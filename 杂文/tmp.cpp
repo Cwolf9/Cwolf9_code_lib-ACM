@@ -1,37 +1,80 @@
-#include<cstdio>
-#include<iostream>
-#include<cstring>
-#include<algorithm>
-#include<map>
-#include<queue>
-#include<set>
-#include<vector>
-#include<cmath>
-#include<bitset>
-#include<cassert>
+#include<bits/stdc++.h>
+#define lson rt<<1
+#define rson rt<<1|1
 #define fi first
 #define se second
 #define all(x) (x).begin(),(x).end()
+#define lowbit(x) (x&(-(x)))
 #define mme(a,b) memset((a),(b),sizeof((a)))
+#define test printf("**-**\n")
 #define fuck(x) cout<<"* "<<x<<"\n"
 #define iis std::ios::sync_with_stdio(false)
 using namespace std;
-typedef pair<int,int> pii;
 typedef long long LL;
-const int MXN = 1e5 + 7;
+typedef pair<int,int> pii;
+const int MXN = 2e5 + 7;
 const int MXE = 1e6 + 7;
-const int mod = 998244353;
 const int INF = 0x3f3f3f3f;
+const LL mod = 1e9 + 7;
 
 int n;
+
+const int MX = 1e5 + 5;
+LL F[MX], invF[MX];
+LL ksm(LL a, LL b){
+  LL res = 1;
+  for(;b;b>>=1,a=a*a%mod){
+    if(b&1)res = res * a % mod;
+  }
+  return res;
+}
+void init() {
+  F[0] = 1;
+  for (int i = 1; i < MX; i++) F[i] = F[i - 1] * i % mod;
+  invF[MX - 1] = ksm(F[MX - 1], mod - 2);
+  for (int i = MX - 2; i >= 0; --i) invF[i] = invF[i + 1] * (i + 1) % mod;
+}
+LL COMB(LL n, LL m) {
+  if(n == m)return 1;
+  if(n < m) return 0;
+  return F[n]*invF[m]%mod*invF[n-m]%mod;
+}
+struct lp{
+  int l, r, id;
+}cw[MX];
+int belong[MX];
+LL ans, Ans[MX];
+bool cmp(lp &a,lp &b){
+  if(belong[a.l]!=belong[b.l])return belong[a.l]<belong[b.l];
+  return a.r<b.r;
+}
 
 int main(){
 #ifndef ONLINE_JUDGE
     freopen("E://ADpan//in.in", "r", stdin);
     //freopen("E://ADpan//out.out", "w", stdout);  
 #endif
-    while(~scanf("%d", &n)){
-        
-    }
-    return 0;
+  init();
+  scanf("%d", &n);
+  int block = sqrt(MX*1.0);
+  for(int i = 1; i < MX; ++i)belong[i] = (i-1)/block;
+  for(int i = 1; i <= n; ++i){
+    scanf("%d%d", &cw[i].r, &cw[i].l);
+    cw[i].id = i;
+  }
+  sort(cw+1,cw+n+1,cmp);
+  int L = 1, R = 0;
+  ans = 1LL;
+  LL two = ksm(2LL, mod-2);
+  for(int i = 1; i <= n; ++i){
+    while(R<cw[i].r)ans = ((ans * 2LL - COMB(R++, L))%mod+mod)%mod ;
+    while(R>cw[i].r)ans = (ans + COMB(--R, L))*two%mod ;
+    while(L<cw[i].l)ans = (ans + COMB(R,++L))%mod ;
+    while(L>cw[i].l)ans = (ans - COMB(R,L--) + mod)%mod ;
+    Ans[cw[i].id] = ans;
+  }
+  for(int i = 1; i <= n; ++i){
+    printf("%lld\n", Ans[i]);
+  }
+  return 0;
 }
