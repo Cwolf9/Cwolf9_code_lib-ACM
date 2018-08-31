@@ -1,80 +1,71 @@
 #include<bits/stdc++.h>
+#define lowbit(x) (x)&(-(x))
+#define all(x) x.begin(),x.end()
+#define iis std::ios::sync_with_stdio(false)
+#define mme(a,b) memset((a),(b),sizeof((a)))
 #define lson rt<<1
 #define rson rt<<1|1
-#define fi first
-#define se second
-#define all(x) (x).begin(),(x).end()
-#define lowbit(x) (x&(-(x)))
-#define mme(a,b) memset((a),(b),sizeof((a)))
-#define test printf("**-**\n")
-#define fuck(x) cout<<"* "<<x<<"\n"
-#define iis std::ios::sync_with_stdio(false)
 using namespace std;
 typedef long long LL;
-typedef pair<int,int> pii;
-const int MXN = 2e5 + 7;
-const int MXE = 1e6 + 7;
+typedef unsigned long long uLL;
+const int MXN = 1e5+7;
+const int N = 1e5+7;
 const int INF = 0x3f3f3f3f;
-const LL mod = 1e9 + 7;
-
-int n;
-
-const int MX = 1e5 + 5;
-LL F[MX], invF[MX];
-LL ksm(LL a, LL b){
-  LL res = 1;
-  for(;b;b>>=1,a=a*a%mod){
-    if(b&1)res = res * a % mod;
-  }
-  return res;
+const LL INFLL = 0x3f3f3f3f3f3f3f3f;
+const int MOD = 1e9 + 7;
+int n, m, k;
+int flag, t;
+int is[N];
+int ar[N], ans[N*2], vis[N];
+std::vector<int> g[N];
+struct lh{
+  int v,ip;
+}aa,bb;
+void dfs(int u){
+    for(auto v:g[u]){
+        if(vis[v] == 1){
+            flag=1;
+        }else if(vis[v]==0){
+            vis[v] = 1;
+            dfs(v);
+        }
+    }
+    ans[t++] = u;
+    vis[u] = 2;
 }
-void init() {
-  F[0] = 1;
-  for (int i = 1; i < MX; i++) F[i] = F[i - 1] * i % mod;
-  invF[MX - 1] = ksm(F[MX - 1], mod - 2);
-  for (int i = MX - 2; i >= 0; --i) invF[i] = invF[i + 1] * (i + 1) % mod;
+void init(){
+    t = 0;
+    mme(is, 0);mme(vis, 0);
 }
-LL COMB(LL n, LL m) {
-  if(n == m)return 1;
-  if(n < m) return 0;
-  return F[n]*invF[m]%mod*invF[n-m]%mod;
-}
-struct lp{
-  int l, r, id;
-}cw[MX];
-int belong[MX];
-LL ans, Ans[MX];
-bool cmp(lp &a,lp &b){
-  if(belong[a.l]!=belong[b.l])return belong[a.l]<belong[b.l];
-  return a.r<b.r;
-}
-
 int main(){
-#ifndef ONLINE_JUDGE
-    freopen("E://ADpan//in.in", "r", stdin);
-    //freopen("E://ADpan//out.out", "w", stdout);  
-#endif
-  init();
-  scanf("%d", &n);
-  int block = sqrt(MX*1.0);
-  for(int i = 1; i < MX; ++i)belong[i] = (i-1)/block;
-  for(int i = 1; i <= n; ++i){
-    scanf("%d%d", &cw[i].r, &cw[i].l);
-    cw[i].id = i;
-  }
-  sort(cw+1,cw+n+1,cmp);
-  int L = 1, R = 0;
-  ans = 1LL;
-  LL two = ksm(2LL, mod-2);
-  for(int i = 1; i <= n; ++i){
-    while(R<cw[i].r)ans = ((ans * 2LL - COMB(R++, L))%mod+mod)%mod ;
-    while(R>cw[i].r)ans = (ans + COMB(--R, L))*two%mod ;
-    while(L<cw[i].l)ans = (ans + COMB(R,++L))%mod ;
-    while(L>cw[i].l)ans = (ans - COMB(R,L--) + mod)%mod ;
-    Ans[cw[i].id] = ans;
-  }
-  for(int i = 1; i <= n; ++i){
-    printf("%lld\n", Ans[i]);
+  while(~scanf("%d %d",&n,&k)){
+    init();
+    for(int i = 0; i <= n; ++i)g[i].clear();
+    for(int i = 0; i < k; ++i){
+      scanf("%d", &ar[i]);
+      is[ar[i]] = 1;
+    }
+    for(int i = 1, x; i <= n; ++i){
+      scanf("%d", &x);
+      g[i].resize(x);
+      for(int j = 0; j < x; ++j){
+        scanf("%d", &g[i][j]);
+        //in[g[i][j]]++;
+      }
+    }
+    flag = 0;
+    for(int i = 0; i < k; ++i){
+        if(vis[ar[i]]==0){
+            dfs(ar[i]);
+        }
+    }
+    if(flag){
+        printf("-1\n");
+        continue;
+    }
+    printf("%d\n", t);
+    for(int i = 0; i < t; ++i)printf("%d ", ans[i]);
+    printf("\n");
   }
   return 0;
 }

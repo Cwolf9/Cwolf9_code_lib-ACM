@@ -41,7 +41,7 @@ LL Mul(LL n,LL pi,LL pk){
     LL ans=1LL;
     if (n/pk){
       for (LL i=2;i<=pk;++i)
-        if (i%pi) ans=ans*i%pk;
+        if (i%pi) ans=ans*i%pk;//跳过pk的倍数,不然无逆元
       ans=ksm(ans,n/pk,pk);
     }
     LL r = n%pk;
@@ -56,7 +56,7 @@ LL COMB(LL n,LL m,LL mod,LL pi,LL pk){
     for (LL i=n;i;i/=pi) k+=i/pi;
     for (LL i=m;i;i/=pi) k-=i/pi;
     for (LL i=n-m;i;i/=pi) k-=i/pi;
-    ans=a*Inv(b,pk)%pk*Inv(c,pk)%pk*ksm(pi,k,pk)%pk;
+    ans=a*Inv(b,pk)%pk*Inv(c,pk)%pk*ksm(pi,k,pk)%pk;//把pk的倍数乘回去
     return ans*(mod/pk)%mod*Inv(mod/pk,pk)%mod;//CRT合并
 }
 LL exLucas(LL n, LL m, LL mod){
