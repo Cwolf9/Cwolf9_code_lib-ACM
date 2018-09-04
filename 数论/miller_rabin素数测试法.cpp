@@ -15,10 +15,8 @@ long long power(long long v, long long p, long long m){
 		//v = mul(v, v, m);
 		p >>= 1;
 	}
- 
 	return r;
 }
- 
 bool witness(long long a, long long p){
 	int k = 0;
 	long long q = p - 1;
@@ -32,19 +30,15 @@ bool witness(long long a, long long p){
 		if(v == p - 1)
 			return false;
 	}
- 
 	return true; // composite number
 }
- 
 bool miller_rabin(long long p){
 	if(p == 2) return true;
 	if(p % 2 == 0) return false;
- 
 	for(int i = 0; i != 50; ++i){
 		long long a = std::rand() % (p - 1) + 1;
 		if(witness(a, p))
 			return false;
 	}
- 
 	return true;
 }
