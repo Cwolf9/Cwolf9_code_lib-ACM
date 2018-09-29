@@ -1,10 +1,21 @@
 //#include<bits/stdc++.h>
 #include<cstdio>
-#include<cstring>
 #include<iostream>
+#include<cstring>
 #include<algorithm>
+#include<map>
+#include<queue>
+#include<set>
+#include<stack>
+#include<vector>
+#include<cctype>
+#include<string>
+#include<cmath>
+#include<bitset>
+#include<cassert>
 using namespace std;
 typedef long long LL;
+//https://www.cnblogs.com/KonjakJuruo/p/5906164.html
 /*SA,R,H的下标都是 0~n 其中多包括了一个空字符串*/
 struct Suffix_Array {
     static const int N = 3e5 + 7;
@@ -18,21 +29,12 @@ struct Suffix_Array {
     void Out(char *str);
     void RMQ_init(int n);
     int RMQ_query(int l, int r);
-    int cmp_suffix(char* pattern, int p);
 }SA;
-int Suffix_Array::cmp_suffix(char* pattern, int p){
-    return strncmp(pattern, s + sa[p], M);
-}
 void Suffix_Array::Out(char *str) {
     puts ("/*Suffix*/");
     for (int i=0; i<n; ++i) {
         printf ("%s\n", str+sa[i]);
     }
-}
-char a[MXN], b[MXN], s[MXN];
-int sa[MXN], M;
-int cmp_suffix(char* pattern, int p){
-    return strncmp(pattern, s + sa[p], M);
 }
 //LCP(suffix(i), suffix(j))=RMQ_query(rnk[i], rnk[j]);
 int Suffix_Array::RMQ_query(int l, int r) {

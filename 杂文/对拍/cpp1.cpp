@@ -1,73 +1,93 @@
-#include<bits/stdc++.h>
-#define lson rt<<1
-#define rson rt<<1|1
-#define all(x) (x).begin(),(x).end()
-#define mme(a,b) memset((a),(b),sizeof((a)))
-#define fuck(x) cout<<"* "<<x<<"\n"
-#define iis std::ios::sync_with_stdio(false)
+#include <cstdio>
+#include <iostream>
+#include <algorithm>
+#include <cstring>
+#include <queue>
+#include <bitset>
+#include <map>
+#include <vector>
+#include <stack>
+#include <set>
+#include <cmath>
+#ifdef LOCAL
+#define debug(x) cout<<#x<<" = "<<(x)<<endl;
+#else
+#define debug(x) 1;
+#endif
+
+#define chmax(x,y) x=max(x,y)
+#define chmin(x,y) x=min(x,y)
+#define lson id<<1,l,mid
+#define rson id<<1|1,mid+1,r
+#define lowbit(x) x&-x
+#define mp make_pair
+#define pb push_back
 using namespace std;
-typedef long long LL;
-typedef pair<int,int> pii;
-const int MXN = 1e5 + 7;
-const int MXE = 1e6 + 7;
+typedef long long ll;
+typedef unsigned long long ull;
+typedef pair<int, int> pii;
+const ll MOD = 1e9 + 7;
+const double eps = 1e-10;
 const int INF = 0x3f3f3f3f;
-const LL MOD = 1e9 + 7;
-const LL mod = 1e9 + 7;
-
-int n;
-LL l, r;
-
-const int MX = 1e5 + 7;
-LL F[MX], invF[MX];
-LL ksm(LL a, LL b){
-  LL res = 1;
-  for(;b;b>>=1,a=a*a%mod){
-    if(b&1)res = res * a % mod;
-  }
-  return res;
-}
-void init() {
-  F[0] = 1;
-  for (int i = 1; i < MX; i++) F[i] = F[i - 1] * i % mod;
-  invF[MX - 1] = ksm(F[MX - 1], mod - 2);
-  for (int i = MX - 2; i >= 0; i--) invF[i] = invF[i + 1] * (i + 1) % mod;
-}
-LL COMB(int n, int m) {
-  if(n == m)return 1;
-  if(n < m) return 0;
-  return F[n]*invF[m]%mod*invF[n-m]%mod;
-}
-
-LL bino[505][505], bpre[505][MXN];
-int blocks = 500;
-void yuchuli(){
-  for(int i = 0; i < blocks; ++i){
-    for(int j = 0; j < blocks; ++j){
-      bino[i][j] = COMB(i,j);
+const ll INFLL = 0x3f3f3f3f3f3f3f3fll;
+const int MAXN = 1e6 + 5;
+struct nodes {
+    int l, r;
+    bool operator <(const nodes &x) const {
+        return r < x.r;
     }
-  }
-  for(int i = 1; i < MXN/blocks; ++i){
-    for(int j = 0; j < MXN; ++j){
-      if(j==0)bpre[i][j] = COMB(blocks*i, j);
-      else bpre[i][j] = (bpre[i][j-1] + COMB(blocks*i, j))%MOD;
+} a[MAXN];
+int tree[MAXN * 2];
+int n, k;
+void add(int i, int v) {
+    while(i <= n) {
+        tree[i] += v;
+        i += i&-i;
     }
-  }
 }
-
-int main(int argc, char const *argv[]){
-  init();
-  yuchuli();
-  int tim = 1;
-  //scanf("%d", &tim);
-  while(tim--){
-    scanf("%lld%lld", &r, &l);
-    LL p = r/blocks, re = r - p * blocks, ans = 0, tmp = min(l, re);
-    //printf("%lld %lld\n", p, re);
-    if(re==0) --p;
-    for(int i = 0; i <= tmp; ++i){
-      ans = (ans + bino[re][i]*bpre[p+1][min(l-i, p*500)]%MOD)%MOD;
+int get(int i) {
+    int ret = 0;
+    while(i) {
+        ret += tree[i];
+        i -= i&-i;
     }
-    printf("%lld\n", ans);
-  }
-  return 0;
+    return ret;
+}
+pii h[MAXN * 2];
+int com[MAXN * 2];
+int tot;
+int id(int x) {
+    return lower_bound(com + 1, com + 1 + tot, x) - com;
+}
+int main() {
+    scanf("%d%d", &n, &k);
+        int cnt = 0, sz = 0;
+        tot = 0;
+        for(int i = 1; i <= n; i++) {
+            scanf("%d%d", &a[i].l, &a[i].r);
+            h[++sz] = mp(a[i].l, 1);
+            h[++sz] = mp(a[i].r, -a[i].l);
+            com[++tot] = a[i].l;
+            com[++tot] = a[i].r;
+        }
+        sort(com + 1, com + 1 + tot);
+        tot = unique(com + 1, com + 1 + tot) - com - 1;
+        sort(h + 1, h + 1 + sz);
+        int ans = 0;
+        for(int i = 1; i <= sz; i++) {
+            if(h[i].second == 1) add(id(h[i].first), 1);
+            else {
+                int idx = id(h[i].first);
+                int l = 1, r = idx - 1;
+                while(l <= r) {
+                    int mid = (l+r) >> 1;
+                    if(get(mid) >= k) r = mid - 1;
+                    else l = mid + 1;
+                }
+                ans = max(ans, com[idx] - com[r + 1]);
+                add(id(-h[i].second), -1);
+            }
+        }
+        printf("%d\n", ans);
+    return 0;
 }

@@ -10,9 +10,14 @@ typedef long long LL;
 const int maxn=1000000000-3;
 int main(){
 	srand(time(0)); 
-	int n=ran(1,100000);
+	int n=ran(1,10);
     int m=ran(1,n);
     printf("%d %d\n", n,m);
+    for(int i = 0; i < n; ++i){
+        int a = ran(1, 10000000);
+        int b = ran(1, a);
+        printf("%d %d\n", b, a);
+    }
 	return 0;
 } 
 /*
