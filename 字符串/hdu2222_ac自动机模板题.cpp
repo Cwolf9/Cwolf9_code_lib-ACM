@@ -103,6 +103,6 @@ int main(int argc, char const *argv[]) {
         aho.build_ac();
         scanf("%s", s);
         printf("%d\n", aho.Query(s));
-    }    
+    }
     return 0;
 }

@@ -2,21 +2,23 @@
 #include<iostream>  
 #include<ctime>  
 #include<cstdlib>
-#define ran(a, b) ((((rand() << 15) ^ rand()) % ((b) - (a) + 1)) + (a))  
-using namespace std;  
-const int N =200;
+#define ran(a,b) ((((rand()<<15)^rand())%((b)-(a)+1))+(a))  
+using namespace std;
+
+const int N =1e6;
 const int M =300;
 typedef long long LL;
-const int maxn=1000000000-3;
+
 int main(){
-	srand(time(0)); 
-	int n=ran(1,10);
-    int m=ran(1,n);
-    printf("%d %d\n", n,m);
-    for(int i = 0; i < n; ++i){
-        int a = ran(1, 10000000);
-        int b = ran(1, a);
-        printf("%d %d\n", b, a);
+#ifndef ONLINE_JUDGE
+    //freopen("E://ADpan//in.in", "r", stdin);
+    freopen("E://ADpan//out.out", "w", stdout);  
+#endif
+	srand(time(0));
+    for(int i = 0; i < 20; ++i) {
+    	int n = ran(0, N);
+        int k = ran(1, N);
+        printf("%d %d\n", n, k);
     }
 	return 0;
 } 
@@ -25,10 +27,9 @@ int main(){
 int main(){
     srand(time(0));  
     int a,b,c;  
-    a = rand();
-	//(rand() << 16) + rand();  
-    //b = rand();// (rand() << 16) + rand();  
-    //c = rand(); // (rand() << 16) + rand(); 
+    //a = (rand() << 16) + rand();  
+    //b = (rand() << 16) + rand();  
+    //c = (rand() << 16) + rand(); 
     LL d=rand();
     int n=max(rand()%N,1);
 	printf("%d %d %lld\n",n,max(rand()%N,1),(d*d)%M );
@@ -38,4 +39,5 @@ int main(){
 		else printf("%lld\n",max((d*d)%M,1LL) );
 	}
     return 0;  
-}  */ 
+}
+*/
