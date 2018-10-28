@@ -50,7 +50,7 @@ void rongchi() {
 }
 int main(){
 #ifndef ONLINE_JUDGE
-    freopen("E://ADpan//in.in", "r", stdin);
+    //freopen("E://ADpan//in.in", "r", stdin);
     // freopen("E://ADpan//out.out", "w", stdout);  
 #endif
     while(~scanf("%lld", &n)&&n){

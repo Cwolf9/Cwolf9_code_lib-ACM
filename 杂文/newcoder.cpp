@@ -1,4 +1,14 @@
-//模拟退火
+#include <bits/stdc++.h>
+using namespace std;
+
+int n, m;
+
+int main(){
+    
+    return 0;
+}
+
+/*//模拟退火
 #include <iostream>
 #include<cstdio>
 #include<algorithm>
@@ -40,3 +50,6 @@ int main(){
     }
     return 0;
 }
+*/
+
+//当手机开机时，它处于空闲状态(idle)，当用户使用电话呼叫某人

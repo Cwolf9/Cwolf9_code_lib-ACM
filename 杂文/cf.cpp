@@ -53,69 +53,12 @@ typedef long long LL;
 const int MXN = 2e5 + 6;
 const int MXE = 5e6 + 6;
 
-int ar[MXN], pre[MXN], pos[25];
-int ch[MXE][2], node, buf[MXE];
-int ans, p, dp[25], n;
-void ins(int n,int P) {
-    int now = 0;
-    for(int i = 0; i <=21; ++i) {
-        pos[i] = n % 2;
-        n /= 2;
-    }
-    for(int i = 21, x; i >= 0; --i) {
-        x = pos[i];
-        if(ch[now][x] == -1) {
-            ch[now][x] = ++node;
-            ch[node][0] = ch[node][1] = -1;
-        }
-        now = ch[now][x];
-    }
-    buf[now] = min(buf[now], P);
-}
-void Find(int n) {
-    p = -1; ans = 0;
-    int now = 0;
-    for(int i = 0; i <=21; ++i) {
-        pos[i] = n % 2;
-        n /= 2;
-    }
-    for(int i = 21, x; i >= 0; --i) {
-        x = pos[i];
-        if(ch[now][1 - x] != -1) {
-            if(x == 0) ans += dp[i];
-            now = ch[now][1 - x];
-        }else {
-            if(x == 1) ans += dp[i];
-            now = ch[now][x];
-        }
-    }
-    p = buf[now] + 1;
-}
+
 int main(){
-    dp[0] = 1;
-    for(int i = 1; i <= 22; ++i) dp[i] = dp[i-1] * 2;
-    while(~scanf("%d", &n)){
-        node = 0;
-        ch[0][0] = ch[0][1] = -1;
-        memset(buf, 0x3f, sizeof(buf));
-        for(int i = 1; i <= n; ++i) scanf("%d", &ar[i]);
-        for(int i = 1; i <= n; ++i) pre[i] = pre[i-1] ^ ar[i], ins(pre[i], i);
-        int tmp = pre[n], L = 1, R = n;
-        for(int i = n; i >= 1; --i) {
-            Find(pre[i]);
-            ans ^= pre[i];
-            if(p > i) continue;
-            if(ans > tmp) {
-                tmp = ans;
-                R = i; L = p;
-            }else if(ans == tmp && i < R) {
-                R = i; L = p;
-            }else if(ans == tmp && i == R && p > L) {
-                L = p;
-            }
-        }
-        printf("%d %d %d\n", tmp, L, R);
-        for(int i = 1; i <= node; ++i) ch[i][0] = ch[i][1] = -1;
+    int tim, fuck = 0;
+    scanf("%d", &tim);
+    while(tim --) {
+        
     }
     return 0;
 }
