@@ -1,9 +1,11 @@
-#include<bits/stdc++.h> 
+#include <cstdio>
+#include <iostream>
+#include <cmath>
+#include <cstring>
+#include <algorithm>
+#include <vector>
 using namespace std;
 typedef long long LL;
-
-const int MXN = 4e5 + 6;
-const int INF = 0x3f3f3f3f;
 
 struct fastio{
     char s[100005];
@@ -20,15 +22,16 @@ struct fastio{
         if(it>0)it--;
         return c!=EOF;
     }
-}_buff;
+}BUFF;
 #define read(x) x=getnum()
-#define write(x) putnum(x),putchar('\n')
+#define write(x) putnum(x),putchar(' ')
+#define writeln(x) putnum(x),putchar('\n')
 
 inline LL getnum(){
-    LL r=0;bool ng=0;char c;c=_buff.get();
-    while(c!='-'&&(c<'0'||c>'9'))c=_buff.get();
-    if(c=='-')ng=1,c=_buff.get();
-    while(c>='0'&&c<='9')r=r*10+c-'0',c=_buff.get();
+    LL r=0;bool ng=0;char c;c=BUFF.get();
+    while(c!='-'&&(c<'0'||c>'9'))c=BUFF.get();
+    if(c=='-')ng=1,c=BUFF.get();
+    while(c>='0'&&c<='9')r=r*10+c-'0',c=BUFF.get();
     return ng?-r:r;
 }
 template<class T> inline void putnum(T x){
@@ -38,114 +41,118 @@ template<class T> inline void putnum(T x){
     if(sz==0)putchar('0');
     for(int i=sz-1;i>=0;i--)putchar('0'+a[i]);
 }
-inline char getreal(){char c=_buff.get();while(c<=32)c=_buff.get();return c;}
-/*
-基于一个观察
-如果存在恰好选k个数gcd为1的方案
-那么一定存在至少选k个数gcd为1的方案
-然后解一个恰好选的问题
-从一个数x的倍数里选k个数，它们的gcd一定是x的倍数
-假设已经算出gcd是2x 3x ...的方案数
-那么就可以算出gcd是x的方案数了
-对于x还要容斥减去gcd是2x 3x ...的方案数
-%%%tls
-*/
-const int mod[2] = {(int)1e9 + 7, (int)1e9 + 9};
+inline char getreal(){char c=BUFF.get();while(c<=32)c=BUFF.get();return c;}
+
+
+const int MXN = 1e6 + 5;
+const int mod = 1e9 + 7;
+const LL INF = 0x3f3f3f3f3f3f3f3fLL;
+
 int n, m;
-int ar[MXN], sum[MXN];
-LL tmp[MXN], f[MXN], inv[2][MXN];;
-int gcd(int a,int b) {
-    return b == 0? a: gcd(b, a%b);
+std::vector<pair<int,int> > mp[MXN], edge[MXN];
+int dfn[MXN], low[MXN], inde;
+int qltMap[MXN], qltNum;
+int vis[MXN];
+int stak[MXN], top;
+int fa[MXN];
+LL dis[MXN], ans, ANS[MXN];
+void init() {
+    for(int i = 1; i <= n; ++i) {
+        mp[i].clear();
+        edge[i].clear();
+        dis[i] = 0;
+        dfn[i] = low[i] = 0;
+        vis[i] = 0;
+        ANS[i] = -1;
+    }
+    top = inde = qltNum = 0;
 }
-bool ok(int s) {
-    for(int o = 0; o < 2; ++o) {
-        //预处理组合数C(i, s)
-        for(int i = 0; i < s; ++i) f[i] = 0;
-        LL cf = 1;
-        for(int i = s; i <= n; ++i) {
-            f[i] = cf;
-            cf = cf * (i+1) % mod[o] * inv[o][i+1-s] % mod[o];
+void dfs(int u,int ba) {
+    dfn[u] = low[u] = ++ inde;
+    stak[++top] = u;
+    vis[u] = 1;
+    for(auto V: mp[u]) {
+        int v = V.first;
+        if(v == ba) continue;
+        if(!dfn[v]) {
+            dfs(v, u);
+            low[u] = min(low[u], low[v]);
+        }else if(vis[v] == 1) {
+            low[u] = min(low[u], dfn[v]);
         }
-        for(int i = m; i >= 1; --i) {
-            tmp[i] = f[sum[i]];
-            for(int j = i + i; j <= m; j += i) {
-                tmp[i] -= tmp[j];//容斥
-                if(tmp[i] < 0) tmp[i] = (tmp[i] + mod[o]) % mod[o];
+    }
+    if(dfn[u] == low[u]) {
+        int v;
+        ++ qltNum;
+        do{
+            v = stak[top --];
+            vis[v] = 2;
+            qltMap[v] = qltNum;
+        }while(v != u);
+    }
+}
+void dfs1(int u,int ba,LL d) {
+    dis[u] = d;
+    for(auto x: edge[u]) {
+        if(x.first == ba) continue;
+        dfs1(x.first, u, x.second + d);
+        fa[x.first] = u;
+    }
+}
+int main(){
+    int tim;
+    scanf("%d", &tim);
+    while(tim --) {
+        scanf("%d%d", &n, &m);
+        init();
+        for(int i = 1, a, b, c; i <= m; ++i) {
+            scanf("%d%d%d", &a, &b, &c);
+            mp[a].push_back({b,c}); mp[b].push_back({a,c});
+        }
+        for(int i = 1; i <= n; ++i) {
+            if(vis[i] == 0) {
+                dfs(i, -1);
             }
         }
-        if(tmp[1]) return 1;
-    }
-    return 0;
-}
-int main() {
-    for(int o = 0; o < 2; ++o) {
-        LL p = mod[o];
-        inv[o][1] = 1;
-        for(int i = 2; i < MXN; ++i)//预处理逆元
-            inv[o][i] = p - (p / i * inv[o][p % i] % p);
-    }
-    read(n);
-    int p = 0;
-    m = 0;
-    for(int i = 1; i <= n; ++i) {
-        read(ar[i]);
-        m = m > ar[i]? m: ar[i];
-        p = gcd(p, ar[i]);
-        ++ sum[ar[i]];
-    }
-    if(p != 1) {
-        write(-1);
-        return 0;
-    }
-    //预处理每个因子出现的次数
-    for(int i = 1; i <= m; ++i) {
-        for(int j = i << 1; j <= m; j += i) {
-            sum[i] += sum[j];
-        }
-    }
-    int ans = 1, L = 1, R = min(n, 7), mid;
-    while(R >= L) {
-        mid = (L + R) >> 1;
-        if(ok(mid)) ans = mid, R = mid - 1;
-        else L = mid + 1;
-    }
-    write(ans);
-    return 0;
-}
-/*
-int main() {
-    read(n);
-    int p = 0, m = 0;
-    //题目要求的是最少k个数, 所以此法正确
-    for(int i = 1; i <= n; ++i) {
-        read(ar[i]);
-        m = m > ar[i]? m: ar[i];
-        p = gcd(p, ar[i]);
-        sum[ar[i]] = is[ar[i]] = 1;//只关心gcd为i是否存在
-    }
-    if(p != 1) {
-        puts("-1");
-        return 0;
-    }
-    int ans = 1;
-    //sum[i]表示选出ans个数gcd为i是否存在, sum[i]累加
-    while(1) {
-        if(sum[1]) break;
-        for(int i = 1; i <= m; ++i) tmp[i] = 0;
-        for(int i = m; i >= 1; --i) {
-            LL sum1 = 0, sum2 = 0;
-            for(int j = i; j <= m; j += i) {
-                tmp[i] -= tmp[j];//容斥
-                sum1 += sum[j]; sum2 += is[j];
+        for(int i = 1; i <= n; ++i) {
+            for(auto v: mp[i]) {
+                if(qltMap[i] != qltMap[v.first]) {
+                    edge[qltMap[i]].push_back({qltMap[v.first],v.second});
+                }
             }
-            tmp[i] += sum1 * sum2;
         }
-        for(int i = 1; i <= m; ++i) {
-            sum[i] = tmp[i] > 0? tmp[i]: 0;
+        dfs1(1, -1, 0);
+        int tmp = 1;
+        LL mmax = dis[1];
+        for(int i = 2; i <= qltNum; ++i) {
+            if(dis[i] > mmax) {
+                mmax = dis[i];
+                tmp = i;
+            }
         }
-        ans ++;
+        int vs = tmp;
+        dfs1(vs, -1, 0);
+        tmp = 1; mmax = dis[1];
+        for(int i = 2; i <= qltNum; ++i) {
+            if(dis[i] > mmax) {
+                mmax = dis[i];
+                tmp = i;
+            }
+        }
+        int vt = tmp;
+        ans = INF;
+        while(tmp != vs) {
+            LL a = max(dis[tmp], dis[vt]-dis[tmp]);
+            ANS[tmp] = a;
+            if(a < ans) ans = a;
+            tmp = fa[tmp];
+        }
+        for(int i = 1; i <= n; ++i) {
+            if(ANS[qltMap[i]] == ans) {
+                printf("%d %lld\n", i, ans);
+                break;
+            }
+        }
     }
-    write(ans);
     return 0;
 }
-*/
