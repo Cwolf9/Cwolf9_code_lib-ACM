@@ -2,23 +2,34 @@
 #include<iostream>  
 #include<ctime>  
 #include<cstdlib>
+#include <map>
 #define ran(a,b) ((((rand()<<15)^rand())%((b)-(a)+1))+(a))  
 using namespace std;
 
 const int N =1e6;
 const int M =300;
 typedef long long LL;
-
+map<int,int> mp;
 int main(){
 #ifndef ONLINE_JUDGE
     //freopen("E://ADpan//in.in", "r", stdin);
     freopen("E://ADpan//out.out", "w", stdout);  
 #endif
 	srand(time(0));
-    for(int i = 0; i < 20; ++i) {
-    	int n = ran(0, N);
-        int k = ran(1, N);
-        printf("%d %d\n", n, k);
+    int tim = 20;
+    printf("20\n");
+    while(tim--){
+        int n = ran(100,1000);
+        printf("%d\n", n);
+        for(int i = 0; i < n;) {
+            int k = ran(1, N);
+            if(mp[k] == 0){
+                if(i == n-1) printf("%d\n", k);
+                else printf("%d ", k);
+                ++ i;
+            }
+            mp[k] = 1;
+        }
     }
 	return 0;
 } 
