@@ -1,49 +1,3 @@
-/*//模拟退火
-#include <iostream>
-#include<cstdio>
-#include<algorithm>
-#include<cstring>
-#include<cmath>
-using namespace std;
-const double eps=1e-7;
-struct point3D{
-    double x,y,z;
-} data[105];
-int n;
-double dis(point3D a,point3D b){
-    return sqrt((a.x-b.x)*(a.x-b.x)+(a.y-b.y)*(a.y-b.y)+(a.z-b.z)*(a.z-b.z));
-}
-double solve(){
-    double step=1000,ans=1e30,mt;
-    point3D z;
-    z.x=z.y=z.z=0;
-    int s=0;
-    while(step>eps){
-        for(int i=0; i<n; i++)
-            if(dis(z,data[s])<dis(z,data[i])) s=i;
-        mt=dis(z,data[s]);
-        ans=min(ans,mt);
-        z.x+=(data[s].x-z.x)/mt*step;
-        z.y+=(data[s].y-z.y)/mt*step;
-        z.z+=(data[s].z-z.z)/mt*step;
-        step*=0.98;
-    }
-    return ans;
-}
-int main(){
-    double ans;
-    while(scanf("%d",&n)!=EOF){
-        for(int i=0; i<n; i++)
-            scanf("%lf%lf%lf",&data[i].x,&data[i].y,&data[i].z);
-        ans=solve();
-        printf("%.7f\n",ans);
-    }
-    return 0;
-}
-*/
-
-//当手机开机时，它处于空闲状态(idle)，当用户使用电话呼叫某人
-
 /*
 题意：给定一张n<=100,m<=1000的无向图，另外相同权值的边不超过10条，求最小生成树的数目。
 思路：首先我们将不同的权值从小到大分开考虑。
@@ -116,11 +70,9 @@ const int M=1111;
  
 typedef __int64 LL;
  
-struct Edges
-{
+struct Edges{
     int a,b,c;
-    bool operator<(const Edges & x)const
-    {
+    bool operator<(const Edges & x)const{
         return c<x.c;
     }
 } edge[M];
@@ -132,25 +84,21 @@ LL G[N][N],C[N][N];//G顶点之间的关系，C为生成树计数用的Kirchhoff
  
 vector<int>V[N];//记录每个连通分量
  
-int Find(int x,LL f[])
-{
+int Find(int x,LL f[]){
     if(x==f[x])
         return x;
     else
         return Find(f[x],f);
 }
- 
-LL det(LL a[][N],int n)//生成树计数:Matrix-Tree定理
-{
+//生成树计数:Matrix-Tree定理
+LL det(LL a[][N],int n){
     for(int i=0; i<n; i++)
         for(int j=0; j<n; j++)
             a[i][j]%=mod;
     int ret=1;
-    for(int i=1; i<n; i++)
-    {
+    for(int i=1; i<n; i++){
         for(int j=i+1; j<n; j++)
-            while(a[j][i])
-            {
+            while(a[j][i]){
                 int t=a[i][i]/a[j][i];
                 for(int k=i; k<n; k++)
                     a[i][k]=(a[i][k]-a[j][k]*t)%mod;
@@ -165,41 +113,34 @@ LL det(LL a[][N],int n)//生成树计数:Matrix-Tree定理
     return (ret+mod)%mod;
 }
  
-void Solve()
-{
+void Solve(){
     sort(edge,edge+m);//按权值排序
-    for(int i=1; i<=n; i++)//初始化并查集
-    {
+    for(int i=1; i<=n; i++){
         f[i]=i;
         vist[i]=0;
     }
  
     LL Edge=-1;//记录相同的权值的边
     LL ans=1;
-    for(int k=0; k<=m; k++)
-    {
-        if(edge[k].c!=Edge||k==m)//一组相等的边,即权值都为Edge的边加完
-        {
-            for(int i=1; i<=n; i++)
-            {
-                if(vist[i])
-                {
+    for(int k=0; k<=m; k++){
+        //一组相等的边,即权值都为Edge的边加完
+        if(edge[k].c!=Edge||k==m){
+            for(int i=1; i<=n; i++){
+                if(vist[i]){
                     LL u=Find(i,U);
                     V[u].push_back(i);
                     vist[i]=0;
                 }
             }
-            for(int i=1; i<=n; i++) //枚举每个连通分量
-            {
-                if(V[i].size()>1)
-                {
+            //枚举每个连通分量
+            for(int i=1; i<=n; i++) {
+                if(V[i].size()>1){
                     for(int a=1; a<=n; a++)
                         for(int b=1; b<=n; b++)
                             C[a][b]=0;
                     int len=V[i].size();
                     for(int a=0; a<len; a++) //构建Kirchhoff矩阵C
-                        for(int b=a+1; b<len; b++)
-                        {
+                        for(int b=a+1; b<len; b++){
                             int a1=V[i][a];
                             int b1=V[i][b];
                             C[a][b]=(C[b][a]-=G[a1][b1]);
@@ -212,8 +153,7 @@ void Solve()
                         f[V[i][a]]=i;
                 }
             }
-            for(int i=1; i<=n; i++)
-            {
+            for(int i=1; i<=n; i++){
                 U[i]=f[i]=Find(i,f);
                 V[i].clear();
             }

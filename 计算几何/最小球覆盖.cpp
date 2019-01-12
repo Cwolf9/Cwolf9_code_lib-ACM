@@ -1,7 +1,9 @@
+//500ms 600ms 1000ms wa3
 #include<cstdio>
 #include<cstring>
 #include<iostream>
 #include<algorithm>
+#include<cmath>
 using namespace std;
 typedef long long LL;
 typedef unsigned long long uLL;
@@ -10,26 +12,26 @@ const double san = 1e5;
 const int MXN = 2005;
 
 int n;
-struct lh{
+struct buf{
     int x, y;
-    lh(){}
-    lh(int a,int b){x = a, y = b;}
-    lh add(lh &a){
-        lh b;
+    buf(){}
+    buf(int a,int b){x = a, y = b;}
+    buf add(buf &a){
+        buf b;
         b.x = x + a.x;
         b.y = y + a.y;
         return b;
     }
 };
-struct lp{
+struct node{
     int x, y, z;
-}cw[MXN];
+}edge[MXN];
 double LEN(double x, double y, double z){
     return x*x+y*y+z*z;
 }
 double get(double x, double y, double z) {
     double ans = 0;
-    for(int i = 0; i < n; ++i) ans = max(ans, LEN(cw[i].x-x,cw[i].y-y,cw[i].z-z));
+    for(int i = 0; i < n; ++i) ans = max(ans, LEN(edge[i].x-x,edge[i].y-y,edge[i].z-z));
     return ans;
 }
 double getz(double x, double y) {
@@ -61,7 +63,7 @@ pair<double,double> getyz(double x) {
 int main(){
     while(~scanf("%d", &n)){
         for(int i = 0; i < n; ++i) {
-            scanf("%d%d%d", &cw[i].x, &cw[i].y, &cw[i].z);
+            scanf("%d%d%d", &edge[i].x, &edge[i].y, &edge[i].z);
         }
         double L = -san, R = san, mid1, mid2, ans;
         pair<double,double> x1, x2, x3;
@@ -87,6 +89,7 @@ int main(){
 #include<cstring>
 #include<iostream>
 #include<algorithm>
+#include<cmath>
 using namespace std;
 typedef long long LL;
 typedef unsigned long long uLL;
@@ -96,26 +99,26 @@ const int MXN = 2005;
 
 int n;
 double X, Y, Z;
-struct lh{
+struct buf{
     int x, y;
-    lh(){}
-    lh(int a,int b){x = a, y = b;}
-    lh add(lh &a){
-        lh b;
+    buf(){}
+    buf(int a,int b){x = a, y = b;}
+    buf add(buf &a){
+        buf b;
         b.x = x + a.x;
         b.y = y + a.y;
         return b;
     }
 };
-struct lp{
+struct node{
     int x, y, z;
-}cw[MXN];
+}edge[MXN];
 double LEN(double x, double y, double z){
     return x*x+y*y+z*z;
 }
 double get(double x, double y, double z) {
     double ans = 0;
-    for(int i = 0; i < n; ++i) ans = max(ans, LEN(cw[i].x-x,cw[i].y-y,cw[i].z-z));
+    for(int i = 0; i < n; ++i) ans = max(ans, LEN(edge[i].x-x,edge[i].y-y,edge[i].z-z));
     return ans;
 }
 double getz(double x, double y) {
@@ -145,7 +148,7 @@ double getyz(double x) {
 int main(){
     while(~scanf("%d", &n)){
         for(int i = 0; i < n; ++i) {
-            scanf("%d%d%d", &cw[i].x, &cw[i].y, &cw[i].z);
+            scanf("%d%d%d", &edge[i].x, &edge[i].y, &edge[i].z);
         }
         double L = -san, R = san, mid1, mid2;
         for(int i = 0; i < 60; ++i) {
@@ -165,7 +168,7 @@ int main(){
 
 #include<bits/stdc++.h>
 using namespace std;
-const int maxn=1e2+5;
+const int maxn=1e5+5;
 const double eps=1e-7;
 typedef struct {double p[3];}point;
 point a[maxn];
@@ -208,5 +211,119 @@ int main(){
     }
     return 0;
 }
+3
+0 0 0
+3 0 0
+0 4 0
+4
+0 0 0
+1 0 0
+0 1 0
+0 0 1
+2.500000590252103
+0.816496631812619
+
+https://www.cnblogs.com/heisenberg-/p/6827790.html
+#include<iostream>
+#include<cstdio>
+#include<algorithm>
+#include<cstring>
+#include<cmath>
+using namespace std;
+const double eps=1e-7;
+struct point3D{
+    double x,y,z;
+} data[105];
+int n;
+double dis(point3D a,point3D b){
+    return sqrt((a.x-b.x)*(a.x-b.x)+(a.y-b.y)*(a.y-b.y)+(a.z-b.z)*(a.z-b.z));
+}
+double solve(){
+    double step=1000,ans=1e30,mt;
+    point3D z;
+    z.x=z.y=z.z=0;
+    int s=0;
+    while(step>eps){
+        for(int i=0; i<n; i++)
+            if(dis(z,data[s])<dis(z,data[i])) s=i;
+        mt=dis(z,data[s]);
+        ans=min(ans,mt);
+        z.x+=(data[s].x-z.x)/mt*step;
+        z.y+=(data[s].y-z.y)/mt*step;
+        z.z+=(data[s].z-z.z)/mt*step;
+        step*=0.98;
+    }
+    return ans;
+}
+int main(){
+    double ans;
+    while(scanf("%d",&n)!=EOF){
+        for(int i=0; i<n; i++)
+            scanf("%lf%lf%lf",&data[i].x,&data[i].y,&data[i].z);
+        ans=solve();
+        printf("%.7f\n",ans);
+    }
+    return 0;
+}
 
 
+
+
+#include <bits/stdc++.h>
+#define o2(x) (x)*(x)
+using namespace std;
+typedef long long LL;
+const int MXN = 1e5 + 5;
+int n;
+int x[MXN], y[MXN], z[MXN];
+double len(double X, double Y, double Z, int i) {
+    return o2(X-x[i])+o2(Y-y[i])+o2(Z-z[i]);
+}
+double exe3(double X, double Y, double Z) {
+    double ans = 0;
+    for(int i = 1; i <= n; ++i) ans = max(ans, len(X,Y,Z,i));
+    return ans;
+}
+double exe2(double X, double Y) {
+    double l = -1e6, r = 1e6, midl, midr, ans;
+    for(int i = 0; i < 70; ++i) {
+        midl = (l+r)/2;
+        midr = (midl+r)/2;
+        if(exe3(X, Y, midl) <= exe3(X, Y, midr)) {
+            r = midr, ans = midl;
+        }else {
+            l = midl, ans = midr;
+        }
+    }
+    return exe3(X, Y, ans);
+}
+double exe1(double X) {
+    double l = -1e6, r = 1e6, midl, midr, ans;
+    for(int i = 0; i < 70; ++i) {
+        midl = (l+r)/2;
+        midr = (midl+r)/2;
+        if(exe2(X, midl) <= exe2(X, midr)) {
+            r = midr, ans = midl;
+        }else {
+            l = midl, ans = midr;
+        }
+    }
+    return exe2(X, ans);
+}
+int main() {
+    scanf("%d", &n);
+    for(int i = 1; i <= n; ++i) scanf("%d%d%d", &x[i], &y[i], &z[i]);
+    double l = -1e6, r = 1e6, midl, midr, ans;
+    for(int i = 0; i < 70; ++i) {
+        midl = (l+r)/2;
+        midr = (midl+r)/2;
+        if(exe1(midl) <= exe1(midr)) {
+            r = midr, ans = midl;
+        }else {
+            l = midl, ans = midr;
+        }
+    }
+    double tmp = exe1(ans);
+    printf("%.9f\n", sqrt(tmp));
+    return 0;
+}

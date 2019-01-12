@@ -1,82 +1,91 @@
-#pragma GCC optimize(2)
-#pragma GCC optimize(3)
-#pragma GCC optimize("inline")
-#pragma GCC optimize("-fgcse")
-#pragma GCC optimize("-fgcse-lm")
-#pragma GCC optimize("-ftree-pre")
-#pragma GCC optimize("-ftree-vrp")
-#pragma GCC optimize("-fpeephole2")
-#pragma GCC optimize("-ffast-math")
-#pragma GCC optimize("-fsched-spec")
-#pragma GCC optimize("unroll-loops")
-#pragma GCC optimize("-falign-jumps")
-#pragma GCC optimize("-falign-loops")
-#pragma GCC optimize("-falign-labels")
-#pragma GCC optimize("-fcaller-saves")
-#pragma GCC optimize("-fcrossjumping")
-#pragma GCC optimize("-fthread-jumps")
-#pragma GCC optimize("-funroll-loops")
-#pragma GCC optimize("-fwhole-program")
-#pragma GCC optimize("-freorder-blocks")
-#pragma GCC optimize("-fschedule-insns")
-#pragma GCC optimize("inline-functions")
-#pragma GCC optimize("-fschedule-insns2")
-#pragma GCC optimize("-fstrict-aliasing")
-#pragma GCC optimize("-fstrict-overflow")
-#pragma GCC optimize("-falign-functions")
-#pragma GCC optimize("-fcse-skip-blocks")
-#pragma GCC optimize("-fcse-follow-jumps")
-#pragma GCC optimize("-fsched-interblock")
-#pragma GCC optimize("no-stack-protector")
-#pragma GCC optimize("-freorder-functions")
-#pragma GCC optimize("-findirect-inlining")
-#pragma GCC optimize("-frerun-cse-after-loop")
-#pragma GCC optimize("inline-small-functions")
-#pragma GCC optimize("-finline-small-functions")
-#pragma GCC optimize("-ftree-switch-conversion")
-#pragma GCC optimize("-foptimize-sibling-calls")
-#pragma GCC optimize("-fexpensive-optimizations")
-#pragma GCC optimize("-funsafe-loop-optimizations")
-#pragma GCC optimize("inline-functions-called-once")
-#pragma GCC optimize("-fdelete-null-pointer-checks")
+//#include<bits/stdc++.h>
+#include <cstdio>
+#include <cmath>
+#include <map>
+#include <iostream>
+#include <cstring>
+#include <string>
+#include <algorithm>
+#include <queue>
+#include <set>
+#define fi first
+#define se second
+#define iis std::ios::sync_with_stdio(false)
 
-#include<bits/stdc++.h> 
-using namespace std;
-typedef long long LL;
-const int INF = 0x3f3f3f3f;
-const int MOD = 998244353;
-const int MXN = 2e5 + 7;
-int n, m;
-int sum[MXN], w[MXN];
-std::vector<int> mp[MXN];
-void dfs(int u,int ba) {
-    for(auto v: mp[u]) {
-        if(v == ba) continue;
-        dfs(v, u);
-        sum[u] += sum[v];
-    }
-    sum[u] -= 2 * w[u];
+namespace lh {
+#define o2(x) (x)*(x)
+    using namespace std;
+    typedef long long LL;
+    typedef unsigned long long uLL;
+    typedef pair<LL, LL> pii;
 }
-int main(int argc, char const *argv[]){
-    scanf("%d", &n);
-    for(int i = 1, a, b; i < n; ++i) {
-        scanf("%d%d", &a, &b);
-        mp[a].push_back(b);
-        mp[b].push_back(a);
+
+using namespace lh;
+
+const int MXN = 1e5 + 7;
+const int INF = 0x3f3f3f3f;
+const int mod = 1000000007;
+int n;
+int mu[MXN], prim[MXN], noprime[MXN], cnt;
+void get_mu(int n) {
+    mu[1] = 1;
+    for(int i = 2; i <= n; ++i) {
+        if(!noprime[i]) { prim[++cnt] = i; mu[i] = -1; }
+        for(int j = 1; j <= cnt && prim[j] * i <= n; ++j) {
+            noprime[prim[j] * i] = 1;
+            if(i % prim[j] == 0) break;
+            mu[i * prim[j]] = -mu[i];
+        }
     }
-    int a, b;
-    scanf("%d%d", &a, &b);
-    while(a+b) {
-        ++ sum[a], ++ sum[b];
-        scanf("%d%d", &a, &b);
+}
+int main() {
+    get_mu(100000);
+    while(~scanf("%d", &n)) {
+        printf("%d\n", mu[n]);
     }
-    sum[5] -= 1;
-    sum[2] -= 1;
-    sum[1] -= 1;
-    dfs(1, -1);
-    for(int i = 1; i <= n; ++i) {
-        printf("%d ", sum[i]);
-    }
-    printf("\n");
     return 0;
 }
+/*int main() {
+    int tim; scanf("%d", &tim);
+    while(tim --) {
+        scanf("%d%d", &n, &m);
+        int tn = n, num = 0;
+        while(tn % 10 == 0) tn /= 10, num++;
+        n = tn;
+        bitset<11> a, b;
+        for(int i = 0; i < m; ++i) {
+            scanf("%d", &ar[i]);
+            a.set(ar[i]);
+        }
+        sort(ar, ar+m);
+        LL tmp = ar[0], ret;
+        for(int i = 1; i < m; ++i) {
+            tmp = tmp * 10 + ar[i];
+        }
+        if(a.test(0)) tmp *= 10;
+        tmp = max(n*1LL, tmp);
+        int flag;
+        while(1) {
+            flag = 1;
+            ret = tmp;
+            b.reset();
+            while(ret) {
+                b.set(ret % 10);
+                ret /= 10;
+            }
+            for(int i = 0; i < 10; ++i) {
+                if(a.test(i) && b.test(i) == 0) {
+                    flag = 0; break;
+                }
+            }
+            if(flag) {
+                while(num --) tmp *= 10;
+                printf("%lld\n", tmp);
+                break;
+            }
+            tmp += n;
+        }
+    }
+    return 0;
+}
+*/
