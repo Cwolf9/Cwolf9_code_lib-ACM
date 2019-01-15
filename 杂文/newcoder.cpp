@@ -45,6 +45,12 @@ int main() {
     }
     return 0;
 }
+1.17：线段树：ppq
+1.19：基础数论相关：pph
+1.22：并查集&mst
+1.24：最短路：py
+1.29：树状数组：llw
+2.1：RMQ&LCA
 /*int main() {
     int tim; scanf("%d", &tim);
     while(tim --) {
