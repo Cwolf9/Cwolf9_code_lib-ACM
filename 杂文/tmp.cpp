@@ -88,3 +88,86 @@ int main() {
     cout<<"! "<<a<<" "<<b<<"\n";
     return 0;
 }
+int MOD = 1e9+7;
+void ADD(LL& x,LL v){x=(x+v)%MOD;if(x<0)x+=MOD;}
+/*}}}*/
+const int SIZE = 1e6+10;
+struct AA{
+    int x,y;
+    AA(int x=0,int y=0):x(x),y(y){}
+    bool operator==(const AA& b)const{return x==b.x&&y==b.y;}
+    void scan(){R(x,y);}
+}me,black[SIZE];
+const int N = 666;
+bool best(AA king){
+    if(king.x<=0||king.y<=0||king.x>999||king.y>999)return 0;
+    bool good=0;
+    FOR(i,1,666){
+        if(king==black[i])return 0;
+        if(king.x==black[i].x||king.y==black[i].y)good=1;
+    }
+    return good;
+}
+void mov(int x ,int y){
+    W(x,y);
+    fflush(stdout);
+}
+void update(){
+    int k,x,y;
+    R(k,x,y);
+    black[k]=AA(x,y);
+}
+void can_win(AA king){
+    FOR(dx,-1,1)FOR(dy,-1,1){
+        if(best(AA(king.x+dx,king.y+dy))){
+            mov(king.x+dx,king.y+dy);
+            exit(0);
+        }
+    }
+}
+int main(){
+    me.scan();
+    FOR(i,1,666)black[i].scan();
+    AA O(500,500);
+    while(!(me==O)){
+        can_win(me);
+        if(me.x>O.x)me.x--;
+        else if(me.x<O.x)me.x++;
+        
+        if(me.y>O.y)me.y--;
+        else if(me.y<O.y)me.y++;
+        mov(me.x,me.y);
+        update();
+    }
+    int cnt[4]={};
+    FOR(i,1,666){
+        int ty=0;
+        if(black[i].x>me.x)ty|=1;
+        if(black[i].y>me.y)ty|=2;
+        cnt[ty]++;
+    }
+    int mi=min({cnt[0],cnt[1],cnt[2],cnt[3]});
+    int dx,dy;
+    if(mi==cnt[0]){
+        dx=dy=1;
+    }
+    else if(mi==cnt[1]){
+        dx=-1;
+        dy=1;
+    }
+    else if(mi==cnt[2]){
+        dx=1;
+        dy=-1;
+    }
+    else{
+        dx=dy=-1;
+    }
+    while(1){
+        can_win(me);
+        me.x+=dx;
+        me.y+=dy;
+        mov(me.x,me.y);
+        update();
+    }
+    return 0;
+}

@@ -40,18 +40,34 @@ void check() {
 int main() {
     cin>>x>>y;
     for(int i = 1; i <= 666; ++i) cin>>cw[i].x>>cw[i].y;
-    while(x < 500 && flag == 0) go(x+1, y);
-    while(x > 500 && flag == 0) go(x-1, y);
-    while(y < 500 && flag == 0) go(x, y+1);
-    while(y > 500 && flag == 0) go(x, y-1);
+    while(x < 500 && flag == 0) {
+        check();
+        if(flag) break;
+        go(x+1, y);
+    }
+    while(x > 500 && flag == 0) {
+        check();
+        if(flag) break;
+        go(x-1, y);
+    }
+    while(y < 500 && flag == 0) {
+        check();
+        if(flag) break;
+        go(x, y+1);
+    }
+    while(y > 500 && flag == 0) {
+        check();
+        if(flag) break;
+        go(x, y-1);
+    }
     if(flag) return 0;
     int cnt[4]={0,};
     for(int i = 1; i <= 666; ++i) {
-        mp[cw[i].x][cw[i].y] = i;
-        if(cw[i].x <= 500 && cw[i].y <= 500) ++cnt[0];
-        if(cw[i].x >= 500 && cw[i].y <= 500) ++cnt[1];
-        if(cw[i].x <= 500 && cw[i].y >= 500) ++cnt[2];
-        if(cw[i].x >= 500 && cw[i].y >= 500) ++cnt[3];
+        //mp[cw[i].x][cw[i].y] = i;
+        if(cw[i].x < 500 && cw[i].y < 500) ++cnt[0];
+        if(cw[i].x > 500 && cw[i].y < 500) ++cnt[1];
+        if(cw[i].x < 500 && cw[i].y > 500) ++cnt[2];
+        if(cw[i].x > 500 && cw[i].y > 500) ++cnt[3];
     }
     int cc = min(min(cnt[0],cnt[1]),min(cnt[2],cnt[3]));
     while(flag == 0) {
