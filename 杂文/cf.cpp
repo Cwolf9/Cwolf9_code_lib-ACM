@@ -1,87 +1,31 @@
 #include<bits/stdc++.h>
+#define lson rt<<1
+#define rson rt<<1|1
 using namespace std;
-const int MXN = 1e6 + 6;
-const int INF = 0x3f3f3f3f;
+typedef long long LL;
 
-int x, y;
-struct lp {
-    int x, y;
-}cw[MXN];
-int mp[1001][1001], flag;
-void go(int X, int Y,int ip = 0) {
-    x = X, y = Y;
-    cout<<x<<y<<"\n";
-    fflush(stdout);
-    int k;
-    cin>>k;
-    if(ip || k <= 0) {
-        cin>>k>>k;
-        flag = 1; return;
+const int MXN = 5e5 + 6;
+const int INF = 0x3f3f3f3f;
+const int mod = 1000000009;
+
+int n, m;
+LL sum[MXN<<2], ar[MXN];
+LL ksm(LL a,LL b) {
+    LL res = 1;
+    for(;b;b>>=1,a=a*a%mod) {
+        if(b&1) res = res * a %mod;
     }
-    cin>>cw[k].x>>cw[k].y;
-}
-void check() {
-    for(int i = -1; i <= 1; ++i) {
-        for(int j = -1; j <= 1; ++j) {
-            if(x + i <= 0 || y + j <= 0 || x + i > 999 || y + j > 999) continue;
-            for(int k = 1; k <= 666; ++k) {
-                if(x+i == cw[k].x) {
-                    go(x+i, y, 1);
-                    return;
-                }
-                if(y+j == cw[k].y) {
-                    go(x, y+j, 1);
-                    return;
-                }
-            }
-        }
-    }
+    return res;
 }
 int main() {
-    cin>>x>>y;
-    for(int i = 1; i <= 666; ++i) cin>>cw[i].x>>cw[i].y;
-    while(x < 500 && flag == 0) {
-        check();
-        if(flag) break;
-        go(x+1, y);
-    }
-    while(x > 500 && flag == 0) {
-        check();
-        if(flag) break;
-        go(x-1, y);
-    }
-    while(y < 500 && flag == 0) {
-        check();
-        if(flag) break;
-        go(x, y+1);
-    }
-    while(y > 500 && flag == 0) {
-        check();
-        if(flag) break;
-        go(x, y-1);
-    }
-    if(flag) return 0;
-    int cnt[4]={0,};
-    for(int i = 1; i <= 666; ++i) {
-        //mp[cw[i].x][cw[i].y] = i;
-        if(cw[i].x < 500 && cw[i].y < 500) ++cnt[0];
-        if(cw[i].x > 500 && cw[i].y < 500) ++cnt[1];
-        if(cw[i].x < 500 && cw[i].y > 500) ++cnt[2];
-        if(cw[i].x > 500 && cw[i].y > 500) ++cnt[3];
-    }
-    int cc = min(min(cnt[0],cnt[1]),min(cnt[2],cnt[3]));
-    while(flag == 0) {
-        check();
-        if(flag) break;
-        if(cc == cnt[0]) {
-            go(x+1, y+1);
-        }else if(cc == cnt[1]) {
-            go(x-1, y+1);
-        }else if(cc == cnt[2]) {
-            go(x+1, y-1);
-        }else {
-            go(x-1, y-1);
-        }
-    }
+    //F(n) = √5/5[((1+√5)/2)^n-((1-√5)/2)^n]
+    //383008016^2 ≡ 5 (mod 1e9 + 9)
+    //383008016 ≡ sqrt(5) (mod 1e9 + 9)
+    printf("%lld\n", ksm(383008016,mod-2));//1/sqrt(5)≡276601605(mod)
+    printf("%lld\n", 383008017*ksm(2,mod-2)%mod);//(1+sqrt(5))/2≡691504013(mod)
+    printf("%lld\n", (mod-383008016+1)*ksm(2,mod-2)%mod);//(1-sqrt(5))/2≡308495997(mod)
+    scanf("%d%d", &n, &m);
+    ar[1] = ar[2] = 1;
+    for(int i = 3; i <= n; ++i) ar[i] = ar[i-1] + ar[i-2];
     return 0;
 }
