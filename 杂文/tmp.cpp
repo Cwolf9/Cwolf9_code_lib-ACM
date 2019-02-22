@@ -45,18 +45,3 @@ int main(){
     printf("%lld\n", ans);
     return 0;
 }
-/*分析：
-先取出前两项
-(r1 ≡ r1(mod a1))-->
-N ≡ r1(mod a1)
-N ≡ r2(mod a2)
-N = r1+a1*x = r2+a2*y
---> a1*x - a2*y = r2-r1 --> exgcd()
-考虑: a1*X - a2*Y = gcd(a1,a2)
-a1*x/gcd - a2*y/gcd = R/gcd
-(a1/gcd*x)%(a2/gcd)≡(R/gcd)%(a2/gcd)
-令mod = a2/gcd
--->x = (X*(r2-r1)/gcd + mod)%mod
-r1 = a1*x + r1
-a1 = a1*a2/gcd
-*/

@@ -9,6 +9,11 @@ https://www.cnblogs.com/Running-Time/p/5450483.html
  *rank[i]: 后缀i在sa数组下标，即第rank[i]小
  *height[i]: LCP(suffix(sa[i-1], sa[i]))
  */
+后缀数组(SA[i]存放排名第i大的后缀首字符的下标)
+名次数组（rank[i]存放Suffix(i)的优先级(名次)）
+height数组：height[i]是Suffix(sa[i-1])和Suffix(sa[i])的最长公共前缀长度
+/*SA,R,H的下标都是 0~n 其中多包括了一个空字符串*/
+ 
 struct Suffix_Array {
     static const int N = 3e5 + 7;
     int n, len, s[N], M;
@@ -86,7 +91,8 @@ void Suffix_Array::build_sa(int m) {
     for (i=1; i<m; ++i) c[i] += c[i-1];
     for (i=n-1; i>=0; --i) sa[--c[x[i]]] = i;
     for (j=1; j<=n; j<<=1) {
-        for (p=0, i=n-j; i<n; ++i) y[p++] = i;
+        //y[i]表示第二关键字排名为i的数，第一关键字的位置
+        for (p=0, i=n-j; i<n; ++i) y[p++] = i;//这些数没有第二关键字，排在最前面
         for (i=0; i<n; ++i) if (sa[i] >= j) y[p++] = sa[i] - j;
         for (i=0; i<m; ++i) c[i] = 0;
         for (i=0; i<n; ++i) c[x[y[i]]]++;

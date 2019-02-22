@@ -1,4 +1,4 @@
-/*#include<bits/stdc++.h>
+#include<bits/stdc++.h>
 #define fi first
 #define se second
 #define iis std::ios::sync_with_stdio(false)
@@ -47,34 +47,5 @@ int main(int argc, char const *argv[]) {
     memset(dp, -1, sizeof(dp));
     scanf("%lld%lld", &n, &m);
     printf("%lld\n", solve(m)-solve(n-1));
-    return 0;
-}*/
-
-#include<bits/stdc++.h>
-#define fi first
-#define se second
-#define iis std::ios::sync_with_stdio(false)
-#define pb push_back
-#define o2(x) (x)*(x)
-using namespace std;
-typedef long long LL;
-typedef pair<int, int> pii;
-
-const int INF = 0x3f3f3f3f;
-const LL mod = 998244353;
-const int MXN = 3e5 + 7;
-
-int n, nd;
-int arr[MXN];
-std::mt19937_64 generator(std::clock());
-int main(int argc, char const *argv[]){
-    freopen("E://ADpan//in.in", "w", stdout);  
-    n = 100000;
-    printf("%d\n", n);
-    for(int i = 0; i < n; ++i) arr[i] = i + 1;
-    std::shuffle(arr, arr + n, generator);
-    for(int i = 0; i < n; ++i) printf("%d ", arr[i]); printf("\n");
-    std::shuffle(arr, arr + n, generator);
-    for(int i = 0; i < n; ++i) printf("%d ", arr[i]); printf("\n");
     return 0;
 }
