@@ -78,3 +78,40 @@ int main(int argc, char const *argv[]){
     }    
     return 0;
 }
+/*
+Description
+
+The little cat is majoring in physics in the capital of Byterland. A piece of sad news comes to him these days: his mother is getting ill. Being worried about spending so much on railway tickets (Byterland is such a big country, and he has to spend 16 shours on train to his hometown), he decided only to send SMS with his mother. 
+
+The little cat lives in an unrich family, so he frequently comes to the mobile service center, to check how much money he has spent on SMS. Yesterday, the computer of service center was broken, and printed two very long messages. The brilliant little cat soon found out: 
+
+1. All characters in messages are lowercase Latin letters, without punctuations and spaces. 
+2. All SMS has been appended to each other – (i+1)-th SMS comes directly after the i-th one – that is why those two messages are quite long. 
+3. His own SMS has been appended together, but possibly a great many redundancy characters appear leftwards and rightwards due to the broken computer. 
+E.g: if his SMS is “motheriloveyou”, either long message printed by that machine, would possibly be one of “hahamotheriloveyou”, “motheriloveyoureally”, “motheriloveyouornot”, “bbbmotheriloveyouaaa”, etc. 
+4. For these broken issues, the little cat has printed his original text twice (so there appears two very long messages). Even though the original text remains the same in two printed messages, the redundancy characters on both sides would be possibly different. 
+
+You are given those two very long messages, and you have to output the length of the longest possible original text written by the little cat. 
+
+Background: 
+The SMS in Byterland mobile service are charging in dollars-per-byte. That is why the little cat is worrying about how long could the longest original text be. 
+
+Why ask you to write a program? There are four resions: 
+1. The little cat is so busy these days with physics lessons; 
+2. The little cat wants to keep what he said to his mother seceret; 
+3. POJ is such a great Online Judge; 
+4. The little cat wants to earn some money from POJ, and try to persuade his mother to see the doctor :( 
+Input
+
+Two strings with lowercase letters on two of the input lines individually. Number of characters in each one will never exceed 100000.
+Output
+
+A single line with a single integer number – what is the maximum length of the original text written by the little cat.
+Sample Input
+
+yeshowmuchiloveyoumydearmotherreallyicannotbelieveit
+yeaphowmuchiloveyoumydearmother
+Sample Output
+
+27
+*/

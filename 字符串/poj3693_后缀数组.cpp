@@ -195,4 +195,30 @@ int main(int argc, char const *argv[]){
 #endif
     return 0;
 }
+Description
+
+The repetition number of a string is defined as the maximum number R such that the string can be partitioned into R same consecutive substrings. For example, the repetition number of "ababab" is 3 and "ababa" is 1.
+
+Given a string containing lowercase letters, you are to find a substring of it with maximum repetition number.
+
+Input
+
+The input consists of multiple test cases. Each test case contains exactly one line, which
+gives a non-empty string consisting of lowercase letters. The length of the string will not be greater than 100,000.
+
+The last test case is followed by a line containing a '#'.
+
+Output
+
+For each test case, print a line containing the test case number( beginning with 1) followed by the substring of maximum repetition number. If there are multiple substrings of maximum repetition number, print the lexicographically smallest one.
+
+Sample Input
+
+ccabababc
+daabbccaa
+#
+Sample Output
+
+Case 1: ababab
+Case 2: aa
 */
