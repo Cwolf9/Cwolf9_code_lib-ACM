@@ -1,3 +1,4 @@
+
 //#include<bits/stdc++.h>
 #include<cstdio>
 #include<iostream>
@@ -13,10 +14,11 @@
 #include<cmath>
 #include<bitset>
 #include<cassert>
+#include<ctime>
 using namespace std;
 typedef long long LL;
 //https://www.cnblogs.com/KonjakJuruo/p/5906164.html
-/*SA,R,H的下标都是 0~n 其中多包括了一个空字符串*/
+//SA,R,H的下标都是 0~n 其中多包括了一个空字符串
 struct Suffix_Array {
     static const int N = 3e5 + 7;
     int n, len, s[N], M;
@@ -31,7 +33,7 @@ struct Suffix_Array {
     int RMQ_query(int l, int r);
 }SA;
 void Suffix_Array::Out(char *str) {
-    puts ("/*Suffix*/");
+    puts ("[Suffix]");
     for (int i=0; i<n; ++i) {
         printf ("%s\n", str+sa[i]);
     }
@@ -96,10 +98,64 @@ void Suffix_Array::build_sa(int m) {
 }
 const int MXN = 3e5 + 7;
 char str[MXN];
+int rem[MXN];//求一个串他的重复子串重复次数最多
 int main(int argc, char const *argv[]){
 #ifndef ONLINE_JUDGE
     freopen("E://ADpan//in.in", "r", stdin);
-    //freopen("E://ADpan//out.out", "w", stdout);  
+    freopen("E://ADpan//out.out", "w", stdout);  
+#endif
+    int cas = 1;
+    while(~scanf("%s", str) && str[0] != '#'){
+        printf("Case %d: ", cas++);
+        int len = strlen(str);
+        SA.init_str(str);
+        SA.build_sa();
+        int ans = 0, num = 0;
+        //先枚举len，得到重复次数最多的那些len，然后枚举求解字典序最小
+        for(int d = 1; d * 2 <= len; ++d){
+            for(int j = 0; (j+1) * d < len; ++j){
+                int x = j*d, y = (j+1)*d;
+                if(str[x] != str[y]) continue;
+                int z = SA.RMQ_query(x, y), k = (z+y-1-x+1)/d;
+                int cha = x-(d-z%d);
+                if(cha >= 0) {
+                    int tz = SA.RMQ_query(cha, cha + d), tk = max(k,(tz+cha+d-1-cha+1)/d);
+                    k = tk;
+                }
+                if(k > ans) {ans=k;num=0;rem[num++]=d;}
+                else if(k == ans) {
+                    if(num && rem[num-1] == d) continue;
+                    rem[num++]=d;
+                }
+            }
+        }
+        if(ans == 0){
+            printf("%c\n", str[SA.sa[1]]);
+        }else{
+            for(int _i = 1, i = SA.sa[_i]; _i <= len && ans != -1; ++_i, i = SA.sa[_i]) {
+                for(int j = 0, k; j < num; ++j) {
+                    k = (SA.RMQ_query(i, i+rem[j])+rem[j])/rem[j];
+                    if(k >= ans) {
+                        str[i+k*rem[j]] = '\0';
+                        printf("%s\n", str+i);
+                        ans = -1; break;
+                    }
+                }
+            }
+        }
+    }
+#ifndef ONLINE_JUDGE
+  cout << "time cost:" << clock() << "ms" << endl;
+#endif
+    return 0;
+}
+/*
+const int MXN = 3e5 + 7;
+char str[MXN];
+int main(int argc, char const *argv[]){
+#ifndef ONLINE_JUDGE
+    freopen("E://ADpan//in.in", "r", stdin);
+    freopen("E://ADpan//out.out", "w", stdout);  
 #endif
     int cas = 1;
     while(~scanf("%s", str) && str[0] != '#'){
@@ -133,6 +189,10 @@ int main(int argc, char const *argv[]){
             for(int i = ansL; i <= ansR; ++i) putchar(str[i]);
             putchar(10);
         }
-    }    
+    }
+#ifndef ONLINE_JUDGE
+  cout << "time cost:" << clock() << "ms" << endl;
+#endif
     return 0;
 }
+*/

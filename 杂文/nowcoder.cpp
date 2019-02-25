@@ -1,4 +1,4 @@
-#include<bits/stdc++.h>
+/*#include<bits/stdc++.h>
 #define fi first
 #define se second
 #define iis std::ios::sync_with_stdio(false)
@@ -47,5 +47,32 @@ int main(int argc, char const *argv[]) {
     memset(dp, -1, sizeof(dp));
     scanf("%lld%lld", &n, &m);
     printf("%lld\n", solve(m)-solve(n-1));
+    return 0;
+}
+*/
+#include<bits/stdc++.h>
+#define fi first
+#define se second
+#define iis std::ios::sync_with_stdio(false)
+#define eb emplace_back
+#define o2(x) (x)*(x)
+using namespace std;
+typedef long long LL;
+typedef pair<int, int> pii;
+#define BASE_MAX 62
+ 
+const int INF = 0x3f3f3f3f;
+const int mod = 10086;
+const int MXN = 1e6 + 7;
+int n;
+
+int main(int argc, char const *argv[]) {
+#ifndef ONLINE_JUDGE
+    //freopen("E://ADpan//in.in", "r", stdin);
+    freopen("E://ADpan//in.in", "w", stdout);  
+#endif
+    for(int i = 0; i < 99999; ++i) printf("c");
+    printf("\n");
+    printf("#\n");
     return 0;
 }
