@@ -11,7 +11,7 @@ const LL mod = 2078526727;
 /*
 给你一个长度为n的数字串，有两种操作：
 1 L R C： 把s[L, R] 全部变为C；
-2 L R d： 询问s[L, R] 是否由长度为d的循环节。
+2 L R d： 询问s[L, R] 是否有长度为d的循环节。
 */
 int n, m, q;
 char ar[MXN];
