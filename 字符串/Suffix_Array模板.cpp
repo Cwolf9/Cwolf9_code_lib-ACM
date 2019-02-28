@@ -15,11 +15,12 @@ height数组：height[i]是Suffix(sa[i-1])和Suffix(sa[i])的最长公共前缀�
 /*SA,R,H的下标都是 0~n 其中多包括了一个空字符串*/
  
 struct Suffix_Array {
-    static const int N = 3e5 + 7;
-    int n, len, s[N], M;
-    int sa[N], rnk[N], height[N];
-    int tmp_one[N], tmp_two[N], c[N];
-    int dp[N][33];
+    static const int MN = 3e5 + 7;
+    int n, len, s[MN], M;
+    int sa[MN], rnk[MN], height[MN];
+    int tmp_one[MN], tmp_two[MN], c[MN];
+    int dp[MN][33];
+    char yuan[MN];
     void init_str(char *str);
     void build_sa(int m = 128);
     void calc_height(int n);
@@ -27,7 +28,7 @@ struct Suffix_Array {
     void RMQ_init(int n);
     int RMQ_query(int l, int r);
     int cmp_suffix(char* pattern, int p){//判断是否为后缀p的前缀
-        return strncmp(pattern, s + sa[p], M);
+        return strncmp(pattern, yuan + sa[p], M);
     }
     int find(char* P){//Omlog(n)
         M = strlen(P);
@@ -44,7 +45,7 @@ struct Suffix_Array {
     }
 }SA;
 void Suffix_Array::Out(char *str) {
-    puts ("/*Suffix*/");
+    puts ("[Suffix]");
     for (int i=0; i<n; ++i) {
         printf ("%s\n", str+sa[i]);
     }
@@ -87,19 +88,20 @@ void Suffix_Array::calc_height(int n) {
 void Suffix_Array::build_sa(int m) {
     int i, j, p, *x = tmp_one, *y = tmp_two;
     for (i=0; i<m; ++i) c[i] = 0;
-    for (i=0; i<n; ++i) c[x[i]=s[i]]++;
+    for (i=0; i<n; ++i) c[x[i]=s[i]]++;//第一关键字是x[i]，第二关键字是i
     for (i=1; i<m; ++i) c[i] += c[i-1];
-    for (i=n-1; i>=0; --i) sa[--c[x[i]]] = i;
-    for (j=1; j<=n; j<<=1) {
+    for (i=n-1; i>=0; --i) sa[--c[x[i]]] = i;//sa辅助更新第二关键字
+    for (j=1; j<=n; j<<=1) {//y就是第二关键字从小到大的位置
         //y[i]表示第二关键字排名为i的数，第一关键字的位置
         for (p=0, i=n-j; i<n; ++i) y[p++] = i;//这些数没有第二关键字，排在最前面
-        for (i=0; i<n; ++i) if (sa[i] >= j) y[p++] = sa[i] - j;
+        for (i=0; i<n; ++i) if (sa[i] >= j) y[p++] = sa[i] - j;//错位，这个第一关键字作为前j位元素的第二关键字
+        //现在第二关键字已经有序，在此基础上按第一关键字排序
         for (i=0; i<m; ++i) c[i] = 0;
         for (i=0; i<n; ++i) c[x[y[i]]]++;
         for (i=1; i<m; ++i) c[i] += c[i-1];
         for (i=n-1; i>=0; --i) sa[--c[x[y[i]]]] = y[i];
         std::swap (x, y);
-        for (p=1, x[sa[0]]=0, i=1; i<n; ++i) {
+        for (p=1, x[sa[0]]=0, i=1; i<n; ++i) {//排完序后更新第一关键字
             x[sa[i]] = (y[sa[i-1]] == y[sa[i]] && y[sa[i-1]+j] == y[sa[i]+j] ? p - 1 : p++);
         }
         if(p >= n) break;
