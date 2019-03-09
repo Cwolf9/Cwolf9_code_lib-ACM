@@ -6,20 +6,21 @@ typedef long long LL;
 typedef pair<int, int> pii;
 
 const int INF = 0x3f3f3f3f;
-const int MXN = 1e6 + 7;
+const int MXN = 6e5 + 7;
 const int mod = 998244353;
 
 int n, m;
 int ar[MXN], sum[MXN];
 int bs[35];
 struct TRIE {
-    int sum[MXN], cw[MXN][2], rt[MXN], tot;
+    int sum[MXN*40], cw[MXN*40][2], rt[MXN], tot;
     void init() {
-        tot = 0; cw[0][0] = cw[0][1] = 0; rt[0] = 0; sum[0] = 0;
+        sum[0] = 0;cw[0][0] = cw[0][1] = 0;rt[0] = 0;tot = 0;
     }
     void insert(int old, int cur, int len) {//31
-        int t = ++ tot;
-        cw[t][0] = cw[t][1] = 0; rt[cur] = t;
+        int t = ++ tot; rt[cur] = t;
+        cw[t][0] = cw[t][1] = 0;
+        old = rt[old];
         for(int i = len-1; i >= 0; --i) {
             sum[t] = sum[old] + 1;
             cw[t][!bs[i]] = cw[old][!bs[i]];
@@ -48,7 +49,7 @@ int main(int argc, char const *argv[]) {
     trie.init();
     for(int i = 1; i <= n; ++i) {
         scanf("%d", &ar[i]), sum[i] = sum[i-1] ^ ar[i];
-        for(int j = 0; j < 31; ++j) bs[j] = (sum[i] >> j);
+        for(int j = 0; j < 31; ++j) bs[j] = ((sum[i] >> j)&1);
         trie.insert(i-1, i, 31);
     }
     char s[2]; int l, r, x;
@@ -58,14 +59,17 @@ int main(int argc, char const *argv[]) {
             scanf("%d", &x);
             ar[++n] = x;
             sum[n] = sum[n-1] ^ x;
-            for(int j = 0; j < 31; ++j) bs[j] = (sum[n] >> j);
+            for(int j = 0; j < 31; ++j) bs[j] = ((sum[n] >> j)&1);
             trie.insert(n-1, n, 31);
         }else {
             scanf("%d%d%d", &l, &r, &x);
-            LL ans = x ^ sum[n];
-            -- l, -- r;
-            for(int j = 0; j < 31; ++j) bs[j] = !(ans >> j);
-            printf("%lld\n", trie.query(l, r, 31));
+            if(l == r && l == 1) {
+                printf("%d\n", sum[n]^x);
+            }else {
+                int ans = x ^ sum[n];
+                for(int j = 0; j < 31; ++j) bs[j] = !((ans >> j)&1);
+                printf("%lld\n", trie.query(max(l-2,0), r-1, 31));
+            }
         }
     }
     return 0;
