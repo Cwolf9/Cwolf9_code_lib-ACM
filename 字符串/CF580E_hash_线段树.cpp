@@ -38,8 +38,6 @@ void init() {
 void push_up(int rt, int len) {
     num[rt] = num[lson] * pw[(len)/2] + num[rson];
     num[rt] %= mod;
-    if(lazy[lson] == lazy[rson]) lazy[rt] = lazy[lson];
-    else lazy[rt] = -1;
 }
 void push_down(int rt, int l, int mid, int r) {
     if(lazy[rt] != -1) {
@@ -47,6 +45,7 @@ void push_down(int rt, int l, int mid, int r) {
         num[lson] = dif[lazy[rt]][mid-l+1];
         num[rson] = dif[lazy[rt]][r-mid];
     }
+    lazy[rt] = -1;
 }
 void build(int l,int r,int rt) {
     lazy[rt] = -1;
