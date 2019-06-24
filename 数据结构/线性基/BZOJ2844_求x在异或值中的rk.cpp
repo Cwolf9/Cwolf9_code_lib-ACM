@@ -22,7 +22,7 @@ int cnt;
 //每个数都出现一样的次数，且这个次数为2^{n-|线性基|}。
 void go() {
     for(int i = 0; i < n; ++i) {
-        for(int j = BASE_MAX; j >= 0; --j) {
+        for(int j = BASE_MAX; j >= 0; --j) {//62
             if(!(id[i] >> j)) continue;
             if(bs[j]) id[i] ^= bs[j];
             else {

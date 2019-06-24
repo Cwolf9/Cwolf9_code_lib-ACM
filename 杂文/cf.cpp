@@ -1,62 +1,59 @@
 #include<bits/stdc++.h>
 #define fi first
 #define se second
-#define iis std::ios::sync_with_stdio(false)
-#define eb emplace_back
+#define endl '\n'
 #define o2(x) (x)*(x)
+#define BASE_MAX 62
+#define mk make_pair
+#define eb emplace_back
+#define all(x) (x).begin(), (x).end()
+#define clr(a,b) memset((a),(b),sizeof((a)))
+#define iis std::ios::sync_with_stdio(false); cin.tie(0)
+#define my_unique(x) sort(a(x)),x.erase(unique(a(x)),x.end())
 using namespace std;
+#pragma optimize("-O3")
 typedef long long LL;
 typedef pair<int, int> pii;
-#define BASE_MAX 62
- 
+inline LL read(){
+  LL x=0;int f=0;char ch=getchar();
+  while (ch<'0'||ch>'9') f|=(ch=='-'),ch=getchar();
+  while (ch>='0'&&ch<='9') x=(x<<3)+(x<<1)+ch-'0',ch=getchar();
+  return x=f?-x:x;
+}
+inline void write(LL x) {
+    if(x==0){putchar('0'),putchar('\n');return;}
+    if(x < 0) {putchar('-');x=-x;}
+    static char s[23];int l = 0;
+    while(x!=0)s[l++]=x%10+48,x/=10;
+    while(l)putchar(s[--l]);
+    putchar('\n');
+}
+int lowbit(int x) {return x&(-x);}
+template<class T> T big(const T& a1,const T& a2) { return a1>a2?a1:a2; }
+template<typename T, typename ...R> T big (const T& f,const R& ...r) { return big(f, big (r...)); }
+template<class T> T sml(const T& a1,const T& a2) { return a1<a2?a1:a2; }
+template<typename T, typename ...R> T sml (const T& f,const R& ...r) { return sml(f, sml (r...)); }
+void debug_out() { cerr << '\n'; }
+template<typename T, typename ...R> void debug_out (const T& f,const R& ...r) { cerr << f << " "; debug_out (r...); }
+#define debug(...) cerr << "[" << #__VA_ARGS__ << "]: ", debug_out(__VA_ARGS__);
+
+const LL INFLL = 0x3f3f3f3f3f3f3f3fLL;
+const int HMOD[] = {1000000009, 1004535809};
+const LL BASE[] = {1572872831, 1971536491};
+const int mod = 1e9 + 7;
 const int INF = 0x3f3f3f3f;
-const int mod = 10086;
-const int MXN = 1e6 + 7;
-int n;
-LL id[MXN], m;
-LL bs[MXN];
-int cnt;
-//贪心求最大的异或值；从高到底枚举线性基。
-//如果ax没有插进线性基中，那么ax一定属于span{a1,ax-1};故一定存在异或值为0的方案。
-//任意一条 1 到 n 的路径的异或和，都可以由任意一条 1 到 n 路径的异或和与图中的一些环的异或和来组合得到。
-//每个数都出现一样的次数，且这个次数为2^{n-|线性基|}。
-void go() {
-    for(int i = 0; i < n; ++i) {
-        for(int j = BASE_MAX; j >= 0; --j) {
-            if(!(id[i] >> j)) continue;
-            if(bs[j]) id[i] ^= bs[j];
-            else {
-                bs[j] = id[i]; ++ cnt;
-                for(int k = j-1; k >= 0; --k) if(bs[k]&&(bs[j]&(1LL<<k))) bs[j]^=bs[k];
-                for(int k = j+1; k <= BASE_MAX; ++k) if(bs[k]&(1LL<<j)) bs[k]^=bs[j];
-                break;
-            }
-        }
-    }
-}
-LL ksm(LL a, int b) {
-    LL res = 1;
-    for(;b;b>>=1,a=a*a%mod) {
-        if(b&1)res=res*a%mod;
-    }
-    return res;
-}
-int main(int argc, char const *argv[]){
+const int MXN = 2e5 + 7;
+
+int n, m;
+
+int main() {
 #ifndef ONLINE_JUDGE
     freopen("E://ADpan//in.in", "r", stdin);
-    //freopen("E://ADpan//out.out", "w", stdout);  
+    //freopen("E://ADpan//out.out", "w", stdout);
 #endif
-    scanf("%d", &n);
-    for(int i = 0; i < n; ++i) scanf("%lld", &id[i]);
-    scanf("%lld", &m);
-    go();
-    LL rk = 0;
-    std::vector<int> vs;
-    for(int i = 0; i <= BASE_MAX; ++i) if(bs[i]) vs.push_back(i);
-    for(int i = vs.size()-1; i >= 0; --i) {
-        if((m&(1LL<<vs[i]))!=0) rk += 1LL<<i;
-    }
-    LL ans = (rk)*ksm(2, n-cnt)%mod;
-    printf("%lld\n", (ans+1)%mod);
+    write(248&121);
+#ifndef ONLINE_JUDGE
+    cout << "time cost:" << clock() << "ms" << endl;
+#endif
     return 0;
 }
