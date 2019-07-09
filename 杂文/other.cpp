@@ -1,114 +1,113 @@
 #include<bits/stdc++.h>
+#define endl "\n"
+#define fi first
+#define se second
+#define eb emplace_back
+#define mk make_pair
+#define all(x) (x).begin(), (x).end()
+#define clr(a, b) memset((a),(b),sizeof((a)))
+#define iis std::ios::sync_with_stdio(false);cin.tie(NULL);
 using namespace std;
 typedef long long LL;
-const int MXN = 2e6+ 7;
-LL mud = 998244353;
-LL mod = 998244353;
-LL n, m;
-int noprime[MXN], pp[MXN], pcnt;
-int phi[MXN], mu[MXN], a1[MXN];
-LL pre_phi[MXN], pre_g[MXN], g[MXN];
-void init_prime() {
-    noprime[0] = noprime[1] = 1;
-    mu[1] = 1; phi[1] = 1; g[1] = 1;
-    for(int i = 2; i < MXN; ++i) {
-        if(!noprime[i]) pp[pcnt++] = i, phi[i] = i-1, mu[i] = -1, g[i] = 2, a1[i] = 1;
-        for(int j = 0; j < pcnt && pp[j] * i < MXN; ++j) {
-            noprime[pp[j]*i] = 1;
-            phi[pp[j]*i] = (pp[j]-1)*phi[i];
-            mu[pp[j]*i] = -mu[i];
-            g[i*pp[j]] = g[i] * 2;
-            a1[i*pp[j]] = 1;
-            if(i % pp[j] == 0) {
-                phi[pp[j]*i] = pp[j]*phi[i];
-                mu[pp[j]*i] = 0;
-                a1[i*pp[j]] = a1[i] + 1;
-                g[i*pp[j]] = g[i]*(a1[i*pp[j]]+1)/a1[i*pp[j]];
-                break;
-            }
+typedef unsigned long long uLL;
+typedef pair<int, int> pii;
+typedef vector<int> VI;
+typedef vector<pii> VPII;
+string to_string(string s) {return '"' + s + '"';}string to_string(const char* s) {return to_string((string) s);}string to_string(bool b) {return (b ? "true" : "false");}template <typename A, typename B>string to_string(pair<A, B> p) {return "(" + to_string(p.first) + ", " + to_string(p.second) + ")";}template <typename A>string to_string(A v) {bool first = true;string res = "{";for (const auto &x : v) {if (!first) {res += ", ";}first = false;res += to_string(x);}res += "}";return res;}void debug_out() { cerr << endl; }template <typename Head, typename... Tail>void debug_out(Head H, Tail... T) {cerr << " " << to_string(H);debug_out(T...);}
+#define dbg(...) cerr << "[" << #__VA_ARGS__ << "]:", debug_out(__VA_ARGS__)
+const LL INFLL = 0x3f3f3f3f3f3f3f3f;
+const int INF = 0x3f3f3f3f;
+const int mod = 1000000007;
+const int MOD = 998244353;
+const int MXE = 1e6 + 6;
+const int MXN = 3e5 + 6;
+
+int n, m;
+int ar[MXN];
+int nxl[MXN], nxr[MXN];
+int lid[MXN][20], rid[MXN][20];
+LL lsum[MXN][20], rsum[MXN][20];
+int stak[MXN], top;
+
+void init() {
+    for(int i = n; i >= 0; --i) {
+        while(top && ar[stak[top]] <= ar[i]) -- top;
+        if(top == 0) nxr[i] = n;
+        else nxr[i] = stak[top];
+        stak[++top] = i;
+    }
+    top = 0;
+    for(int i = 0; i <= n; ++i) {
+        while(top && ar[stak[top]] <= ar[i]) -- top;
+        if(top == 0) nxl[i] = 0;
+        else nxl[i] = stak[top];
+        stak[++top] = i;
+    }
+}
+void rmq_init() {
+    memset(rid, 0x3f, sizeof(rid));
+    memset(lid, -1, sizeof(lid));
+    for(int i = 0; i <= n; ++i) {
+        rid[i][0] = nxr[i]; lid[i][0] = nxl[i];
+        rsum[i][0] = (LL)ar[i]*(nxr[i] - i);
+        lsum[i][0] = (LL)ar[i]*(i - nxl[i]);
+        if(lsum[i][0] >= INF) lsum[i][0] = 0;
+        if(rsum[i][0] >= INF) rsum[i][0] = 0;
+    }
+    for(int j = 1; j < 20; ++j) {
+        for(int i = 0; i + (1<<j) - 1 <= n; ++i) {
+            rid[i][j] = rid[rid[i][j-1]][j-1];
+            rsum[i][j] = rsum[i][j-1] + rsum[rid[i][j-1]][j-1];
+        }
+    }
+    for(int j = 1; j < 20; ++j) {
+        for(int i = n; i - (1<<j) + 1 >= 0; --i) {
+            lid[i][j] = lid[lid[i][j-1]][j-1];
+            lsum[i][j] = lsum[i][j-1] + lsum[lid[i][j-1]][j-1];
         }
     }
 }
-LL ksm(LL a, int b, LL p) {
-    LL res = 1;
-    while(b) {
-        if(b&1) res = res * a % p;
-        a = a * a % p;
-        b >>= 1;
-    }
-    return res;
-}
-// struct Hash_map{
-//     static const int mask=0x7fffff;
-//     LL p[mask+1],q[mask+1];
-//     void clear(){
-//         memset(q,0,sizeof(q));
-//     }
-//     LL& operator [](LL k){
-//         LL i;
-//         for(i=k&mask;q[i]&&p[i]!=k;i=(i+1)&mask);
-//         p[i]=k;
-//         return q[i];
-//     }
-// }mp1, mp2;
-unordered_map<LL, LL> mp1, mp2;
-LL solve_g(LL n) {
-    if(n < MXN) return pre_g[n];
-    if(mp1.find(n) != mp1.end()) return mp1[n];
-    //if(mp1[n]) return mp1[n];
-    //if(mp1.count(n)) return mp1[n];
+LL niquery(int st, int ed) {//大小
     LL ans = 0;
-    for(LL L = 1, R; L <= n; L = R + 1) {
-        R = n/(n/L);
-        ans = (ans + ((n/L)*(n/L+1)/2)%mod*((R-L+1)*(L+R)/2)%mod)%mod;
+    for(int i = 19; i >= 0; --i) {
+        if(lid[st][i] >= ed) {
+            ans += lsum[st][i];
+            st = lid[st][i];
+        }
     }
-    ans = (ans + mod) % mod;
-    mp1[n] = ans;
+    if(st != ed) ans += lsum[st][0];
     return ans;
 }
-LL solve_phi(LL n) {
-    if(n < MXN) return pre_phi[n];
-    if(mp2.find(n) != mp2.end()) return mp2[n];
-    //if(mp2[n]) return mp2[n];
-    //if(mp2.count(n)) return mp2[n];
-    LL ans = n*(n+1)/2;
-    for(LL L = 2, R; L <= n; L = R + 1) {
-        R = n/(n/L);
-        ans = (ans - (R-L+1)*solve_phi(n/L)%mod)%mod;
+LL query(int st, int ed) {//小大
+    LL ans = 0;
+    for(int i = 19; i >= 0; --i) {
+        if(rid[st][i] <= ed) {
+            ans += rsum[st][i];
+            st = rid[st][i];
+        }
     }
-    ans = (ans + mod) % mod;
-    mp2[n] = ans;
+    if(st != ed) ans += rsum[st][0];
     return ans;
 }
-
 int main() {
 #ifndef ONLINE_JUDGE
     freopen("E://ADpan//in.in", "r", stdin);
     //freopen("E://ADpan//out.out", "w", stdout);
 #endif
-    init_prime();
-    scanf("%lld%lld%lld", &n, &m, &mud);
-    //mp1.clear(); mp2.clear();
-    mod = mud - 1;
-    for(int i = 1; i < MXN; ++i) {
-        pre_phi[i] = (pre_phi[i-1] + phi[i])%mod;
-        pre_g[i] = (pre_g[i-1] + i * g[i] % mod)%mod;
+    scanf("%d", &n); ar[0] = ar[n] = INF;
+    for(int i = 1; i < n; ++i) scanf("%d", &ar[i]);
+    init();
+    rmq_init();
+    /*for(int i = 0; i <= n; ++i) printf("%d ", nxl[i]); printf("\n");
+    for(int i = 0; i <= n; ++i) printf("%d ", nxr[i]); printf("\n");
+    for(int i = 0; i <= n; ++i) printf("%lld ", lsum[i][0]); printf("\n");
+    for(int i = 0; i <= n; ++i) printf("%lld ", rsum[i][0]); printf("\n");*/
+    scanf("%d", &m);
+    while(m --) {
+        int l, r; scanf("%d%d", &l, &r);
+        if(l == r) printf("0\n");
+        else if(l < r) printf("%lld\n", niquery(r-1, l-1));
+        else printf("%lld\n", query(r, l));
     }
-    LL ans = 0;
-    for(LL L = 1, R; L <= n; L = R + 1) {
-        R = n/(n/L);
-        ans = (ans + (solve_g(R)-solve_g(L-1))%mod*(solve_phi(n/L)*2LL%mod-1LL)%mod)%mod;
-    }
-    ans = (ans+mod)%mod;
-    printf("%lld\n", ksm(m, ans, mud));
-#ifndef ONLINE_JUDGE
-  cout << "time cost:" << clock() << "ms" << endl;
-#endif
     return 0;
-}
-
-// 当x≥ϕ(p)时，有a^x ≡ a^(x mod ϕ(p)+ϕ(p)) mod p
-// gcd(a,mod)=1  a^(x) = a^(x%ϕ(mod)) % mod
-apache-tomcat-9.0.21
-there is no configured/running web-servers
-update mysql.user set authentication_string=password("123456") where user="cdn";
+}https://www.jianshu.com/p/b71fc7307e42

@@ -1,3 +1,4 @@
+#pragma comment(linker, "/STACK:102400000,102400000")
 #include<bits/stdc++.h>
 #define fi first
 #define se second
@@ -44,33 +45,56 @@ const int mod = 1e9 + 6;
 const int MOD = 1e9 + 7;
 const int INF = 0x3f3f3f3f;
 const int MXN = 2e6 + 7;
-
-int n, m, p;
-int fa[50005];
-int Fi(int x) {
-    return fa[x] == x? x: fa[x] = Fi(fa[x]);
-}
+int n, m;
+LL t[MXN], d[MXN];
+/*
+n: 1e5
+t: 2e6
+d: 1e2
+时间，每秒伤害，伤害最小
+Ti*(sum-Di) = T1*sum - Ti*Di
+复杂度nd可以接受
+按D分成一百个桶，储存时间最短的
+*/
+std::vector<LL > vs[205];
+int st[205];
 int main() {
 #ifndef ONLINE_JUDGE
     freopen("E://ADpan//in.in", "r", stdin);
     //freopen("E://ADpan//out.out", "w", stdout);
 #endif
-    scanf("%d%d%d", &n, &m, &p);
-    for(int i = 1, a, b; i <= m; ++i) {
-        scanf("%d%d", &a, &b);
-        int pa = Fi(a), pb = Fi(b);
-        if(pa != pb) fa[pa] = pb;
+    n = read();
+    assert(n >= 2 && n <= 100000);
+    LL sum = 0, res = 0;
+    for(int i = 1; i <= n; ++i) {
+        t[i] = read(), d[i] = read();
+        assert(d[i] >= 1 && d[i] <= 100);
+        vs[d[i]].eb(t[i]);
+        sum += d[i];
     }
-    while(p --) {
-        int a, b; scanf("%d%d", &a, &b);
-        if(Fi(a) == Fi(b)) {
-            printf("YES\n");
-        }else {
-            printf("NO\n");
+    for(int i = 1; i <= 100; ++i) sort(all(vs[i]));
+    for(int M = 0; M < n; ++M) {
+        LL ans = INFLL, p = -1;
+        for(int i = 1; i <= 100; ++i) {
+            if(vs[i].size() == st[i]) continue;
+            LL tmp = vs[i][st[i]] * (sum - i);
+            if(tmp < ans) {
+                ans = tmp; p = i;
+            }
         }
+        res += ans;
+        sum -= p;
+        ++ st[p];
     }
+    write(res*2);
 #ifndef ONLINE_JUDGE
     cout << "time cost:" << clock() << "ms" << endl;
 #endif
     return 0;
 }
+/*
+或者反过来考虑，先确定最后一个移动的，最后一个变化的Di要乘上\sum_Ti
+SUMT = \sum_Ti
+ans = \sum_{Di*SUMT}
+
+*/
