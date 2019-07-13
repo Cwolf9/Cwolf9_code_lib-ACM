@@ -1,37 +1,84 @@
+#pragma comment(linker, "/STACK:102400000,102400000")
 //#include<bits/stdc++.h>
 #include<cstdio>
-#include<iostream>
 #include<cstring>
-#include<algorithm>
-#include<map>
-#include<queue>
-#include<set>
-#include<stack>
-#include<vector>
-#include<cctype>
 #include<string>
-#include<cmath>
-#include<bitset>
-#include<cassert>
-#include<ctime>
+#include<vector>
+#include<stack>
+#include<map>
+#include<iostream>
+#include<assert.h>
+#define fi first
+#define se second
+#define endl '\n'
+#define o2(x) (x)*(x)
+#define BASE_MAX 62
+#define mk make_pair
+#define eb push_back
+#define all(x) (x).begin(), (x).end()
+#define clr(a,b) memset((a),(b),sizeof((a)))
+#define iis std::ios::sync_with_stdio(false); cin.tie(0)
+#define my_unique(x) sort(a(x)),x.erase(unique(a(x)),x.end())
 using namespace std;
+#pragma optimize("-O3")
 typedef long long LL;
+typedef pair<int, int> pii;
+typedef pair<LL, int> pLi;
+inline LL read(){
+    LL x=0;int f=0;char ch=getchar();
+    while (ch<'0'||ch>'9') f|=(ch=='-'),ch=getchar();
+    while (ch>='0'&&ch<='9') x=(x<<3)+(x<<1)+ch-'0',ch=getchar();
+    return x=f?-x:x;
+}
+inline void write(LL x) {
+    if(x==0){putchar('0'),putchar('\n');return;}
+    if(x < 0) {putchar('-');x=-x;}
+    static char s[23];int l = 0;
+    while(x!=0)s[l++]=x%10+48,x/=10;
+    while(l)putchar(s[--l]);
+    putchar('\n');
+}
+int lowbit(int x) {return x&(-x);}
+template<class T> T big(const T& a1,const T& a2) { return a1>a2?a1:a2; }
+//template<typename T, typename ...R> T big (const T& f,const R& ...r) { return big(f, big (r...)); }
+template<class T> T sml(const T& a1,const T& a2) { return a1<a2?a1:a2; }
+//template<typename T, typename ...R> T sml (const T& f,const R& ...r) { return sml(f, sml (r...)); }
+#ifndef ONLINE_JUDGE
+void debug_out() { cerr << '\n'; }
+template<typename T, typename ...R> void debug_out (const T& f,const R& ...r) { cerr << f << " "; debug_out (r...); }
+#define debug(...) cerr << "[" << #__VA_ARGS__ << "]: ", debug_out(__VA_ARGS__);
+#endif
+#define print(x) write(x);
+
+const LL INFLL = 0x3f3f3f3f3f3f3f3fLL;
+const int HMOD[] = {1000000009, 1004535809};
+const LL BASE[] = {1572872831, 1971536491};
+const int mod = 1e9 + 6;
+const int MOD = 1e9 + 7;
+const int INF = 0x3f3f3f3f;
+const int MXN = 3e5 + 7;
 
 struct Suffix_Array {
-    static const int MAXN = 3e5 + 7;
-    int n, len, s[MAXN], M;
-    int sa[MAXN], rnk[MAXN], height[MAXN];
-    int tmp_one[MAXN], tmp_two[MAXN], c[MAXN];
-    int dp[MAXN][33];
-    char yuan[MAXN];
-    void init_str(char *str);
+    static const int N = 3e5 + 7;
+    int n, len, s[N], M;
+    int sa[N], rnk[N], height[N];
+    int tmp_one[N], tmp_two[N], c[N];
+    int dp[N][21];
+    void init_str(char *str) {
+        len = strlen(str);
+        n = len + 1;
+        for (int i = 0; i < len; ++i) {
+            s[i] = str[i];
+        }
+        s[len] = '\0';
+    }
     void build_sa(int m = 128);
     void calc_height(int n);
     void Out(char *str);
     void RMQ_init(int n);
     int RMQ_query(int l, int r);
-    int cmp_suffix(const char* pattern, int p){//判断是否为后缀p的前缀
-        return strncmp(pattern, yuan + sa[p], M);
+    int cmp_suffix(char* pattern, int p){//判断是否为后缀p的前缀
+        return strncmp(pattern, reinterpret_cast<const char *>(s + sa[p]), M);
     }
     int find(char* P){//Omlog(n)
         M = strlen(P);
@@ -69,15 +116,6 @@ void Suffix_Array::RMQ_init(int n) {
         }
     }
 }
-void Suffix_Array::init_str(char *str) {
-    len = strlen(str);
-    n = len + 1;
-    for (int i=0; i<len; ++i) {
-        s[i] = str[i];
-        yuan[i] = str[i];
-    }
-    yuan[len] = s[len] = '\0';
-}
 void Suffix_Array::calc_height(int n) {
     for (int i=0; i<=n; ++i) rnk[sa[i]] = i;
     int k = height[0] = 0;
@@ -92,19 +130,18 @@ void Suffix_Array::calc_height(int n) {
 void Suffix_Array::build_sa(int m) {
     int i, j, p, *x = tmp_one, *y = tmp_two;
     for (i=0; i<m; ++i) c[i] = 0;
-    for (i=0; i<n; ++i) ++c[x[i]=s[i]];//第一关键字是x[i]，第二关键字是i
+    for (i=0; i<n; ++i) c[x[i]=s[i]]++;
     for (i=1; i<m; ++i) c[i] += c[i-1];
-    for (i=n-1; i>=0; --i) sa[--c[x[i]]] = i;//sa辅助更新第二关键字
-    for (j=1; j<=n; j<<=1) {//y就是第二关键字从小到大的位置
-        for (p=0, i=n-j; i<n; ++i) y[p++] = i;//第二关键字为0，最小
-        for (i=0; i<n; ++i) if (sa[i] >= j) y[p++] = sa[i] - j;//错位，这个第一关键字作为前j位元素的第二关键字
-        //现在第二关键字已经有序，在此基础上按第一关键字排序
+    for (i=n-1; i>=0; --i) sa[--c[x[i]]] = i;
+    for (j=1; j<=n; j<<=1) {
+        for (p=0, i=n-j; i<n; ++i) y[p++] = i;
+        for (i=0; i<n; ++i) if (sa[i] >= j) y[p++] = sa[i] - j;
         for (i=0; i<m; ++i) c[i] = 0;
         for (i=0; i<n; ++i) c[x[y[i]]]++;
         for (i=1; i<m; ++i) c[i] += c[i-1];
         for (i=n-1; i>=0; --i) sa[--c[x[y[i]]]] = y[i];
-        std::swap(x, y);
-        for (p=1, x[sa[0]]=0, i=1; i<n; ++i) {//拍完序后更新第一关键字
+        std::swap (x, y);
+        for (p=1, x[sa[0]]=0, i=1; i<n; ++i) {
             x[sa[i]] = (y[sa[i-1]] == y[sa[i]] && y[sa[i-1]+j] == y[sa[i]+j] ? p - 1 : p++);
         }
         if(p >= n) break;
@@ -113,49 +150,76 @@ void Suffix_Array::build_sa(int m) {
     calc_height(n-1);
     RMQ_init(n);
 }
-const int MXN = 2e5 + 7;
-char s[MXN], t[MXN];
-int k, ls, lt, len;
-int stk[MXN], top;
-int na[MXN], nb[MXN];
-int main(int argc, char const *argv[]) {
+int n, m;
+int k;
+char ar[MXN], br[MXN];
+
+int main() {
 #ifndef ONLINE_JUDGE
-    freopen("E://ADpan//in.in", "r", stdin);
-    //freopen("E://ADpan//out.out", "w", stdout);
+    freopen("/home/cwolf9/CLionProjects/ccc/in.txt", "r", stdin);
+    //freopen("/home/cwolf9/CLionProjects/ccc/out.txt", "w", stdout);
 #endif
-    while(scanf("%d", &k) && k) {
-        scanf("%s%s", s, t);
-        ls = strlen(s), lt = strlen(t);
-        len = ls + lt + 1;
-        s[ls] = '#';//把两个串拼在一起并加入分隔符
-        memcpy(s + ls + 1, t, sizeof(char) * (lt + 1));
-        SA.init_str(s);
-        SA.build_sa(128);
-        for(int i = 2; i <= len; ++i) SA.height[i] = max(0, SA.height[i]-k+1);
-        LL ans = 0, w1 = 0, w2 = 0;
-        top = na[0] = nb[0] = 0;
-        //维护一个单调递增的栈，分别记录两个串的贡献
-        //pop的元素合并到栈顶元素里去并记录数量，方便计算减少的贡献
-        for(int i = 2; i <= len; ++i) {
-            //sa[i-1]和sa[i]的lcp
-            stk[++top] = SA.height[i];
-            if(SA.sa[i-1] < ls) na[top]=1,nb[top]=0,w1+=SA.height[i];
-            else na[top]=0,nb[top]=1,w2+=SA.height[i];
-            while(top > 1 && stk[top] <= stk[top-1]) {
-                w1 -= na[top-1]*(stk[top-1]-stk[top]);//减少的贡献
-                w2 -= nb[top-1]*(stk[top-1]-stk[top]);
-                na[top-1] += na[top]; nb[top-1] += nb[top];
-                stk[top-1] = stk[top];
-                -- top;
+    int cas = 0;
+    while(~scanf("%d", &k) && k) {
+        scanf("%s%s", ar, br);
+        n = strlen(ar);
+        m = strlen(br);
+        ar[n] = '#';
+        memcpy(ar+n+1, br, m);
+        ar[n+m+1] = '\0';
+        SA.init_str(ar);
+        SA.build_sa();
+        for(int i = 0; i <= n + m + 1; ++i) SA.height[i] = max(SA.height[i] - k + 1, 0);
+        vector<int> vs, is;
+        LL ans = 0, sum = 0;
+        //维护一个单调递增的栈
+        //若段的左端点是最小的height值，则每一段height的贡献都是这一段height里的的最小值乘上这一段的数量
+        //这个单调递增的栈把值push出去之后，并不是直接把它删去，对于能造成贡献的值的数量要累加上去
+        for(int i = 2; i <= n + m + 1; ++i) {
+            vs.eb(SA.height[i]);
+            if(SA.sa[i-1] > n) {
+                sum += SA.height[i];
+                is.eb(1);
+            }else is.eb(0);
+            while(vs.size() > 2 && vs.back() <= vs[vs.size()-2]) {
+                LL vsa = vs.back();
+                int isa = is.back();
+                vs.pop_back(); is.pop_back();
+                sum -= is.back()*(vs.back() - vsa);
+                is[is.size()-1] += isa;
+                vs[vs.size()-1] = vsa;
             }
-            if(SA.sa[i] < ls) ans += w2;
-            else ans += w1;
+            if(SA.sa[i] < n) ans += sum;
+//            debug(SA.height[i], SA.sa[i-1], SA.sa[i], vs.size(), ans, sum)
         }
-        printf("%lld\n", ans);
+        vs.clear(), is.clear();
+        sum = 0;
+        for(int i = 2; i <= n + m + 1; ++i) {
+            vs.eb(SA.height[i]);
+            if(SA.sa[i-1] < n) {
+                sum += SA.height[i];
+                is.eb(1);
+            }else is.eb(0);
+            while(vs.size() > 2 && vs.back() <= vs[vs.size()-2]) {
+                LL vsa = vs.back();
+                int isa = is.back();
+                vs.pop_back(); is.pop_back();
+                sum -= is.back()*(vs.back() - vsa);
+                is[is.size()-1] += isa;
+                vs[vs.size()-1] = vsa;
+            }
+            if(SA.sa[i] > n) ans += sum;
+//            debug(SA.height[i], SA.sa[i-1], SA.sa[i], vs.size(), ans)
+        }
+        print(ans)
     }
 #ifndef ONLINE_JUDGE
     cout << "time cost:" << clock() << "ms" << endl;
 #endif
-  return 0;
+    return 0;
 }
+//后缀数组(SA[i]存放排名第i大的后缀首字符的下标)
+//名次数组（rank[i]存放suffix(i)的优先级(名次)）
+//height数组：height[i]是Suffix(sa[i-1])和Suffix(sa[i])的最长公共前缀长度
+/*SA,R,H的下标都是 0~n 其中多包括了一个空字符串*/
 

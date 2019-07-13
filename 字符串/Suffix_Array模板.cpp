@@ -88,18 +88,18 @@ void Suffix_Array::calc_height(int n) {
 void Suffix_Array::build_sa(int m) {
     int i, j, p, *x = tmp_one, *y = tmp_two;
     for (i=0; i<m; ++i) c[i] = 0;
-    for (i=0; i<n; ++i) c[x[i]=s[i]]++;//第一关键字是x[i]，第二关键字是i
+    for (i=0; i<n; ++i) c[x[i]=s[i]]++;//此时第一关键字是x[i]，第二关键字是i
     for (i=1; i<m; ++i) c[i] += c[i-1];
-    for (i=n-1; i>=0; --i) sa[--c[x[i]]] = i;//sa辅助更新第二关键字
+    for (i=n-1; i>=0; --i) sa[--c[x[i]]] = i;//排第几的后缀是i
     for (j=1; j<=n; j<<=1) {//y就是第二关键字从小到大的位置
         //y[i]表示第二关键字排名为i的数，第一关键字的位置
-        for (p=0, i=n-j; i<n; ++i) y[p++] = i;//这些数没有第二关键字，排在最前面
-        for (i=0; i<n; ++i) if (sa[i] >= j) y[p++] = sa[i] - j;//错位，这个第一关键字作为前j位元素的第二关键字
+        for (p=0, i=n-j; i<n; ++i) y[p++] = i;//这些数的第二关键字为0
+        for (i=0; i<n; ++i) if (sa[i] >= j) y[p++] = sa[i] - j;//按rank顺序，1<<(j+1)的第二半的rank。sa[i]把自己交给了sa[i]-j
         //现在第二关键字已经有序，在此基础上按第一关键字排序
         for (i=0; i<m; ++i) c[i] = 0;
         for (i=0; i<n; ++i) c[x[y[i]]]++;
         for (i=1; i<m; ++i) c[i] += c[i-1];
-        for (i=n-1; i>=0; --i) sa[--c[x[y[i]]]] = y[i];
+        for (i=n-1; i>=0; --i) sa[--c[x[y[i]]]] = y[i];//排第几的后缀是y[i]
         std::swap (x, y);
         for (p=1, x[sa[0]]=0, i=1; i<n; ++i) {//排完序后更新第一关键字
             x[sa[i]] = (y[sa[i-1]] == y[sa[i]] && y[sa[i-1]+j] == y[sa[i]+j] ? p - 1 : p++);
