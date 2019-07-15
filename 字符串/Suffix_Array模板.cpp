@@ -13,22 +13,29 @@ https://www.cnblogs.com/Running-Time/p/5450483.html
 名次数组（rank[i]存放Suffix(i)的优先级(名次)）
 height数组：height[i]是Suffix(sa[i-1])和Suffix(sa[i])的最长公共前缀长度
 /*SA,R,H的下标都是 0~n 其中多包括了一个空字符串*/
- 
+
 struct Suffix_Array {
-    static const int MN = 3e5 + 7;
-    int n, len, s[MN], M;
-    int sa[MN], rnk[MN], height[MN];
-    int tmp_one[MN], tmp_two[MN], c[MN];
-    int dp[MN][33];
-    char yuan[MN];
-    void init_str(char *str);
+    static const int N = 3e5 + 7;
+    int n, len, s[N], M;
+    int sa[N], rnk[N], height[N];
+    int tmp_one[N], tmp_two[N], c[N];
+    int dp[N][21];
+    void init_str(int *str, int _n) {
+        len = _n;
+        n = len + 1;
+        for (int i = 0; i < len; ++i) {
+            s[i] = str[i];
+        }
+        s[len] = '\0';
+    }
     void build_sa(int m = 128);
     void calc_height(int n);
     void Out(char *str);
     void RMQ_init(int n);
     int RMQ_query(int l, int r);
     int cmp_suffix(char* pattern, int p){//判断是否为后缀p的前缀
-        return strncmp(pattern, yuan + sa[p], M);
+        return strncmp(pattern, reinterpret_cast<const char *>(s + sa[p]), M);
+        //return strncmp(pattern, yuan + sa[p], M);
     }
     int find(char* P){//Omlog(n)
         M = strlen(P);
@@ -45,13 +52,13 @@ struct Suffix_Array {
     }
 }SA;
 void Suffix_Array::Out(char *str) {
-    puts ("[Suffix]");
+    puts ("/*Suffix*/");
     for (int i=0; i<n; ++i) {
         printf ("%s\n", str+sa[i]);
     }
 }
 //LCP(suffix(i), suffix(j))=RMQ_query(rnk[i], rnk[j]);
-int Suffix_Array::RMQ_query(int l, int r) {
+int Suffix_Array::RMQ_query(int l, int r) {//看自己需求自由变换
     l = rnk[l]; r = rnk[r];
     if (l > r) swap(l, r);
     l++;
@@ -65,14 +72,6 @@ void Suffix_Array::RMQ_init(int n) {
             dp[i][j] = std::min (dp[i][j-1], dp[i+(1<<(j-1))][j-1]);
         }
     }
-}
-void Suffix_Array::init_str(char *str) {
-    len = strlen(str);
-    n = len + 1;
-    for (int i=0; i<len; ++i) {
-        s[i] = str[i] - 'a' + 1;
-    }
-    s[len] = '\0';
 }
 void Suffix_Array::calc_height(int n) {
     for (int i=0; i<=n; ++i) rnk[sa[i]] = i;
@@ -118,52 +117,77 @@ void Suffix_Array::build_sa(int m) {
 
 
 
-
 /*
     *后缀数组，DC3算法实现，复杂度O(n)
 */
-int wa[N],wb[N],wv[N],ws[N];
-int rank[N],height[N];  
-int sa[N],r[N];
- 
-int c0(int *y,int a,int b) {
-    return y[a]==y[b]&&y[a+1]==y[b+1]&&y[a+2]==y[b+2];
-}
-int c12(int k,int *y,int a,int b) {
-    if(k==2) return y[a]<y[b]||y[a]==y[b]&&c12(1,y,a+1,b+1);
-    else return y[a]<y[b]||y[a]==y[b]&&wv[a+1]<wv[b+1];
-}
-void sort(int *r,int *a,int *b,int n,int m) {
-    int i;
-    for(i=0;i<n;i++) wv[i]=r[a[i]];
-    for(i=0;i<m;i++) ws[i]=0;
-    for(i=0;i<n;i++) ws[wv[i]]++;
-    for(i=1;i<m;i++) ws[i]+=ws[i-1];
-    for(i=n-1;i>=0;i--) b[--ws[wv[i]]]=a[i];
-}
-void DC3(int *r,int *sa,int n,int m) {
-    int i,j,*rn=r+n,*san=sa+n,ta=0,tb=(n+1)/3,tbc=0,p;
-    r[n]=r[n+1]=0;
-    for(i=0;i<n;i++) if(i%3!=0) wa[tbc++]=i;
-    sort(r+2,wa,wb,tbc,m);
-    sort(r+1,wb,wa,tbc,m);
-    sort(r,wa,wb,tbc,m);
-    for(p=1,rn[F(wb[0])]=0,i=1;i<tbc;i++)
-        rn[F(wb[i])]=c0(r,wb[i-1],wb[i])?p-1:p++;
-    if(p<tbc) dc3(rn,san,tbc,p);
-    else for(i=0;i<tbc;i++) san[rn[i]]=i;
-    for(i=0;i<tbc;i++) if(san[i]<tb) wb[ta++]=san[i]*3;
-    if(n%3==1) wb[ta++]=n-1;
-    sort(r,wb,wa,ta,m);
-    for(i=0;i<tbc;i++) wv[wb[i]=G(san[i])]=i;
-    for(i=0,j=0,p=0;i<ta && j<tbc;p++)
-        sa[p]=c12(wb[j]%3,r,wa[i],wb[j])?wa[i++]:wb[j++];
-    for(;i<ta;p++) sa[p]=wa[i++];
-    for(;j<tbc;p++) sa[p]=wb[j++];
-}
-void calc_height(int *r,int *sa,int n) {
-    int i,j,k=0;
-    for(i=1;i<=n;i++) rank[sa[i]]=i;
-    for(i=0;i<n;height[rank[i++]]=k)
-        for(k?k--:0,j=sa[rank[i]-1];r[i+k]==r[j+k];k++);
-}
+#define F(x) ((x)/3+((x)%3==1?0:tb))
+#define G(x) ((x)<tb?(x)*3+1:((x)-tb)*3+2)
+
+struct DC3 {
+    static const int N = 1e6 + 5;
+    int sa[N * 3], height[N], rnk[N];;
+    int wa[N], wb[N], wv[N], c[N];
+    int dp[N][24];
+    int c0(int *r, int a, int b) {
+        return r[a] == r[b] && r[a + 1] == r[b + 1] && r[a + 2] == r[b + 2];
+    }
+    int c12(int k, int *r, int a, int b) {
+        if (k == 2) return r[a] < r[b] || r[a] == r[b] && c12(1, r, a + 1, b + 1);
+        else return r[a] < r[b] || r[a] == r[b] && wv[a + 1] < wv[b + 1];
+    }
+    void _sort(int *r, int *a, int *b, int n, int m) {
+        int i;
+        for (i = 0; i < n; i++) wv[i] = r[a[i]];
+        for (i = 0; i < m; i++) c[i] = 0;
+        for (i = 0; i < n; i++) c[wv[i]]++;
+        for (i = 1; i < m; i++) c[i] += c[i - 1];
+        for (i = n - 1; i >= 0; i--) b[--c[wv[i]]] = a[i];
+        return;
+    }
+    //dc3.dc3(s, dc3.sa, len + 1, 256);
+    //dc3.calheight(s, len);
+    void dc3(int *r, int *sa, int n, int m) {
+        int i, j, *rn = r + n, *san = sa + n, ta = 0, tb = (n + 1) / 3, tbc = 0, p;
+        r[n] = r[n + 1] = 0;
+        for (i = 0; i < n; i++) if (i % 3 != 0) wa[tbc++] = i;
+        _sort(r + 2, wa, wb, tbc, m);
+        _sort(r + 1, wb, wa, tbc, m);
+        _sort(r, wa, wb, tbc, m);
+        for (p = 1, rn[F(wb[0])] = 0, i = 1; i < tbc; i++)
+            rn[F(wb[i])] = c0(r, wb[i - 1], wb[i]) ? p - 1 : p++;
+        if (p < tbc) dc3(rn, san, tbc, p);
+        else for (i = 0; i < tbc; i++) san[rn[i]] = i;
+        for (i = 0; i < tbc; i++) if (san[i] < tb) wb[ta++] = san[i] * 3;
+        if (n % 3 == 1) wb[ta++] = n - 1;
+        _sort(r, wb, wa, ta, m);
+        for (i = 0; i < tbc; i++) wv[wb[i] = G(san[i])] = i;
+        for (i = 0, j = 0, p = 0; i < ta && j < tbc; p++)
+            sa[p] = c12(wb[j] % 3, r, wa[i], wb[j]) ? wa[i++] : wb[j++];
+        for (; i < ta; p++) sa[p] = wa[i++];
+        for (; j < tbc; p++) sa[p] = wb[j++];
+        return;
+    }
+    void calheight(int *r, int n) {
+        int i, j, k = 0;
+        for (i = 1; i <= n; i++) rnk[sa[i]] = i;
+        for (i = 0; i < n; height[rnk[i++]] = k)
+            for (k ? k-- : 0, j = sa[rnk[i] - 1]; r[i + k] == r[j + k]; k++);
+        RMQ_init(n + 1);
+    }
+    int RMQ_query(int l, int r) {
+        l = rnk[l], r = rnk[r];
+        if (l > r) swap(l, r);
+        l++;
+        int k = 0;
+        while (1 << (k + 1) <= r - l + 1) k++;
+        return min(dp[l][k], dp[r - (1 << k) + 1][k]);
+    }
+    void RMQ_init(int n) {
+        for (int i = 0; i < n; ++i) dp[i][0] = height[i];
+        for (int j = 1; (1 << j) <= n; ++j) {
+            for (int i = 0; i + (1 << j) - 1 < n; ++i) {
+                dp[i][j] = std::min(dp[i][j - 1], dp[i + (1 << (j - 1))][j - 1]);
+            }
+        }
+    }
+}dc3;
