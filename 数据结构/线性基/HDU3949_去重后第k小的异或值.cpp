@@ -17,19 +17,23 @@ LL id[MXN];
 LL bs[MXN];
 std::vector<LL> vs;
 int zero;
+bool insert(LL x, LL *bs) {
+    for(int j = BASE_MAX; j >= 0; --j) {//63
+        if(!(x >> j)) continue;
+        if(bs[j]) x ^= bs[j];
+        else {
+            bs[j] = x;
+            for(int k = j-1; k >= 0; --k) if(bs[k]&&(bs[j]&(1LL<<k))) bs[j]^=bs[k];
+            for(int k = j+1; k <= BASE_MAX; ++k) if(bs[k]&(1LL<<j)) bs[k]^=bs[j];
+            return true;
+        }
+    }
+    return false;
+}
 void go() {
     int cnt = 0;
     for(int i = 0; i < n; ++i) {
-        for(int j = BASE_MAX; j >= 0; --j) {
-            if(!(id[i] >> j)) continue;
-            if(bs[j]) id[i] ^= bs[j];
-            else {
-                bs[j] = id[i]; ++ cnt;
-                for(int k = j-1; k >= 0; --k) if(bs[k] && (bs[j]&(1LL<<k))) bs[j]^=bs[k];
-                for(int k = j+1; k <= BASE_MAX; ++k) if(bs[k]&(1LL<<j)) bs[k]^=bs[j];
-                break;
-            }
-        }
+        if(insert(id[i], bs)) ++ cnt;
     }
     if(cnt < n) zero = 1;//如果ax没有插进线性基中，那么ax一定属于span{a1,ax-1}
     else zero = 0;

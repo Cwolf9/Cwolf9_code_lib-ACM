@@ -20,19 +20,21 @@ int cnt;
 //如果ax没有插进线性基中，那么ax一定属于span{a1,ax-1};故一定存在异或值为0的方案。
 //任意一条 1 到 n 的路径的异或和，都可以由任意一条 1 到 n 路径的异或和与图中的一些环的异或和来组合得到。
 //每个数都出现一样的次数，且这个次数为2^{n-|线性基|}。
-void go() {
-    for(int i = 0; i < n; ++i) {
-        for(int j = BASE_MAX; j >= 0; --j) {//62
-            if(!(id[i] >> j)) continue;
-            if(bs[j]) id[i] ^= bs[j];
-            else {
-                bs[j] = id[i]; ++ cnt;
-                for(int k = j-1; k >= 0; --k) if(bs[k]&&(bs[j]&(1LL<<k))) bs[j]^=bs[k];
-                for(int k = j+1; k <= BASE_MAX; ++k) if(bs[k]&(1LL<<j)) bs[k]^=bs[j];
-                break;
-            }
+bool insert(LL x, LL *bs) {
+    for(int j = BASE_MAX; j >= 0; --j) {//63
+        if(!(x >> j)) continue;
+        if(bs[j]) x ^= bs[j];
+        else {
+            bs[j] = x;
+            for(int k = j-1; k >= 0; --k) if(bs[k]&&(bs[j]&(1LL<<k))) bs[j]^=bs[k];
+            for(int k = j+1; k <= BASE_MAX; ++k) if(bs[k]&(1LL<<j)) bs[k]^=bs[j];
+            return true;
         }
     }
+    return false;
+}
+void go() {
+    for(int i = 0; i < n; ++i) if(insert(id[i], bs)) ++ cnt;
 }
 LL ksm(LL a, int b) {
     LL res = 1;

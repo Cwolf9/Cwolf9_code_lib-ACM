@@ -60,6 +60,11 @@ int mp[100];
  然后这题套个矩阵快速幂就可以啦
  不过记得要把原矩阵中的坏节点全部删掉得到新矩阵
  坏节点：这个节点存在一个后缀是坏字符串
+
+ 本题扩展hdu2243，相当于求长度不超过m的合法字符串
+ 解法：大体类似，主要是他要求是长度不超过m的合法字符串，我们上面求得是长度恰好为m的合法字符串数量。
+ 给初始矩阵最右边加一列全为1的列，再同样求m次幂即可。
+ 加一列1相当储存当前行以前长度的数量的和，得到sum_{i=0}^m hefa(i)
  */
 struct AC_Auto {
     struct Trie {
@@ -114,7 +119,8 @@ struct AC_Auto {
                     }
                     Q.push(pos);
                 }else {
-                    cw[u].nex[i] = cw[cw[u].fail].nex[i];
+                    if(cw[u].fail >= 0) cw[u].nex[i] = cw[cw[u].fail].nex[i];
+                    else cw[u].nex[i] = 0;
                 }
             }
         }

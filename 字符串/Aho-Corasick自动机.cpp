@@ -59,7 +59,8 @@ struct AC_Auto {
                     cw[pos].last = cw[cw[pos].fail].is?cw[pos].fail:cw[cw[pos].fail].last;
                     Q.push(pos);
                 }else {//建新的边补全图（可选可不选,会改变遍历方式
-//                    cw[u].nex[i] = cw[cw[u].fail].nex[i];
+//                    if(cw[u].fail >= 0) cw[u].nex[i] = cw[cw[u].fail].nex[i];
+//                    else cw[u].nex[i] = 0;
                 }
             }
         }
@@ -212,3 +213,8 @@ struct AC_Auto {
         return 0;
     }
 }aho;
+sudo gedit /etc/pacman.conf
+[archlinuxcn]
+Server = https://mirrors.ustc.edu.cn/archlinuxcn/$arch
+[archlinuxcn]
+Server = https://mirrors.tuna.tsinghua.edu.cn/archlinuxcn/$arch

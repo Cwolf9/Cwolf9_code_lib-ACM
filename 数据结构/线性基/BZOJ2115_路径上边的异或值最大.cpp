@@ -28,19 +28,21 @@ void add_edge(int u, int v, LL w) {
     edge[++cnt].v = u; edge[cnt].nex = head[v]; edge[cnt].w = w;
     head[v] = cnt;
 }
-void go(int n) {
-    for(int i = 0; i < n; ++i) {
-        for(int j = BASE_MAX; j >= 0; --j) {
-            if(!(id[i] >> j)) continue;
-            if(bs[j]) id[i] ^= bs[j];
-            else {
-                bs[j] = id[i];
-                for(int k = j-1; k >= 0; --k) if(bs[k]&&(bs[j]&(1LL<<k))) bs[j]^=bs[k];
-                for(int k = j+1; k <= BASE_MAX; ++k) if(bs[k]&(1LL<<j)) bs[k]^=bs[j];
-                break;
-            }
+bool insert(LL x, LL *bs) {
+    for(int j = BASE_MAX; j >= 0; --j) {//63
+        if(!(x >> j)) continue;
+        if(bs[j]) x ^= bs[j];
+        else {
+            bs[j] = x;
+            for(int k = j-1; k >= 0; --k) if(bs[k]&&(bs[j]&(1LL<<k))) bs[j]^=bs[k];
+            for(int k = j+1; k <= BASE_MAX; ++k) if(bs[k]&(1LL<<j)) bs[k]^=bs[j];
+            return true;
         }
     }
+    return false;
+}
+void go(int n) {
+    for(int i = 0; i < n; ++i) insert(id[i], bs);
 }
 void dfs(int u, int ba, int bid, LL val) {
     if(u == n) {
