@@ -9,10 +9,10 @@ https://www.cnblogs.com/Running-Time/p/5450483.html
  *rank[i]: 后缀i在sa数组下标，即第rank[i]小
  *height[i]: LCP(suffix(sa[i-1], sa[i]))
  */
-后缀数组(SA[i]存放排名第i大的后缀首字符的下标)
-名次数组（rank[i]存放Suffix(i)的优先级(名次)）
-height数组：height[i]是Suffix(sa[i-1])和Suffix(sa[i])的最长公共前缀长度
-/*SA,R,H的下标都是 0~n 其中多包括了一个空字符串*/
+//后缀数组(SA[i]存放排名第i大的后缀首字符的下标)
+//名次数组（rank[i]存放Suffix(i)的优先级(名次)）
+//height数组：height[i]是Suffix(sa[i-1])和Suffix(sa[i])的最长公共前缀长度
+//SA,R,H的下标都是 0~n 其中多包括了一个空字符串
 
 struct Suffix_Array {
     static const int N = 3e5 + 7;

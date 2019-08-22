@@ -1,0 +1,15 @@
+ 基姆拉尔森计算公式
+W = (d + 2 * m + 3 * (m + 1) / 5 + y + y / 4 - y / 100 + y / 400) mod 7
+int CaculateWeekDay(int y, int m, int d) {
+    if (m == 1 || m == 2) {
+        m += 12;
+        y--;
+    }
+    int iWeek = (d + 2 * m + 3 * (m + 1) / 5 + y + y / 4 - y / 100 + y / 400) % 7;
+    return iWeek;//0-6,一-七
+}
+
+构造自补图：
+当n=4时，一条简单的“链”便满足要求：不妨把这4个顶点分别记作x,y,z,w,那么x–y–z–w的补图就是y–w–x–z,整个图的本质结构并未发生改变。
+rb[cnt + 1] = cnt + 2, rb[cnt + 2] = cnt + 4, rb[cnt + 3] = cnt + 1, rb[cnt + 4] = cnt + 3;
+http://www.matrix67.com/blog/archives/6221

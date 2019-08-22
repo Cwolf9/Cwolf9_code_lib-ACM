@@ -3,6 +3,9 @@
  * 模板题：hdu6305，sgu155，poj1785
  *
  * https://blog.csdn.net/acdreamers/article/details/11353117
+ *
+ * 【Memphis】非旋转Treap及可持久化[Merge,Split]
+ * https://blog.csdn.net/bpm136/article/details/48025371
  */
 
 struct DT{
