@@ -1,0 +1,86 @@
+无源汇有上下界可行流:
+设下界为B，上界为C。先让每条边流过B的流量，下界变为0,上界变为C-B。
+这样初始流会不满足流量平衡。添加一个附加流g，满足∑(u,i)∈E[B(u,i)+g(u,i)]=∑(i,v)∈E[B(i,v)+g(i,v)]，B+g是实际流量f
+令M(i)=∑(u,i)∈E B(u,i)−∑(i,v)∈E B(i,v)=∑(i,v)∈E g(i,v)−∑(u,i)∈E g(u,i) = i点的流入的下界之和减流出的下界之和
+若M(i)≥0: 我们发现附加流中流出的需要比流入的多M(i)才可以达到流量平衡，那么这些流从哪来呢。建一个源点SS，建一条从SS到i的边，容量为M(i) 。
+若M(i)<0: 我们发现附加流中流入的需要比流出的多M(i)才可以达到流量平衡，那么这些流从哪来呢。建一个汇点TT，建一条从i到TT的边，容量为M(i) 。
+存在解的条件是：SS流出的边和流入TT的边满流。
+有源汇有上下界最大流:
+法1：加TS无穷大边，变成无源汇求可行流，判断是否有解，记录TS边流过的流量，然后删除T->S边和SS与TT所有边及点，求ST最大流，ans = TS边流过的流量+此时最大流
+法2：加TS无穷大边，变成无源汇求可行流，判断是否有解，删点超源汇(都行)，求ST最大流，ans = 最大流
+void solve(int n, int m, int s, int t) {
+    vs = 0, vt = n + 1;
+    dinic.init(vs, vt);
+    int flow = 0, flag, all = 0;
+    for(int i = 0, a, b, c, d; i < m; ++i) {
+        a = read(), b = read(), c = read(), d = read();
+        dinic.add_edge(a, b, d - c);//减去流量下界，假做已经流过B的流量
+        out[a] += c, in[b] += c;
+    }
+    int tmp = dinic.tot + 1;
+    for(int i = 1; i <= n; ++i) {
+        if(in[i] > out[i]) 
+            dinic.add_edge(vs, i, in[i] - out[i]), all += in[i] - out[i];
+        else if(in[i] < out[i]) dinic.add_edge(i, vt, out[i] - in[i]);
+    }
+    dinic.add_edge(t, s, INF);
+    flow = dinic.max_flow(), flag = (flow != 0);
+    for(int i = dinic.head[vs]; ~i; i = dinic.cw[i].nex) if(dinic.cw[i].w != 0) flag = 0;
+    for(int i = dinic.head[vt]; ~i; i = dinic.cw[i].nex) if(dinic.cw[1^i].w != 0) flag = 0;
+//    flag = (flow == all);
+    if(flag) {
+        flow = dinic.cw[dinic.head[t]^1].w;
+        for(int i = tmp; i <= dinic.tot; ++i) dinic.cw[i].v = 0;
+        dinic.head[vs] = dinic.head[vt] = -1;
+        dinic.vs = s, dinic.vt = t;
+        flow += dinic.max_flow();
+//        dinic.head[vs] = dinic.head[vt] = -1;
+//        dinic.vs = s, dinic.vt = t;
+//        flow = dinic.max_flow();
+        printf("%d\n", flow);
+    }else printf("please go home to sleep\n");
+}
+有源汇有上下界最小流:
+做法1：
+加TS无穷大边变成无源汇形式求可行流，记录TS无穷大边流量，判断是否有解，删除TS无穷大边(甚至可以把超源汇点及相邻边全删掉)，然后残余网络上求TS最大流，ans=TS无穷大边流量 - TS最大流。
+做法2：
+建超级源汇点求出最大流，连TS无穷大的边，再跑一遍超源汇最大流，判断超级源点出去的边是否满流，TS边流过的流量即为答案。
+void main() {
+    vs = 0, vt = n + 1;
+    dinic.init(vs, vt);
+    dinic.NV = vt;
+    LL flow = 0, flow2 = 0, flag = 1, all = 0;
+    for(LL i = 0, a, b, c, d; i < m; ++i) {
+        a = read(), b = read(), c = read(), d = read();
+        dinic.add_edge(a, b, d - c);//减去流量下界，假做已经流过B的流量
+        out[a] += c, in[b] += c;
+    }
+    for(int i = 1; i <= n; ++i) {
+        if(in[i] >= out[i]) 
+            dinic.add_edge(vs, i, in[i] - out[i]), all += in[i] - out[i];
+        else if(in[i] < out[i]) dinic.add_edge(i, vt, out[i] - in[i]);
+    }
+    ---
+    dinic.add_edge(t, s, INFLL);
+    dinic.max_flow();
+    flow = dinic.cw[dinic.tot].w;
+    for(int i = dinic.head[vs]; ~i; i = dinic.cw[i].nex) if(dinic.cw[i].w) flag = false;
+//    for(int i = tmp; i >= ret + 1; --i) dinic.cw[i].w = dinic.cw[i].v = 0;
+//    dinic.head[vs] = -1, dinic.head[vt] = -1;
+    dinic.head[t] = dinic.cw[dinic.head[t]].nex;
+    dinic.head[s] = dinic.cw[dinic.head[s]].nex;
+    dinic.vs = t, dinic.vt = s;
+    flow2 = dinic.max_flow();
+    if(flag) printf("%lld\n", flow - flow2);
+    else printf("please go home to sleep\n");
+    ---
+    flow = dinic.max_flow();
+    dinic.add_edge(t, s, INFLL);
+    flow2 = dinic.max_flow();
+    for(int i = dinic.head[vs]; ~i; i = dinic.cw[i].nex) 
+        if(dinic.cw[i].w) flag = false;
+    if(flag) {
+        assert(flow2 == dinic.cw[dinic.head[t]^1].w);
+        printf("%lld\n", dinic.cw[dinic.head[t]^1].w);
+    }else printf("please go home to sleep\n");
+}
