@@ -1,3 +1,5 @@
+/*n个前缀组合n个节点的树，两个前缀的lc suffix是对应节点的lca表示的字符串
+ * */
 struct Suffix_Automaton {
     static const int maxn = 2e5 + 105;
     static const int MAXN = 2e5 + 5;
