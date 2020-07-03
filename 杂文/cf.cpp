@@ -1,60 +1,57 @@
-#include<bits/stdc++.h>
-#define fi first
-#define se second
-#define endl '\n'
-#define o2(x) (x)*(x)
-#define BASE_MAX 62
-#define mk make_pair
-#define eb emplace_back
-#define all(x) (x).begin(), (x).end()
-#define clr(a,b) memset((a),(b),sizeof((a)))
-#define iis std::ios::sync_with_stdio(false); cin.tie(0)
-#define my_unique(x) sort(a(x)),x.erase(unique(a(x)),x.end())
+#include <iostream>
+#include <windows.h>
+#include <cstdio>
+#include <algorithm>
+#include <cstring>
+#include <assert.h>
+#include <vector>
+#include <queue>
 using namespace std;
-#pragma optimize("-O3")
-typedef long long LL;
-typedef pair<int, int> pii;
-inline LL read(){
-  LL x=0;int f=0;char ch=getchar();
-  while (ch<'0'||ch>'9') f|=(ch=='-'),ch=getchar();
-  while (ch>='0'&&ch<='9') x=(x<<3)+(x<<1)+ch-'0',ch=getchar();
-  return x=f?-x:x;
-}
-inline void write(LL x) {
-    if(x==0){putchar('0'),putchar('\n');return;}
-    if(x < 0) {putchar('-');x=-x;}
-    static char s[23];int l = 0;
-    while(x!=0)s[l++]=x%10+48,x/=10;
-    while(l)putchar(s[--l]);
-    putchar('\n');
-}
-int lowbit(int x) {return x&(-x);}
-template<class T> T big(const T& a1,const T& a2) { return a1>a2?a1:a2; }
-template<typename T, typename ...R> T big (const T& f,const R& ...r) { return big(f, big (r...)); }
-template<class T> T sml(const T& a1,const T& a2) { return a1<a2?a1:a2; }
-template<typename T, typename ...R> T sml (const T& f,const R& ...r) { return sml(f, sml (r...)); }
-void debug_out() { cerr << '\n'; }
-template<typename T, typename ...R> void debug_out (const T& f,const R& ...r) { cerr << f << " "; debug_out (r...); }
-#define debug(...) cerr << "[" << #__VA_ARGS__ << "]: ", debug_out(__VA_ARGS__);
 
-const LL INFLL = 0x3f3f3f3f3f3f3f3fLL;
-const int HMOD[] = {1000000009, 1004535809};
-const LL BASE[] = {1572872831, 1971536491};
-const int mod = 1e9 + 7;
-const int INF = 0x3f3f3f3f;
-const int MXN = 2e5 + 7;
-
-int n, m;
-
-int main() {
-#ifndef ONLINE_JUDGE
-    freopen("E://ADpan//in.in", "r", stdin);
-    //freopen("E://ADpan//out.out", "w", stdout);
-#endif
-    write(248&121);
-#ifndef ONLINE_JUDGE
-    cout << "time cost:" << clock() << "ms" << endl;
-#endif
+volatile int x = 0;
+pthread_mutex_t m = PTHREAD_MUTEX_INITIALIZER;
+pthread_cond_t cond = PTHREAD_COND_INITIALIZER;
+pthread_cond_t cond2 = PTHREAD_COND_INITIALIZER;
+void *runA(void *ptr) {
+    for(int i = 0, y; i < 10; i++) {
+        pthread_mutex_lock(&m);
+        pthread_cond_wait(&cond2, &m);
+        cout << "A"; 
+        pthread_mutex_unlock(&m);
+        Sleep(100);
+        pthread_cond_signal(&cond);
+    }
     return 0;
 }
-
+void *runB(void *ptr) {
+    for(int i = 0, y; i < 10; i++) {
+        Sleep(100);
+        pthread_cond_signal(&cond2);
+        pthread_mutex_lock(&m);
+        pthread_cond_wait(&cond, &m);
+        cout << "B";
+        pthread_mutex_unlock(&m);
+    }
+    return 0;
+}
+int main() {
+    cout << pthread_self() << endl;
+    // pthread_mutex_init(&m, nullptr);
+    int ret[3];
+    pthread_t id[3];
+    ret[0] = pthread_create(&id[0], nullptr, runA, nullptr);
+    ret[1] = pthread_create(&id[1], nullptr, runB, nullptr);
+    if(ret[0] || ret[1]) {
+        cout << "create thread failed " << endl;
+        return 0;
+    }
+    pthread_join(id[0], nullptr);
+    pthread_join(id[1], nullptr);
+    printf("\n%d\n", x);
+    pthread_mutex_destroy(&m);
+    pthread_cond_destroy(&cond);
+}
+/*
+POSIX 引入了一个线程调度竞争范围(thread-scheduling contention scope)的概念
+线程的contentionscope属性可是PTHREAD_SCOPE_PROCESS,也可以是PTHREAD_SCOPE_SYSTEM。带有PTHREAD_SCOPE_PROCESS属性的线程与它所在的进程中的其他线程竞争处理器资源。带有PTHREAD_SCOPE_SYSTEM属性的线程很像内核级线程，他们在全系统的范围内竞争处理器资源。POSIX的一种映射方式将PTHREAD_SCOPE_SYSTEM线程和内核实体之间绑定起来。
+*/
