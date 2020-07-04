@@ -1,15 +1,17 @@
 /*
 链接：
-https://vjudge.net/contest/381037#problem/F
+https://vjudge.net/contest/381037#problem/K
 题意：
-求每个点最远的点
+n个点的树，有k+1个黑点，满足的方案是删掉k条边后，k+1个联通块
+每个恰好有一个黑点，问有多少种方案数。
 
 思路：
-两次dfs
-
+dp[u][0/1]表示u的子树内有0/1个黑色节点
 
 备注：
+状态难想，之前还想了dp[u][0/1]为u的父节点边是否删除的方案数，显然不行
 蔓延
+
 
 */
 #pragma comment(linker, "/STACK:102400000,102400000")
@@ -29,7 +31,7 @@ https://vjudge.net/contest/381037#problem/F
 #define o2(x) (x)*(x)
 #define BASE_MAX 31
 #define mk make_pair
-#define eb push_back
+#define eb emplace_back
 #define SZ(x) ((int)(x).size())
 #define all(x) (x).begin(), (x).end()
 #define clr(a, b) memset((a),(b),sizeof((a)))
@@ -68,7 +70,7 @@ template<typename T, typename ...R>T sml(const T &f, const R &...r) { return sml
 void debug_out() { cout << '\n'; }
 template<typename T, typename ...R>void debug_out(const T &f, const R &...r) {cout << f << " ";debug_out(r...);}
 #define debug(...) cout << "[" << #__VA_ARGS__ << "]: ", debug_out(__VA_ARGS__);
-// #define LLDO
+#define LLDO
 #ifdef LLDO
 const char ptout[] = "%lld";
 #else
@@ -83,41 +85,27 @@ const int HMOD[] = {1000000009, 1004535809};
 const LL BASE[] = {1572872831, 1971536491};
 const LL INFLL = 0x3f3f3f3f3f3f3f3fLL;
 const int INF = 0x3f3f3f3f;
-const int mod = 1e9 + 7;
+const int mod = 998244353;
 const int MOD = 1e9 + 7;//998244353
-const int MXN = 1e5 + 5;
+const int MXN = 3e5 + 5;
 const int MXE = 2e6 + 6;
 int n, m, k;
-int ans[MXN];
-int ar[MXN], dp[MXN][2];
-vector<pii > mp[MXN];
+int ar[MXN], du[MXN];
+LL dp[MXN][2];
+vector<int > mp[MXN];
+
 void dfs(int u, int ba) {
-    for(pii V: mp[u]) {
-        int v = V.fi, w = V.se;
-        if(v == ba) continue;
+    if(ar[u]) dp[u][0] = 0, dp[u][1] = 1;//11
+    else dp[u][0] = 1, dp[u][1] = 0;//1?
+    for(int v: mp[u]) {
         dfs(v, u);
-        if(dp[v][0] + w > dp[u][0]) dp[u][0] = dp[v][0] + w, ar[u] = v;
-        else dp[u][1] = max(dp[u][1], dp[v][0] + w);
+        // debug(v-1, u-1)
+        // debug(dp[u][0], dp[u][1], dp[v][0], dp[v][1])
+        dp[u][1] = (dp[u][0] * dp[v][1] + dp[u][1] * (dp[v][0] + dp[v][1])) % MOD;
+        dp[u][0] = dp[u][0] * (dp[v][0] + dp[v][1]) % MOD;
+        // debug(u - 1, dp[u][0], dp[u][1])
     }
-}
-void dfs2(int u, int ba, int w) {
-    // debug(u, dp[u][0], dp[u][1], ar[u], dp[ba][0], dp[ba][1])
-    if(ar[ba] == u) {
-        if(dp[ba][1] + w > dp[u][0]) {
-            dp[u][0] = dp[ba][1] + w;
-            ar[u] = ba;
-        }else dp[u][1] = max(dp[u][1], dp[ba][1] + w);
-    }else if(ba) {
-        if(dp[ba][0] + w > dp[u][0]) {
-            dp[u][0] = dp[ba][0] + w;
-            ar[u] = ba;
-        }else dp[u][1] = max(dp[u][1], dp[ba][0] + w);
-    }
-    for(pii V: mp[u]) {
-        int v = V.fi;
-        if(v == ba) continue;
-        dfs2(v, u, V.se);
-    }
+    // debug(u - 1, dp[u][0], dp[u][1])
 }
 int main() {
 #ifndef ONLINE_JUDGE
@@ -125,13 +113,13 @@ int main() {
     freopen("D:out.out", "w", stdout);
 #endif
     n = read();
-    for(int i = 2, a, b; i <= n; ++i) {
-        a = read(), b = read();
-        mp[a].eb(mk(i, b));
+    for(int i = 2, a, b, c; i <= n; ++i) {
+        a = read() + 1;
+        mp[a].eb(i);
     }
+    for(int i = 1; i <= n; ++i) ar[i] = read();
     dfs(1, 0);
-    dfs2(1, 0, 0);
-    for(int i = 1; i <= n; ++i) print(dp[i][0]);
+    print(dp[1][1]);
 #ifndef ONLINE_JUDGE
     cout << "time cost:" << 1.0 * clock() / CLOCKS_PER_SEC << "ms" << endl;
     system("pause");

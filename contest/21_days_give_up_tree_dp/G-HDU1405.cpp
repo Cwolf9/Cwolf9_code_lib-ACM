@@ -1,15 +1,14 @@
 /*
 链接：
-https://vjudge.net/contest/381037#problem/F
+https://vjudge.net/contest/381037#problem/G
 题意：
-求每个点最远的点
+65536内质因数分解，拉错题了吧
 
 思路：
-两次dfs
-
+随便冲
 
 备注：
-蔓延
+
 
 */
 #pragma comment(linker, "/STACK:102400000,102400000")
@@ -88,35 +87,16 @@ const int MOD = 1e9 + 7;//998244353
 const int MXN = 1e5 + 5;
 const int MXE = 2e6 + 6;
 int n, m, k;
-int ans[MXN];
-int ar[MXN], dp[MXN][2];
-vector<pii > mp[MXN];
-void dfs(int u, int ba) {
-    for(pii V: mp[u]) {
-        int v = V.fi, w = V.se;
-        if(v == ba) continue;
-        dfs(v, u);
-        if(dp[v][0] + w > dp[u][0]) dp[u][0] = dp[v][0] + w, ar[u] = v;
-        else dp[u][1] = max(dp[u][1], dp[v][0] + w);
-    }
-}
-void dfs2(int u, int ba, int w) {
-    // debug(u, dp[u][0], dp[u][1], ar[u], dp[ba][0], dp[ba][1])
-    if(ar[ba] == u) {
-        if(dp[ba][1] + w > dp[u][0]) {
-            dp[u][0] = dp[ba][1] + w;
-            ar[u] = ba;
-        }else dp[u][1] = max(dp[u][1], dp[ba][1] + w);
-    }else if(ba) {
-        if(dp[ba][0] + w > dp[u][0]) {
-            dp[u][0] = dp[ba][0] + w;
-            ar[u] = ba;
-        }else dp[u][1] = max(dp[u][1], dp[ba][0] + w);
-    }
-    for(pii V: mp[u]) {
-        int v = V.fi;
-        if(v == ba) continue;
-        dfs2(v, u, V.se);
+int pr[MXN], pcnt, nop[MXN];
+vector<pii> vs;
+void init_p() {
+    nop[1] = 1;
+    for(int i = 2; i < MXN; ++i) {
+        if(!nop[i]) pr[++pcnt] = i;
+        for(int j = 1; j <= pcnt && pr[j] * i < MXN; ++j) {
+            nop[pr[j]*i] = 1;
+            if(i % pr[j] == 0) break;
+        }
     }
 }
 int main() {
@@ -124,14 +104,24 @@ int main() {
     freopen("D:in.in", "r", stdin);
     freopen("D:out.out", "w", stdout);
 #endif
-    n = read();
-    for(int i = 2, a, b; i <= n; ++i) {
-        a = read(), b = read();
-        mp[a].eb(mk(i, b));
+    init_p();
+    int cas = 0;
+    while(~scanf("%d", &n) && n > 0) {
+        if(cas) putchar('\n');
+        vs.clear();
+        for(int i = 1; i <= pcnt && n > 1; ++i) {
+            if(n % pr[i] == 0) {
+                int cnt = 0;
+                while(n % pr[i] == 0) n /= pr[i], ++ cnt;
+                vs.eb(mk(pr[i], cnt));
+            }
+        }
+        if(n > 2) {
+            vs.eb(mk(n, 1));
+        }
+        printf("Case %d.\n", ++ cas);
+        for(int i = 0; i < vs.size(); ++i) printf("%d %d%c", vs[i].fi, vs[i].se, " \n"[i+1==(int)vs.size()]);
     }
-    dfs(1, 0);
-    dfs2(1, 0, 0);
-    for(int i = 1; i <= n; ++i) print(dp[i][0]);
 #ifndef ONLINE_JUDGE
     cout << "time cost:" << 1.0 * clock() / CLOCKS_PER_SEC << "ms" << endl;
     system("pause");

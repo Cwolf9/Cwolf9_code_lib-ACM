@@ -1,8 +1,9 @@
 /*
 链接：
-https://vjudge.net/contest/381037#problem/F
+https://vjudge.net/contest/381037#problem/L
 题意：
-求每个点最远的点
+给定一棵无根树，假设它有n个节点，节点编号从1到n, 求1-n这n个节
+点，到其他n-1个节点的距离之和。
 
 思路：
 两次dfs
@@ -68,7 +69,7 @@ template<typename T, typename ...R>T sml(const T &f, const R &...r) { return sml
 void debug_out() { cout << '\n'; }
 template<typename T, typename ...R>void debug_out(const T &f, const R &...r) {cout << f << " ";debug_out(r...);}
 #define debug(...) cout << "[" << #__VA_ARGS__ << "]: ", debug_out(__VA_ARGS__);
-// #define LLDO
+#define LLDO
 #ifdef LLDO
 const char ptout[] = "%lld";
 #else
@@ -85,33 +86,29 @@ const LL INFLL = 0x3f3f3f3f3f3f3f3fLL;
 const int INF = 0x3f3f3f3f;
 const int mod = 1e9 + 7;
 const int MOD = 1e9 + 7;//998244353
-const int MXN = 1e5 + 5;
+const int MXN = 2e5 + 5;
 const int MXE = 2e6 + 6;
-int n, m, k;
-int ans[MXN];
-int ar[MXN], dp[MXN][2];
+int n;
+LL m, k;
+int ar[MXN];
+LL sz[MXN];
+LL dp[MXN];
 vector<pii > mp[MXN];
 void dfs(int u, int ba) {
+    sz[u] = ar[u];
     for(pii V: mp[u]) {
-        int v = V.fi, w = V.se;
+        int v = V.fi;
+        LL w = V.se;
         if(v == ba) continue;
         dfs(v, u);
-        if(dp[v][0] + w > dp[u][0]) dp[u][0] = dp[v][0] + w, ar[u] = v;
-        else dp[u][1] = max(dp[u][1], dp[v][0] + w);
+        sz[u] += sz[v];
+        dp[u] += dp[v] + w * sz[v];
     }
 }
-void dfs2(int u, int ba, int w) {
-    // debug(u, dp[u][0], dp[u][1], ar[u], dp[ba][0], dp[ba][1])
-    if(ar[ba] == u) {
-        if(dp[ba][1] + w > dp[u][0]) {
-            dp[u][0] = dp[ba][1] + w;
-            ar[u] = ba;
-        }else dp[u][1] = max(dp[u][1], dp[ba][1] + w);
-    }else if(ba) {
-        if(dp[ba][0] + w > dp[u][0]) {
-            dp[u][0] = dp[ba][0] + w;
-            ar[u] = ba;
-        }else dp[u][1] = max(dp[u][1], dp[ba][0] + w);
+void dfs2(int u, int ba, LL w) {
+    // debug(u, dp[u])
+    if(ba) {
+        dp[u] = dp[ba] + w * (m - 2 * sz[u]);
     }
     for(pii V: mp[u]) {
         int v = V.fi;
@@ -125,13 +122,17 @@ int main() {
     freopen("D:out.out", "w", stdout);
 #endif
     n = read();
-    for(int i = 2, a, b; i <= n; ++i) {
+    for(int i = 1; i <= n; ++i) ar[i] = read(), m += ar[i];
+    for(int i = 2, a, b, c; i <= n; ++i) {
         a = read(), b = read();
-        mp[a].eb(mk(i, b));
+        mp[a].eb(mk(b, 1));
+        mp[b].eb(mk(a, 1));
     }
     dfs(1, 0);
     dfs2(1, 0, 0);
-    for(int i = 1; i <= n; ++i) print(dp[i][0]);
+    LL ans = 0;
+    for(int i = 1; i <= n; ++i) ans = max(ans, dp[i]);
+    print(ans);
 #ifndef ONLINE_JUDGE
     cout << "time cost:" << 1.0 * clock() / CLOCKS_PER_SEC << "ms" << endl;
     system("pause");
