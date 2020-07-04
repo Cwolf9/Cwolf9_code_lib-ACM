@@ -1,14 +1,22 @@
 /*
 链接：
-https://vjudge.net/contest/381037#problem/A
+https://vjudge.net/contest/381037#problem/C
 题意：
-n = 50000, k = 500
-求书上距离为k的点对数量
-思路：
-树DP
-dp[u][d]表示树中与点u距离d的点的数量
+n(3,5000)个点的树，每个点可选择设置2种据点（a，b），但是不能有相
+邻的两节点使相同的据点，问最多可设置多少个据点，也就是a+b的最大值
+是多少。按大小输出所有pair(a,b)。
 
-树分治裸题
+思路：
+a+b的最大值肯定是3。任意选一个度大于1的点都可以做为分割点。
+在分割点不同侧的联通块可以任意全部设置统一据点。
+问题转化为求n个数字，不全选求和能组合多少种数字。
+因为n只有5000，dfs遍历儿子的时候暴力背包dp即可。
+
+备注：
+范围1e5能做吗？
+还有别的做法吗？
+DP能优化吗？
+DP可以用一种方法出题包装下吗？
 */
 #pragma comment(linker, "/STACK:102400000,102400000")
 //#include<bits/stdc++.h>
@@ -50,72 +58,85 @@ inline LL read() {
     return x = f ? -x : x;
 }
 inline void write(LL x, bool f) {
-    if (x == 0) {putchar('0'); if(f)putchar('\n');else putchar(' ');return;}
+    if (x == 0) {putchar('0'); if(f)putchar('\n');return;}
     if (x < 0) {putchar('-');x = -x;}
     static char s[23];
     int l = 0;
     while (x != 0)s[l++] = x % 10 + 48, x /= 10;
     while (l)putchar(s[--l]);
-    if(f)putchar('\n');else putchar(' ');
+    if(f)putchar('\n');
 }
 int lowbit(int x) { return x & (-x); }
 template<class T>T big(const T &a1, const T &a2) { return a1 > a2 ? a1 : a2; }
 template<class T>T sml(const T &a1, const T &a2) { return a1 < a2 ? a1 : a2; }
 template<typename T, typename ...R>T big(const T &f, const R &...r) { return big(f, big(r...)); }
 template<typename T, typename ...R>T sml(const T &f, const R &...r) { return sml(f, sml(r...)); }
-void debug_out() { cerr << '\n'; }
-template<typename T, typename ...R>void debug_out(const T &f, const R &...r) {cerr << f << " ";debug_out(r...);}
-#define debug(...) cerr << "[" << #__VA_ARGS__ << "]: ", debug_out(__VA_ARGS__);
+void debug_out() { cout << '\n'; }
+template<typename T, typename ...R>void debug_out(const T &f, const R &...r) {cout << f << " ";debug_out(r...);}
+#define debug(...) cout << "[" << #__VA_ARGS__ << "]: ", debug_out(__VA_ARGS__);
+// #define LLDO
+#ifdef LLDO
+const char ptout[] = "%lld";
+#else
+const char ptout[] = "%d";
+#endif
+template<typename T>
+void print(const T &f) {printf(ptout, f);putchar('\n');}
+template<typename T, typename ...R>
+void print(const T &f, const R &...r) {printf(ptout, f);putchar(' ');print(r...);}
 
-
-const LL INFLL = 0x3f3f3f3f3f3f3f3fLL;
 const int HMOD[] = {1000000009, 1004535809};
 const LL BASE[] = {1572872831, 1971536491};
+const LL INFLL = 0x3f3f3f3f3f3f3f3fLL;
+const int INF = 0x3f3f3f3f;
 const int mod = 1e9 + 7;
 const int MOD = 1e9 + 7;//998244353
-const int INF = 0x3f3f3f3f;
-const int MXN = 1e5 + 5;
+const int MXN = 5e4 + 5;
+const int MXE = 2e6 + 6;
 int n, m, k;
-int dp[MXN][505];
+int ar[MXN];
+// int dp[MXN];
 vector<int> mp[MXN];
-void dfs1(int u, int ba) {
-    dp[u][0] = 1;
+set<int> ans;
+void dfs_sz(int u, int ba) {
+    ar[u] = 1;
     for(int v: mp[u]) {
         if(v == ba) continue;
-        dfs1(v, u);
-        for(int i = 0; i < 500; ++i) dp[u][i+1] += dp[v][i];
+        dfs_sz(v, u);
+        ar[u] += ar[v];
     }
 }
-void dfs2(int u, int ba) {
-    if(ba) {
-        for(int i = 500; i >= 1; --i) {
-            dp[u][i] += dp[ba][i-1] - dp[u][i-2];
-        }
-    }
+void dfs(int u, int ba) {
+    vector<int> dp(n, 0);
+    dp[0] = dp[n - ar[u]] = 1;
+    // debug(u, ar[u], n - ar[u])
     for(int v: mp[u]) {
         if(v == ba) continue;
-        dfs2(v, u);
+        dfs(v, u);
+        for(int i = n - 2; i >= ar[v]; --i) {
+            dp[i] |= dp[i - ar[v]];
+        }
+    }
+    for(int i = 1; i < n - 1; ++i) if(dp[i]) {
+        ans.insert(i);
+        // if(i == 4 || i == 5) debug(u, ar[u])
     }
 }
 int main() {
 #ifndef ONLINE_JUDGE
-    // freopen("D:in.in", "r", stdin);
-    // freopen("D:out.out", "w", stdout);
+    freopen("D:in.in", "r", stdin);
+    freopen("D:out.out", "w", stdout);
 #endif
-    n = read(), m = read();
+    n = read();
     for(int i = 1, a, b; i < n; ++i) {
         a = read(), b = read();
         mp[a].eb(b);
         mp[b].eb(a);
     }
-    dfs1(1, 0);
-    dfs2(1, 0);
-    LL ans = 0;
-    for(int i = 1; i <= n; ++i) {
-        ans += dp[i][m];
-        // debug(i, dp[i][m])
-    }
-    printf("%lld\n", ans / 2);
+    dfs_sz(1, 0);
+    dfs(1, 0);
+    print(ans.size());
+    for(int x: ans) print(x, n - 1 - x);
 #ifndef ONLINE_JUDGE
     cout << "time cost:" << 1.0 * clock() / CLOCKS_PER_SEC << "ms" << endl;
     system("pause");

@@ -1,14 +1,16 @@
 /*
 链接：
-https://vjudge.net/contest/381037#problem/A
+https://vjudge.net/contest/381037#problem/F
 题意：
-n = 50000, k = 500
-求书上距离为k的点对数量
-思路：
-树DP
-dp[u][d]表示树中与点u距离d的点的数量
 
-树分治裸题
+
+思路：
+
+
+
+备注：
+
+
 */
 #pragma comment(linker, "/STACK:102400000,102400000")
 //#include<bits/stdc++.h>
@@ -50,72 +52,71 @@ inline LL read() {
     return x = f ? -x : x;
 }
 inline void write(LL x, bool f) {
-    if (x == 0) {putchar('0'); if(f)putchar('\n');else putchar(' ');return;}
+    if (x == 0) {putchar('0'); if(f)putchar('\n');return;}
     if (x < 0) {putchar('-');x = -x;}
     static char s[23];
     int l = 0;
     while (x != 0)s[l++] = x % 10 + 48, x /= 10;
     while (l)putchar(s[--l]);
-    if(f)putchar('\n');else putchar(' ');
+    if(f)putchar('\n');
 }
 int lowbit(int x) { return x & (-x); }
 template<class T>T big(const T &a1, const T &a2) { return a1 > a2 ? a1 : a2; }
 template<class T>T sml(const T &a1, const T &a2) { return a1 < a2 ? a1 : a2; }
 template<typename T, typename ...R>T big(const T &f, const R &...r) { return big(f, big(r...)); }
 template<typename T, typename ...R>T sml(const T &f, const R &...r) { return sml(f, sml(r...)); }
-void debug_out() { cerr << '\n'; }
-template<typename T, typename ...R>void debug_out(const T &f, const R &...r) {cerr << f << " ";debug_out(r...);}
-#define debug(...) cerr << "[" << #__VA_ARGS__ << "]: ", debug_out(__VA_ARGS__);
+void debug_out() { cout << '\n'; }
+template<typename T, typename ...R>void debug_out(const T &f, const R &...r) {cout << f << " ";debug_out(r...);}
+#define debug(...) cout << "[" << #__VA_ARGS__ << "]: ", debug_out(__VA_ARGS__);
+// #define LLDO
+#ifdef LLDO
+const char ptout[] = "%lld";
+#else
+const char ptout[] = "%d";
+#endif
+template<typename T>
+void print(const T &f) {printf(ptout, f);putchar('\n');}
+template<typename T, typename ...R>
+void print(const T &f, const R &...r) {printf(ptout, f);putchar(' ');print(r...);}
 
-
-const LL INFLL = 0x3f3f3f3f3f3f3f3fLL;
 const int HMOD[] = {1000000009, 1004535809};
 const LL BASE[] = {1572872831, 1971536491};
+const LL INFLL = 0x3f3f3f3f3f3f3f3fLL;
+const int INF = 0x3f3f3f3f;
 const int mod = 1e9 + 7;
 const int MOD = 1e9 + 7;//998244353
-const int INF = 0x3f3f3f3f;
 const int MXN = 1e5 + 5;
+const int MXE = 2e6 + 6;
 int n, m, k;
-int dp[MXN][505];
+int ans[MXN];
+int ar[MXN], num[MXN];
 vector<int> mp[MXN];
-void dfs1(int u, int ba) {
-    dp[u][0] = 1;
+void dfs(int u, int ba) {
+    int leaf = 1;
     for(int v: mp[u]) {
         if(v == ba) continue;
-        dfs1(v, u);
-        for(int i = 0; i < 500; ++i) dp[u][i+1] += dp[v][i];
+        leaf = 0;
+        dfs(v, u);
+        ar[u] += ar[v];
     }
-}
-void dfs2(int u, int ba) {
-    if(ba) {
-        for(int i = 500; i >= 1; --i) {
-            dp[u][i] += dp[ba][i-1] - dp[u][i-2];
-        }
-    }
-    for(int v: mp[u]) {
-        if(v == ba) continue;
-        dfs2(v, u);
-    }
+    ar[u] += leaf;
+    ++ num[ar[u]];
 }
 int main() {
 #ifndef ONLINE_JUDGE
-    // freopen("D:in.in", "r", stdin);
-    // freopen("D:out.out", "w", stdout);
+    freopen("D:in.in", "r", stdin);
+    freopen("D:out.out", "w", stdout);
 #endif
-    n = read(), m = read();
-    for(int i = 1, a, b; i < n; ++i) {
-        a = read(), b = read();
-        mp[a].eb(b);
-        mp[b].eb(a);
+    n = read();
+    for(int i = 2, a; i <= n; ++i) {
+        a = read();
+        mp[a].eb(i);
     }
-    dfs1(1, 0);
-    dfs2(1, 0);
-    LL ans = 0;
-    for(int i = 1; i <= n; ++i) {
-        ans += dp[i][m];
-        // debug(i, dp[i][m])
+    dfs(1, 0);
+    for(int i = 1, j = 1; i <= n; ++i) {
+        for(k = 0; k < num[i]; ++k, ++j) ans[j] = i;
     }
-    printf("%lld\n", ans / 2);
+    for(int i = 1; i <= n; ++i) print(ans[i]);
 #ifndef ONLINE_JUDGE
     cout << "time cost:" << 1.0 * clock() / CLOCKS_PER_SEC << "ms" << endl;
     system("pause");
