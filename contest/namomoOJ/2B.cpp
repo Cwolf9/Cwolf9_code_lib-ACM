@@ -1,14 +1,4 @@
 /*
-链接：
-https://vjudge.net/contest/381037#problem/G
-题意：
-65536内质因数分解，拉错题了吧
-
-思路：
-随便冲
-
-备注：
-
 
 */
 #pragma comment(linker, "/STACK:102400000,102400000")
@@ -28,7 +18,7 @@ https://vjudge.net/contest/381037#problem/G
 #define o2(x) (x)*(x)
 #define BASE_MAX 31
 #define mk make_pair
-#define eb push_back
+#define eb emplace_back
 #define SZ(x) ((int)(x).size())
 #define all(x) (x).begin(), (x).end()
 #define clr(a, b) memset((a),(b),sizeof((a)))
@@ -82,45 +72,84 @@ const int HMOD[] = {1000000009, 1004535809};
 const LL BASE[] = {1572872831, 1971536491};
 const LL INFLL = 0x3f3f3f3f3f3f3f3fLL;
 const int INF = 0x3f3f3f3f;
-const int mod = 1e9 + 7;
+const int mod = 998244353;
 const int MOD = 1e9 + 7;//998244353
-const int MXN = 1e5 + 5;
+const int MXN = 2e3 + 5;
 const int MXE = 2e6 + 6;
 int n, m, k;
-int pr[MXN], pcnt, nop[MXN];
-vector<pii> vs;
-void init_p() {
-    nop[1] = 1;
-    for(int i = 2; i < MXN; ++i) {
-        if(!nop[i]) pr[++pcnt] = i;
-        for(int j = 1; j <= pcnt && pr[j] * i < MXN; ++j) {
-            nop[pr[j]*i] = 1;
-            if(i % pr[j] == 0) break;
-        }
-    }
-}
+int ar[MXN], num[MXN], br[MXN];
 int main() {
 #ifndef ONLINE_JUDGE
     freopen("D:in.in", "r", stdin);
     freopen("D:out.out", "w", stdout);
 #endif
-    init_p();
-    int cas = 0;
-    while(~scanf("%d", &n) && n > 0) {
-        if(cas) putchar('\n');
-        vs.clear();
-        for(int i = 1; i <= pcnt && n > 1; ++i) {
-            if(n % pr[i] == 0) {
-                int cnt = 0;
-                while(n % pr[i] == 0) n /= pr[i], ++ cnt;
-                vs.eb(mk(pr[i], cnt));
+    int tim;
+    scanf("%d", &tim);
+    while(tim --) {
+        scanf("%d", &n);
+        for(int i = 1; i <= n; ++i) scanf("%d", &ar[i]);
+        // m = read();
+        // for(int t = 1; t <= m; ++t) {
+        //     br[t] = read();
+        //     for(int i = 0; i <= n; ++i) num[i] = 0;
+        //     for(int i = 1; i <= n; ++i) {
+        //         ++ num[ar[i]];
+        //     }
+        //     int mex = 0;
+        //     for(int i = 0; i <= n; ++i) if(num[i] == 0) {
+        //         mex = i;
+        //         break;
+        //     }
+        //     printf("mex: %d, pos: %d\n", mex, br[t]);
+        //     for(int i = 1; i <= n; ++i) {
+        //         printf("%d ", ar[i]);
+        //     }
+        //     printf("\n");
+        //     ar[br[t]] = mex;
+        // }
+        // for(int i = 1; i <= n; ++i) {
+        //     printf("%d ", ar[i]);
+        // }
+        // printf("\n");
+        vector<int> ans;
+        int flag = 1;
+        while(1) {
+            flag = 1;
+            for(int i = 0; i <= n; ++i) num[i] = 0;
+            for(int i = 1; i <= n; ++i) {
+                if(i + 1 <= n && ar[i] > ar[i+1]) flag = 0;
+                ++ num[ar[i]];
             }
+            if(flag) break;
+            int pos = 1, mex = 0, aim = -1;
+            for(int i = 0; i <= n; ++i) if(num[i] == 0) {
+                mex = i;
+                break;
+            }
+            pos = mex + 1;
+            if(mex == n) {
+                int aim = 1;
+               for(int i = 1; i <= n; ++i) {
+                   if(ar[i] != i - 1) {
+                       aim = i - 1;
+                       break;
+                   }
+               }
+                for(int i = 1; i <= n; ++i) {
+                    if(ar[i] == aim) {
+                        pos = i;
+                        break;
+                    }
+                }
+            }
+            // debug(mex, pos, ar[pos])
+            ar[pos] = mex;
+            ans.eb(pos);
+            if(ans.size() > 2 * n + 10) break;
         }
-        if(n > 2) {
-            vs.eb(mk(n, 1));
-        }
-        printf("Case %d.\n", ++ cas);
-        for(int i = 0; i < vs.size(); ++i) printf("%d %d%c", vs[i].fi, vs[i].se, " \n"[i+1==(int)vs.size()]);
+        printf("%d\n", ans.size());
+        for(int x: ans) printf("%d ", x);
+        printf("\n");
     }
 #ifndef ONLINE_JUDGE
     cout << "time cost:" << 1.0 * clock() / CLOCKS_PER_SEC << "ms" << endl;
@@ -128,8 +157,4 @@ int main() {
 #endif
     return 0;
 }
-/*
-@[toc]
-# VJ contest 21天放弃树形DP
 
-*/
