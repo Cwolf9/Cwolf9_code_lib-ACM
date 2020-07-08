@@ -92,23 +92,29 @@ int ans[MXN];
 int ar[MXN], dp[MXN][2];
 vector<pii > mp[MXN];
 void dfs(int u, int ba) {
+    dp[u][0] = dp[u][1] = 0;
+    ar[u] = 0;
     for(pii V: mp[u]) {
         int v = V.fi, w = V.se;
         if(v == ba) continue;
         dfs(v, u);
-        if(dp[v][0] + w > dp[u][0]) dp[u][0] = dp[v][0] + w, ar[u] = v;
-        else dp[u][1] = max(dp[u][1], dp[v][0] + w);
+        if(dp[v][0] + w > dp[u][0]) {
+            dp[u][1] = dp[u][0];
+            dp[u][0] = dp[v][0] + w, ar[u] = v;
+        }else dp[u][1] = max(dp[u][1], dp[v][0] + w);
     }
 }
 void dfs2(int u, int ba, int w) {
     // debug(u, dp[u][0], dp[u][1], ar[u], dp[ba][0], dp[ba][1])
     if(ar[ba] == u) {
         if(dp[ba][1] + w > dp[u][0]) {
+            dp[u][1] = dp[u][0];
             dp[u][0] = dp[ba][1] + w;
             ar[u] = ba;
         }else dp[u][1] = max(dp[u][1], dp[ba][1] + w);
     }else if(ba) {
         if(dp[ba][0] + w > dp[u][0]) {
+            dp[u][1] = dp[u][0];
             dp[u][0] = dp[ba][0] + w;
             ar[u] = ba;
         }else dp[u][1] = max(dp[u][1], dp[ba][0] + w);
@@ -120,18 +126,18 @@ void dfs2(int u, int ba, int w) {
     }
 }
 int main() {
-#ifndef ONLINE_JUDGE
-    freopen("D:in.in", "r", stdin);
-    freopen("D:out.out", "w", stdout);
-#endif
-    n = read();
-    for(int i = 2, a, b; i <= n; ++i) {
-        a = read(), b = read();
-        mp[a].eb(mk(i, b));
+    while(~scanf("%d", &n)) {
+        for(int i = 2, a, b; i <= n; ++i) {
+            scanf("%d%d", &a, &b);
+            mp[a].eb(mk(i, b));
+        }
+        dfs(1, 0);
+        dfs2(1, 0, 0);
+        for(int i = 1; i <= n; ++i) {
+            print(dp[i][0]);
+            mp[i].clear();
+        }
     }
-    dfs(1, 0);
-    dfs2(1, 0, 0);
-    for(int i = 1; i <= n; ++i) print(dp[i][0]);
 #ifndef ONLINE_JUDGE
     cout << "time cost:" << 1.0 * clock() / CLOCKS_PER_SEC << "ms" << endl;
     system("pause");

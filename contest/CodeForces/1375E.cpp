@@ -1,5 +1,10 @@
 /*
-
+给你一个n=1000的序列，记所有逆序对为vpairs，你要将vpairs重排一种顺序，
+满足做操作swap(a[pair.first], a[pair.second])后序列变成有序
+从后往前考虑，每次先恢复最大的数字，恢复的数字位就不用管了。
+对于 1 - t 位置的数字，将 1 - (t - 1) 中大于 a[t] 的数字按大小排序，然后按照
+原位置依次与 t 做swap操作即可。
+因为这样可以保证最后一个数是较大，且不会影响其他位置的逆序对情况。
 */
 #pragma comment(linker, "/STACK:102400000,102400000")
 //#include<bits/stdc++.h>
@@ -12,6 +17,7 @@
 #include <algorithm>
 #include <cstring>
 #include <set>
+#include <map>
 #define fi first
 #define se second
 #define endl '\n'
@@ -79,6 +85,7 @@ const int MXE = 2e6 + 6;
 int n, m, k;
 int ar[MXN], br[MXN];
 vector<int> fward[MXN], back[MXN];
+map<int, int> mp;
 bool cmpsml(const int &a, const int &b) {
     return ar[a] < ar[b];
 }
@@ -90,22 +97,32 @@ int main() {
     freopen("D:in.in", "r", stdin);
     freopen("D:out.out", "w", stdout);
 #endif
-    int tim;
-    scanf("%d", &tim);
+    int tim = 1;
     while(tim --) {
         scanf("%d", &n);
         for(int i = 1; i <= n; ++i) scanf("%d", &ar[i]);
         for(int i = 1; i <= n; ++i) {
             for(int j = i + 1; j <= n; ++j) {
                 if(ar[i] > ar[j]) {
-                    fward[i].eb(j);
-                    back[j].eb(i);
+                    mp[i * 10000 + j] = 1;
                 }
             }
         }
-        for(int i = 1; i <= n; ++i) {
-            
+        vector<pii > ans, srt;
+        for(int t = n; t >= 2; --t) {
+            srt.clear();
+            for(int i = 1; i < t; ++i) {
+                if(ar[i] > ar[t]) {
+                    srt.eb(mk(ar[i], i));
+                }
+            }
+            sort(all(srt));
+            for(pii x: srt) {
+                ans.eb(mk(x.se, t));
+            }
         }
+        print((int)ans.size());
+        for(pii x: ans) print(x.fi, x.se);
     }
 #ifndef ONLINE_JUDGE
     cout << "time cost:" << 1.0 * clock() / CLOCKS_PER_SEC << "ms" << endl;
@@ -113,4 +130,3 @@ int main() {
 #endif
     return 0;
 }
-

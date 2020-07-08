@@ -128,8 +128,3 @@ int main() {
 #endif
     return 0;
 }
-/*
-@[toc]
-# VJ contest 21天放弃树形DP
-
-*/
