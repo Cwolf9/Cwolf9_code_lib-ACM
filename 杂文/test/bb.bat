@@ -1,0 +1,1 @@
+g++ b.cpp -o b.exe

@@ -33,12 +33,39 @@ public:
 };
 
 priority_queue<A, vector<A>, comp> Q;
-
+int solve(int n, int m) {
+        // write code here
+        queue<pair<int, int> > Q;
+        Q.push(make_pair(n, 0));
+        map<int, int> mp;
+        mp[n] = 1;
+        int ans = 1000;
+        while(!Q.empty()) {
+            pair<int, int> X = Q.front(); Q.pop();
+            int x = X.first;
+            int y = X.second;
+            if(x == m) ans = min(ans, y);
+            if(x > 1 && mp[x - 1] == 0) {
+                mp[x - 1] = 1;
+                Q.push(make_pair(x - 1, y + 1));
+            }
+            if(x < 1000 && mp[x + 1] == 0) {
+                mp[x + 1] = 1;
+                Q.push(make_pair(x + 1, y + 1));
+            }
+            if(x * x <= 1000 && x * x > 1 && mp[x * x] == 0) {
+                mp[x * x] = 1;
+                Q.push(make_pair(x * x, y + 1));
+            }
+        }
+        return ans;
+    }
 int main() {
 #ifndef ONLINE_JUDGE
-    freopen("in.in", "r", stdin);
-    freopen("out.out", "w", stdout);
+    // freopen("in.in", "r", stdin);
+    // freopen("out.out", "w", stdout);
 #endif
+    debug(solve(3, 10))
     scanf("%d", &n);
     for(int i = 0, a, b; i < n; ++i) {
         scanf("%d%d", &a, &b);
