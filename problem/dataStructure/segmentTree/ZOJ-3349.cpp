@@ -146,13 +146,11 @@ void modify(int p, int v, int l, int r, int rt) {
     sum[rt] = max(sum[rt << 1], sum[rt << 1 | 1]);
 }
 int query(int L, int R, int l, int r, int rt) {
-    if(L <= l && r <= R) {
-        return sum[rt];
-    }
+    if(L <= l && r <= R) return sum[rt];
     int mid = (l + r) >> 1;
     if(L > mid) return query(L, R, mid + 1, r, rt << 1 | 1);
     else if(R <= mid) return query(L, R, l, mid, rt << 1);
-    else return max(query(l, mid, L, mid, rt << 1), query(mid + 1, R, mid + 1, r, rt << 1 | 1));
+    else return max(query(L, mid, l, mid, rt << 1), query(mid + 1, R, mid + 1, r, rt << 1 | 1));
 }
 int main() {
 #ifndef ONLINE_JUDGE
@@ -160,6 +158,7 @@ int main() {
     freopen("D:out.out", "w", stdout);
 #endif
     while (~scanf("%d%d", &n, &m)) {
+        vs.clear();
         for(int i = 1; i <= n; ++i) {
             ar[i] = read();
             vs.eb(ar[i]);
@@ -173,7 +172,7 @@ int main() {
             x = get_p(max(ar[i]-m, 0));
             y = get_p(ar[i] + m);
             ar[i] = get_p(ar[i]);
-            modify(ar[i], query(x, y, 1, k, 1), 1, k, 1);
+            modify(ar[i], query(x, y, 1, k, 1) + 1, 1, k, 1);
         }
         print(sum[1]);
     }
