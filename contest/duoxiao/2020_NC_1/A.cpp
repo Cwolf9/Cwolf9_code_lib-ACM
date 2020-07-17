@@ -1,9 +1,20 @@
 /*
+链接
+https://ac.nowcoder.com/acm/contest/5666/A
+题意
+n(1e5)的字符串只包含ab两个字母，对它的n个后缀字符串按B值来排序。
+字符串的B值是一个向量，bi=min(i - j) 且 1<=j<i,s[j]==s[i]
+
+思路
 
 
+备注
+叉姐说当只有两个字符时，有一个论文结论，对源字符串求出C值 ，
+ci=min(j - i) 且 1<=i<j,s[j]==s[i]，再末尾补上一个数 n+1 ，
+然后对这个 C 值求后缀数组的 sa 反过来就是答案。
 */
 #pragma comment(linker, "/STACK:102400000,102400000")
-#include<bits/stdc++.h>
+//#include<bits/stdc++.h>
 #include <assert.h>
 #include <algorithm>
 #include <cstdio>
@@ -14,7 +25,6 @@
 #include <queue>
 #include <set>
 #include <vector>
-#include <cmath>
 #define fi first
 #define se second
 #define endl '\n'
@@ -39,90 +49,65 @@ typedef pair<int, int> pii;
 // mt19937_64 generator(std::clock());
 // shuffle(arr, arr + n, generator);
 inline int64 read() {
-    int64 x = 0;
-    int f = 0;
-    char ch = getchar();
+    int64 x = 0;int f = 0;char ch = getchar();
     while (ch < '0' || ch > '9') f |= (ch == '-'), ch = getchar();
-    while (ch >= '0' && ch <= '9')
-        x = (x << 3) + (x << 1) + ch - '0', ch = getchar();
+    while (ch >= '0' && ch <= '9') x = (x << 3) + (x << 1) + ch - '0', ch = getchar();
     return x = f ? -x : x;
 }
 inline void write(int64 x, bool f) {
-    if (x == 0) {
-        putchar('0');
-        if (f) putchar('\n');
-        return;
-    }
-    if (x < 0) {
-        putchar('-');
-        x = -x;
-    }
-    static char s[23];
-    int l = 0;
+    if (x == 0) {putchar('0');if (f) putchar('\n');return;}
+    if (x < 0) { putchar('-');x = -x;}
+    static char s[23];int l = 0;
     while (x != 0) s[l++] = x % 10 + 48, x /= 10;
     while (l) putchar(s[--l]);
     if (f) putchar('\n');
 }
 int lowbit(int x) { return x & (-x); }
 template <class T>
-T big(const T &a1, const T &a2) {
-    return a1 > a2 ? a1 : a2;
-}
+T big(const T &a1, const T &a2) {return a1 > a2 ? a1 : a2;}
 template <class T>
-T sml(const T &a1, const T &a2) {
-    return a1 < a2 ? a1 : a2;
-}
+T sml(const T &a1, const T &a2) {return a1 < a2 ? a1 : a2;}
 template <typename T, typename... R>
-T big(const T &f, const R &... r) {
-    return big(f, big(r...));
-}
+T big(const T &f, const R &... r) {return big(f, big(r...));}
 template <typename T, typename... R>
-T sml(const T &f, const R &... r) {
-    return sml(f, sml(r...));
-}
+T sml(const T &f, const R &... r) {return sml(f, sml(r...));}
 void debug_out() { cout << '\n'; }
 template <typename T, typename... R>
-void debug_out(const T &f, const R &... r) {
-    cout << f << " ";
-    debug_out(r...);
-}
+void debug_out(const T &f, const R &... r) {cout << f << " ";debug_out(r...);}
 #define debug(...) cout << "[" << #__VA_ARGS__ << "]: ", debug_out(__VA_ARGS__);
-// #define LLDO
+#define LLDO
 #ifdef LLDO
 const char ptout[] = "%lld";
 #else
 const char ptout[] = "%d";
 #endif
 template <typename T>
-void print(const T &f) {
-    printf(ptout, f);
-    putchar('\n');
-}
+void print(const T &f) {printf(ptout, f);putchar('\n');}
 template <typename T, typename... R>
-void print(const T &f, const R &... r) {
-    printf(ptout, f);
-    putchar(' ');
-    print(r...);
-}
+void print(const T &f, const R &... r) {printf(ptout, f);putchar(' ');print(r...);}
 
 const int HMOD[] = {1000000009, 1004535809};
 const int64 BASE[] = {1572872831, 1971536491};
 const int64 INFLL = 0x3f3f3f3f3f3f3f3fLL;
 const int INF = 0x3f3f3f3f;
-const int mod = 1e9 + 7;
+const int mod = 998244353;
 const int MOD = 1e9 + 7;  // 998244353
-const int MXN = 1e6 + 5;
+const int MXN = 3e5 + 5;
 const int MXE = 2e6 + 6;
-int n, m;
-int is[MXN];
-vector<int> up, down, same;
+int n, m, k;
+char s[MXN];
+int mp[30], ans[MXN], ar[MXN];
+
 int main() {
 #ifndef ONLINE_JUDGE
     freopen("D:in.in", "r", stdin);
     freopen("D:out.out", "w", stdout);
 #endif
-    n = read();
-    
+    iis;
+    while(~scanf("%d", &n)) {
+        scanf("%s", s + 1);
+        
+    }
 #ifndef ONLINE_JUDGE
     cout << "time cost:" << 1.0 * clock() / CLOCKS_PER_SEC << "ms" << endl;
     system("pause");

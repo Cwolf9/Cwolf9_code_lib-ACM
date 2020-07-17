@@ -1,10 +1,10 @@
 /*
 
-
 */
 #pragma comment(linker, "/STACK:102400000,102400000")
-#include<bits/stdc++.h>
+//#include<bits/stdc++.h>
 #include <assert.h>
+
 #include <algorithm>
 #include <cstdio>
 #include <cstring>
@@ -14,7 +14,6 @@
 #include <queue>
 #include <set>
 #include <vector>
-#include <cmath>
 #define fi first
 #define se second
 #define endl '\n'
@@ -87,7 +86,7 @@ void debug_out(const T &f, const R &... r) {
     debug_out(r...);
 }
 #define debug(...) cout << "[" << #__VA_ARGS__ << "]: ", debug_out(__VA_ARGS__);
-// #define LLDO
+#define LLDO
 #ifdef LLDO
 const char ptout[] = "%lld";
 #else
@@ -109,19 +108,16 @@ const int HMOD[] = {1000000009, 1004535809};
 const int64 BASE[] = {1572872831, 1971536491};
 const int64 INFLL = 0x3f3f3f3f3f3f3f3fLL;
 const int INF = 0x3f3f3f3f;
-const int mod = 1e9 + 7;
+const int mod = 998244353;
 const int MOD = 1e9 + 7;  // 998244353
-const int MXN = 1e6 + 5;
-const int MXE = 2e6 + 6;
-int n, m;
-int is[MXN];
-vector<int> up, down, same;
+const int MXN = 1e4 + 5;
+const int MXE = 2e5 + 6;
+
 int main() {
 #ifndef ONLINE_JUDGE
-    freopen("D:in.in", "r", stdin);
-    freopen("D:out.out", "w", stdout);
+    // freopen("D:in.in", "r", stdin);
+    // freopen("D:out.out", "w", stdout);
 #endif
-    n = read();
     
 #ifndef ONLINE_JUDGE
     cout << "time cost:" << 1.0 * clock() / CLOCKS_PER_SEC << "ms" << endl;

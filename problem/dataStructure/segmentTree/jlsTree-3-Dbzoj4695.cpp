@@ -25,44 +25,57 @@ Tp=2或3时，|x|<=10^8
 #define rson rt << 1 | 1
 using namespace std;
 typedef long long int64;
-const int64 INF = 0x3f3f3f3f3f3f3f3fLL;
-const int MXN = 1e6 + 5;
+const int INFLL = 0x3f3f3f3f;
+const int MXN = 1e6 + 7;
 const int MXE = MXN << 2;
 int n, m;
-int64 ar[MXN];
+int ar[MXN];
 class node {
     public:
     int l, r;
-    int64 mx, cntmx, smx;
-    int64 sum;
-    int64 flagMin;
+    int mxv, cntMxv, smxv;//最大值，数量，严格次大值(初始为-INFLL)
+    int mnv, cntMnv, smnv;//最小值，数量，严格次小值(初始为INFLL)
+    int64 sum;//区间和
+    int flagAdd;
     void push_up(const node &ls, const node &rs) {
-        if(ls.mx > rs.mx) {
-            mx = ls.mx;
-            cntmx = ls.cntmx;
-            smx = max(ls.smx, rs.mx);
-            sum = ls.sum + rs.sum;
-        }else if(ls.mx == rs.mx) {
-            mx = ls.mx;
-            cntmx = ls.cntmx + rs.cntmx;
-            smx = max(ls.smx, rs.smx);
-            sum = ls.sum + rs.sum;
+        sum = ls.sum + rs.sum;
+        if(ls.mnv < rs.mnv) {
+            mnv = ls.mnv;
+            cntMnv = ls.cntMnv;
+            smnv = min(ls.smnv, rs.mnv);    
+        }else if(ls.mnv == rs.mnv) {
+            mnv = ls.mnv;
+            cntMnv = ls.cntMnv + rs.cntMnv;
+            smnv = min(ls.smnv, rs.smnv);            
         }else {
-            mx = rs.mx;
-            cntmx = rs.cntmx;
-            smx = max(rs.smx, ls.mx);
-            sum = ls.sum + rs.sum;
+            mnv = rs.mnv;
+            cntMnv = rs.cntMnv;
+            smnv = min(rs.smnv, ls.mnv);
+        }
+        if(ls.mxv > rs.mxv) {
+            mxv = ls.mxv;
+            cntMxv = ls.cntMxv;
+            smxv = max(ls.smxv, rs.mxv);    
+        }else if(ls.mxv == rs.mxv) {
+            mxv = ls.mxv;
+            cntMxv = ls.cntMxv + rs.cntMxv;
+            smxv = max(ls.smxv, rs.smxv);            
+        }else {
+            mxv = rs.mxv;
+            cntMxv = rs.cntMxv;
+            smxv = max(rs.smxv, ls.mxv);
         }
     }
 }cw[MXE];
 
 void build(int l, int r, int rt) {
     cw[rt].l = l, cw[rt].r = r;
-    cw[rt].flagMin = INF;
+    cw[rt].flagAdd = 0;
     if(l == r) {
-        cw[rt].mx = ar[l];
-        cw[rt].cntmx = 1;
-        cw[rt].smx = -1;
+        cw[rt].mxv = cw[rt].mnv = ar[l];
+        cw[rt].cntMxv = cw[rt].cntMnv = 1;
+        cw[rt].smxv = -INFLL;
+        cw[rt].smnv = INFLL;
         cw[rt].sum = ar[l];
         return ;
     }
@@ -71,27 +84,96 @@ void build(int l, int r, int rt) {
     build(mid + 1, r, rson);
     cw[rt].push_up(cw[lson], cw[rson]);
 }
-void push_down(int rt) {
-    if(cw[rt].flagMin == INF) return ;
-    if(cw[lson].mx > cw[rt].flagMin) {
-        cw[lson].sum -= (cw[lson].mx - cw[rt].flagMin) * cw[lson].cntmx;
-        cw[lson].mx = cw[rt].flagMin;
-        cw[lson].flagMin = cw[rt].flagMin;
-    }
-    if(cw[rson].mx > cw[rt].flagMin) {
-        cw[rson].sum -= (cw[rson].mx - cw[rt].flagMin) * cw[rson].cntmx;
-        cw[rson].mx = cw[rt].flagMin;
-        cw[rson].flagMin = cw[rt].flagMin;
-    }
-    cw[rt].flagMin = INF;
+void push_add(int rt, int v) {
+    if(cw[rt].smxv != -INFLL) cw[rt].smxv += v;
+    if(cw[rt].smnv != INFLL) cw[rt].smnv += v;
+    cw[rt].mxv += v;
+    cw[rt].mnv += v;
+    cw[rt].sum += (int64)v * (cw[rt].r - cw[rt].l + 1);
+    cw[rt].flagAdd += v;
 }
-void updateMin(int L, int R, int64 v, int rt) {
+void push_down(int rt) {
+    if(cw[rt].flagAdd) {
+        push_add(lson, cw[rt].flagAdd);
+        push_add(rson, cw[rt].flagAdd);
+        cw[rt].flagAdd = 0;
+    }
+    int oldMxvL = cw[lson].mxv;
+    int oldMnvL = cw[lson].mnv;
+    int oldMxvR = cw[rson].mxv;
+    int oldMnvR = cw[rson].mnv;
+    if(cw[lson].mxv > cw[rt].mxv) {
+        if(cw[lson].mxv == cw[lson].mnv) cw[lson].mnv = cw[rt].mxv;
+        cw[lson].mxv = cw[rt].mxv;
+    }
+    if(cw[lson].mnv < cw[rt].mnv) {
+        if(cw[lson].mxv == cw[lson].mnv) cw[lson].mxv = cw[rt].mnv;
+        cw[lson].mnv = cw[rt].mnv;
+    }
+    if(cw[lson].mxv == cw[lson].mnv) {            
+        cw[lson].cntMxv = cw[lson].cntMnv = cw[lson].r - cw[lson].l + 1;
+        cw[lson].smnv = INFLL;
+        cw[lson].smxv = -INFLL;
+        cw[lson].sum = (int64)cw[lson].cntMnv * cw[lson]. mnv;
+    }else {
+        if(cw[lson].smnv != INFLL && cw[lson].smnv > cw[lson].mxv) cw[lson].smnv = cw[lson].mxv;
+        if(cw[lson].smxv != -INFLL && cw[lson].smxv < cw[lson].mnv) cw[lson].smxv = cw[lson].mnv;
+        cw[lson].sum -= ((int64)oldMxvL - cw[lson].mxv) * cw[lson].cntMxv;
+        cw[lson].sum += ((int64)cw[lson].mnv - oldMnvL) * cw[lson].cntMnv;
+    }
+
+    if(cw[rson].mxv > cw[rt].mxv) {
+        if(cw[rson].mxv == cw[rson].mnv) cw[rson].mnv = cw[rt].mxv;
+        cw[rson].mxv = cw[rt].mxv;
+    }
+    if(cw[rson].mnv < cw[rt].mnv) {
+        if(cw[rson].mxv == cw[rson].mnv) cw[rson].mxv = cw[rt].mnv;
+        cw[rson].mnv = cw[rt].mnv;
+    }
+    if(cw[rson].mxv == cw[rson].mnv) {
+        cw[rson].cntMxv = cw[rson].cntMnv = cw[rson].r - cw[rson].l + 1;
+        cw[rson].smnv = INFLL;
+        cw[rson].smxv = -INFLL;
+        cw[rson].sum = (int64)cw[rson].cntMnv * cw[rson]. mnv;
+    }else {
+        if(cw[rson].smnv != INFLL && cw[rson].smnv > cw[rson].mxv) cw[rson].smnv = cw[rson].mxv;
+        if(cw[rson].smxv != -INFLL && cw[rson].smxv < cw[rson].mnv) cw[rson].smxv = cw[rson].mnv;
+        cw[rson].sum -= ((int64)oldMxvL - cw[rson].mxv) * cw[rson].cntMxv;
+        cw[rson].sum += ((int64)cw[rson].mnv - oldMnvL) * cw[rson].cntMnv;
+    }
+}
+void updateAdd(int L, int R, int v, int rt) {
     if(L > cw[rt].r || R < cw[rt].l) return ;
-    if(cw[rt].mx <= v) return ;
-    if(L <= cw[rt].l && cw[rt].r <= R && cw[rt].smx < v) {
-        cw[rt].flagMin = v;
-        cw[rt].sum -= ((int64)cw[rt].mx - v) * cw[rt].cntmx;
-        cw[rt].mx = cw[rt].flagMin;
+    // if(cw[rt].mxv <= v) return ;
+    if(L <= cw[rt].l && cw[rt].r <= R) {
+        cw[rt].flagAdd += v;
+        cw[rt].sum += (int64)v * (cw[rt].r - cw[rt].l + 1);
+        cw[rt].mxv += v;
+        cw[rt].mnv += v;
+        if(cw[rt].smxv != -INFLL) cw[rt].smxv += v;
+        if(cw[rt].smnv != INFLL) cw[rt].smnv += v;
+        return ;
+    }
+    int mid = (cw[rt].l + cw[rt].r) >> 1;
+    push_down(rt);
+    if(L > mid) {
+        updateAdd(L, R, v, rson);
+    }else if(R <= mid) {
+        updateAdd(L, R, v, lson);
+    }else {
+        updateAdd(L, mid, v, lson);
+        updateAdd(mid + 1, R, v, rson);
+    }
+    cw[rt].push_up(cw[lson], cw[rson]);
+}
+void updateMin(int L, int R, int v, int rt) {
+    if(L > cw[rt].r || R < cw[rt].l) return ;
+    if(cw[rt].mxv <= v) return ;
+    if(L <= cw[rt].l && cw[rt].r <= R && cw[rt].smxv < v) {
+        cw[rt].sum -= ((int64)cw[rt].mxv - v) * cw[rt].cntMxv;
+        if(cw[rt].mxv == cw[rt].mnv) cw[rt].mnv = v;
+        if(cw[rt].smnv != INFLL && cw[rt].smnv > v) cw[rt].smnv = v;
+        cw[rt].mxv = v;
         return ;
     }
     int mid = (cw[rt].l + cw[rt].r) >> 1;
@@ -106,10 +188,48 @@ void updateMin(int L, int R, int64 v, int rt) {
     }
     cw[rt].push_up(cw[lson], cw[rson]);
 }
-int64 queryMax(int L, int R, int rt) {
+void updateMax(int L, int R, int v, int rt) {
+    if(L > cw[rt].r || R < cw[rt].l) return ;
+    // cout << " -- " << cw[rt].mnv << " " << cw[rt].mxv << endl;
+    if(cw[rt].mnv >= v) return ;
+    if(L <= cw[rt].l && cw[rt].r <= R && cw[rt].smnv > v) {
+        cw[rt].sum += ((int64)v - cw[rt].mnv) * cw[rt].cntMnv;
+        if(cw[rt].mxv == cw[rt].mnv) cw[rt].mxv = v;
+        if(cw[rt].smxv != - INFLL && cw[rt].smxv < v) cw[rt].smxv = v;
+        cw[rt].mnv = v;
+        return ;
+    }
+    int mid = (cw[rt].l + cw[rt].r) >> 1;
+    push_down(rt);
+    if(L > mid) {
+        updateMax(L, R, v, rson);
+    }else if(R <= mid) {
+        updateMax(L, R, v, lson);
+    }else {
+        updateMax(L, mid, v, lson);
+        updateMax(mid + 1, R, v, rson);
+    }
+    cw[rt].push_up(cw[lson], cw[rson]);
+}
+int queryMin(int L, int R, int rt) {
     if(L > cw[rt].r || R < cw[rt].l) return 0;
     if(L <= cw[rt].l && cw[rt].r <= R) {
-        return cw[rt].mx;
+        return cw[rt].mnv;
+    }
+    int mid = (cw[rt].l + cw[rt].r) >> 1;
+    push_down(rt);
+    if(L > mid) {
+        return queryMin(L, R, rson);
+    }else if(R <= mid) {
+        return queryMin(L, R, lson);
+    }else {
+        return min(queryMin(L, mid, lson), queryMin(mid + 1, R, rson));
+    }
+}
+int queryMax(int L, int R, int rt) {
+    if(L > cw[rt].r || R < cw[rt].l) return 0;
+    if(L <= cw[rt].l && cw[rt].r <= R) {
+        return cw[rt].mxv;
     }
     int mid = (cw[rt].l + cw[rt].r) >> 1;
     push_down(rt);
@@ -141,30 +261,41 @@ int main() {
     freopen("D:in.in", "r", stdin);
     freopen("D:out.out", "w", stdout);
 #endif
-    int tim;
-    scanf("%d", &tim);
+    int tim = 1;
+    // scanf("%d", &tim);
     while(tim --) {
         scanf("%d", &n);
-        scanf("%d", &m);
         for(int i = 1; i <= n; ++i) {
-            scanf("%lld", ar + i);
+            scanf("%d", ar + i);
         }
         build(1, n, 1);
         int opt, x, y;
-        int64 v;
+        int v;
+        scanf("%d", &m);
         while(m --) {
             scanf("%d", &opt);
             scanf("%d%d", &x, &y);
             switch(opt) {
-                case 0:
-                scanf("%lld", &v);
-                updateMin(x, y, v, 1);
-                break;
                 case 1:
-                printf("%lld\n", queryMax(x, y, 1));
+                scanf("%d", &v);
+                updateAdd(x, y, v, 1);
                 break;
                 case 2:
+                scanf("%d", &v);
+                updateMax(x, y, v, 1);
+                break;
+                case 3:
+                scanf("%d", &v);
+                updateMin(x, y, v, 1);
+                break;
+                case 4:
                 printf("%lld\n", querySum(x, y, 1));
+                break;
+                case 5:
+                printf("%d\n", queryMax(x, y, 1));
+                break;
+                case 6:
+                printf("%d\n", queryMin(x, y, 1));
                 break;
                 default:
                 break;

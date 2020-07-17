@@ -241,3 +241,57 @@ int main() {
 #endif
     return 0;
 }
+/*
+int64 n, m, k;
+int64 L, R;
+int noprime[MXN], pp[MXN], pcnt;
+int phi[MXN], mu[MXN];
+int64 ksm(int64 a, int64 b) {
+    int64 res = 1;
+    for(; b; b>>=1, a=a*a%MOD) {
+        if(b&1) res = res * a % MOD;
+    }
+    return res;
+}
+void init_prime() {
+    noprime[0] = noprime[1] = 1;
+    mu[1] = 1; phi[1] = 1;
+    for(int i = 2; i < MXN; ++i) {
+        if(!noprime[i]) pp[pcnt++] = i, phi[i] = i-1, mu[i] = -1;
+        for(int j = 0; j < pcnt && pp[j] * i < MXN; ++j) {
+            noprime[pp[j]*i] = 1;
+            //phi[pp[j]*i] = (pp[j]-1)*phi[i];
+            mu[pp[j]*i] = -mu[i];
+            if(i % pp[j] == 0) {
+                //phi[pp[j]*i] = pp[j]*phi[i];
+                mu[pp[j]*i] = 0;
+                break;
+            }
+        }
+    }
+}
+  
+int main() {
+#ifndef ONLINE_JUDGE
+    freopen("D:in.in", "r", stdin);
+    freopen("D:out.out", "w", stdout);
+#endif
+    init_prime();
+    n = read(), k = read(), L = read(), R = read();
+    L = (L - 1) / k + 1;
+    R = R / k;
+    m = R - L + 1;
+    // debug(L, R, m, n)
+    int64 ans = 0;
+    for(int i = 1; i <= 100000; ++i) {
+        ans = (ans + mu[i] * (ksm((R/i - (L-1)/i), n) - (R/i - (L-1)/i)) % MOD) % MOD;
+    }
+    if(1 >= L && 1 <= R) ++ ans;
+    print((ans+MOD)%MOD);
+#ifndef ONLINE_JUDGE
+    cout << "time cost:" << 1.0 * clock() / CLOCKS_PER_SEC << "ms" << endl;
+    system("pause");
+#endif
+    return 0;
+}
+*/
