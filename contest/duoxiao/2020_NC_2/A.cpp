@@ -80,9 +80,131 @@ const int64 INFLL = 0x3f3f3f3f3f3f3f3fLL;
 const int INF = 0x3f3f3f3f;
 const int mod = 998244353;
 const int MOD = 1e9 + 7;  // 998244353
-const int MXN = 3e5 + 5;
+const int MXN = 1e6 + 2e5 + 5;
 const int MXE = 2e6 + 6;
 int n, m, k;
+char ss[MXN];
+int st_str[MXN], word[MXN], slen[MXN], vis[MXN];
+int64 ans;
+const int MXN_T = 1e6 + 105;
+const int CHAR_SIZE = 26;
+struct AC_Auto {
+    struct Trie {
+        int nex[CHAR_SIZE];
+        int fail, cnt, is, last, len, sz, inson;
+    } cw[MXN_T];
+    int siz, rt;
+    void init() {
+        siz = rt = 0;
+        clr(cw[siz].nex, -1);
+        cw[siz].fail = cw[siz].cnt = cw[siz].is = 0;
+        cw[siz].last = 0;
+        cw[siz].len = 0;
+        cw[siz].sz = 0;
+        cw[siz].inson = 0;
+    }
+    int idx(char c) {
+        return c - 'a';
+    }
+    void add_str(char *s, int len, int id) {
+        rt = 0;
+        for (int i = 0, now; i < len; ++i) {
+            now = idx(s[i]);
+            if (cw[rt].nex[now] == -1) {
+                cw[rt].nex[now] = ++siz;
+                clr(cw[siz].nex, -1);
+                cw[siz].fail = cw[siz].cnt = cw[siz].is = 0;
+                cw[siz].last = 0;
+                cw[siz].len = 0;
+                cw[siz].sz = 0;
+                cw[siz].inson = 0;
+            }
+            rt = cw[rt].nex[now];
+            cw[rt].len = i + 1;
+        }
+        ++ cw[rt].is;
+        word[id] = rt;
+    }
+    void build_ac() {
+        queue<int> Q;
+        Q.push(0);
+        cw[0].fail = -1;
+        while (!Q.empty()) {
+            int u = Q.front();
+            Q.pop();
+            for (int i = 0, pos; i < CHAR_SIZE; ++i) {
+                pos = cw[u].nex[i];
+                if (~pos) {
+                    assert(pos != -1);
+                    if (u == 0) cw[pos].fail = u;
+                    else {
+                        assert(u != -1);
+                        int v = cw[u].fail;
+                        while (v != -1) {
+                            if (cw[v].nex[i] != -1) {
+                                cw[pos].fail = cw[v].nex[i];
+                                break;
+                            }
+                            v = cw[v].fail;
+                        }
+                        if (v == -1) cw[pos].fail = 0;
+                    }
+                    //last[u] = val[f[u]] ? f[u] : last[f[u]];后缀链接，表示节点rt沿着失配指针往回走遇到的下一个单词节点编号
+                    cw[pos].last = cw[cw[pos].fail].is?cw[pos].fail:cw[cw[pos].fail].last;
+                    Q.push(pos);
+                }else {//建新的边补全图（可选可不选,会改变遍历方式
+                //    if(cw[u].fail >= 0) cw[u].nex[i] = cw[cw[u].fail].nex[i];
+                //    else cw[u].nex[i] = 0;
+                }
+            }
+        }
+    }
+    void dfs(int rt) {
+        cw[rt].sz = cw[rt].is;
+        for(int i = 0; i < 26; ++i) {
+            if(cw[rt].nex[i] != -1) {
+                dfs(cw[rt].nex[i]);
+                cw[rt].sz += cw[cw[rt].nex[i]].sz;
+            }
+        }
+    }
+    void get_first_ans() {
+        for(int i = 0; i < n; ++i) {
+            ans += (int64)slen[i] * slen[i] % mod;
+            if(ans >= mod) ans %= mod;
+            ++ cw[cw[word[i]].fail].cnt;
+            rt = 0;
+            for(int j = 0, now; j < slen[i]; ++j) {
+                now = idx(ss[st_str[i] + j]);
+                rt = cw[rt].nex[now];
+                vis[rt] = i + 1;
+            }
+            if(vis[cw[word[i]].fail] == i + 1) ++ cw[cw[word[i]].fail].inson;
+            // debug(vis[cw[word[i]].fail], i + 1)
+        }
+        dfs(0);
+        for(int i = 1; i <= siz; ++i) {
+            //debug(cw[i].sz, cw[i].cnt, cw[i].len, cw[i].is)
+            ans += (int64)cw[i].sz * (cw[i].cnt-cw[i].inson) %mod * cw[i].len%mod * cw[i].len%mod;
+            ans += (int64)cw[i].inson * (cw[i].sz-cw[i].inson) %mod * cw[i].len%mod * cw[i].len%mod;
+            if(cw[i].is) {
+                int tmp = cw[cw[i].fail].fail;
+                while(tmp > 0) {
+                    ans += (int64)cw[i].is * (cw[tmp].sz-cw[tmp].inson)%mod * cw[tmp].len%mod * cw[tmp].len % mod;
+                    debug(cw[i].is, tmp, cw[tmp].sz, cw[tmp].inson)
+                    tmp = cw[tmp].fail;
+                }
+            }
+            if(ans >= mod) ans %= mod;
+            if(cw[i].is) {
+                ans += (int64)(cw[i].sz-cw[i].is) * cw[i].is %mod * cw[i].len%mod * cw[i].len%mod;
+            }else {
+                ans += (int64)cw[i].sz * cw[i].is %mod * cw[i].len%mod * cw[i].len%mod;
+            }
+            if(ans >= mod) ans %= mod;
+        }
+    }
+}aho;
 
 
 int main() {
@@ -90,7 +212,20 @@ int main() {
     freopen("D:in.in", "r", stdin);
     freopen("D:out.out", "w", stdout);
 #endif
-    
+    n = read();
+    for(int i = 0; i < n; ++i) {
+        scanf("%s", ss + st_str[i]);
+        slen[i] = strlen(ss + st_str[i]);
+        st_str[i+1] = st_str[i] + slen[i] + 1;
+    }
+    //for(int i = 0; i < n; ++i) printf("%s\n", ss + st_str[i]);
+    aho.init();
+    for(int i = 0; i < n; ++i) {
+        aho.add_str(ss + st_str[i], slen[i], i);
+    }
+    aho.build_ac();
+    aho.get_first_ans();
+    print(ans);
 #ifndef ONLINE_JUDGE
     cout << "time cost:" << 1.0 * clock() / CLOCKS_PER_SEC << "ms" << endl;
     system("pause");

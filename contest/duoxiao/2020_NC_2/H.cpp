@@ -1,61 +1,24 @@
 /*
 链接
-https://ac.nowcoder.com/acm/contest/5666/I
+https://ac.nowcoder.com/acm/contest/5667/H
 题意
-n=50
-m=100
-小明要求每个点的度数为 du[i] = 1 or 2, 问你是否存在这样一个边的子集
-满足上述条件。
-不存在自环，可能有重边
-度数和一定要保证为偶数
-
+1. 插入一个x
+2. 删除一个x
+3. 询问是否有两个数可以和x形成三角形
+ 
 思路
-把一条边拆成两个点，把每个点u拆成du[u]个点
-edge ->e1 e2
-x -> x1
-y -> y1 y2
-(e1, e2), (x1, e1), (e2, y1), (e2, y2)
-再跑一般图最大匹配
-看是否是完备匹配
-如果存在完美匹配的话，一定可以是每条边拆成两个点分别和两个端点拆成
-的du[i]个点中的一个相匹配。
-如果完备匹配的话，证明说有条件都满足。
-
+动态开点权值线段树
+对于查询只有三种情况，x是三边之中最大的，x是三边之中第二大的，x是三边之中最小的
+ 
 备注
-如果du[i]等于任意0或者整数, 也是可以这样写的
-如果du[i]等于0的话，相当于i相邻的边拆成的两个点自己和自己相匹配
-*/
-#pragma comment(linker, "/STACK:102400000,102400000")
-//#include<bits/stdc++.h>
-#include <assert.h>
 
-#include <algorithm>
-#include <cstdio>
-#include <cstring>
-#include <ctime>
-#include <iostream>
-#include <map>
-#include <queue>
-#include <set>
-#include <vector>
+*/
+#include<bits/stdc++.h>
 #define fi first
 #define se second
-#define endl '\n'
-#define o2(x) (x) * (x)
-#define BASE_MAX 31
 #define mk make_pair
-#define eb emplace_back
-#define SZ(x) ((int)(x).size())
-#define all(x) (x).begin(), (x).end()
-#define clr(a, b) memset((a), (b), sizeof((a)))
-#define iis                           \
-    std::ios::sync_with_stdio(false); \
-    cin.tie(0)
-#define my_unique(x) sort(all(x)), x.erase(unique(all(x)), x.end())
 using namespace std;
-#pragma optimize("-O3")
 typedef long long int64;
-typedef unsigned long long uint64;
 typedef pair<int, int> pii;
 // mt19937 rng(time(NULL));
 // mt19937_64 rng64(chrono::steady_clock::now().time_since_epoch().count());
@@ -70,39 +33,6 @@ inline int64 read() {
         x = (x << 3) + (x << 1) + ch - '0', ch = getchar();
     return x = f ? -x : x;
 }
-inline void write(int64 x, bool f) {
-    if (x == 0) {
-        putchar('0');
-        if (f) putchar('\n');
-        return;
-    }
-    if (x < 0) {
-        putchar('-');
-        x = -x;
-    }
-    static char s[23];
-    int l = 0;
-    while (x != 0) s[l++] = x % 10 + 48, x /= 10;
-    while (l) putchar(s[--l]);
-    if (f) putchar('\n');
-}
-int lowbit(int x) { return x & (-x); }
-template <class T>
-T big(const T &a1, const T &a2) {
-    return a1 > a2 ? a1 : a2;
-}
-template <class T>
-T sml(const T &a1, const T &a2) {
-    return a1 < a2 ? a1 : a2;
-}
-template <typename T, typename... R>
-T big(const T &f, const R &... r) {
-    return big(f, big(r...));
-}
-template <typename T, typename... R>
-T sml(const T &f, const R &... r) {
-    return sml(f, sml(r...));
-}
 void debug_out() { cout << '\n'; }
 template <typename T, typename... R>
 void debug_out(const T &f, const R &... r) {
@@ -110,188 +40,164 @@ void debug_out(const T &f, const R &... r) {
     debug_out(r...);
 }
 #define debug(...) cout << "[" << #__VA_ARGS__ << "]: ", debug_out(__VA_ARGS__);
-#define LLDO
-#ifdef LLDO
-const char ptout[] = "%lld";
-#else
-const char ptout[] = "%d";
-#endif
-template <typename T>
-void print(const T &f) {
-    printf(ptout, f);
-    putchar('\n');
-}
-template <typename T, typename... R>
-void print(const T &f, const R &... r) {
-    printf(ptout, f);
-    putchar(' ');
-    print(r...);
-}
-
-const int HMOD[] = {1000000009, 1004535809};
-const int64 BASE[] = {1572872831, 1971536491};
+ 
 const int64 INFLL = 0x3f3f3f3f3f3f3f3fLL;
-const int INF = 0x3f3f3f3f;
-const int mod = 998244353;
-const int MOD = 1e9 + 7;  // 998244353
-const int MXN = 2e2 + 5;
-const int MXE = 2e5 + 6;
-class Dhs {
-   public:
-    static const int D_MXN = 5020;
-    static const int D_MXE = 100005;
-    static const int D_MXQL = 20005;
-    int n;
-    int eCnt, head[D_MXN], nex[D_MXE], to[D_MXE];
-    int dui[D_MXQL], hed, tail;
-    int fa[D_MXN], id[D_MXN], pre[D_MXN], match[D_MXN], vis[D_MXN], Tim;
-    inline void add_edge(int u, int v) {
-        nex[++ eCnt] = head[u];
-        to[eCnt] = v;
-        head[u] = eCnt;
-        nex[++ eCnt] = head[v];
-        to[eCnt] = u;
-        head[v] = eCnt;
+const int MXN = 2e6 + 5;
+const int MXE = 6e6 + 5;
+const int MXR = 1000000002;
+int n, m;
+class node {
+    public:
+    int ls, rs;
+    int64 mnv, gap;
+    int mxv, smxv;
+    int cnt;
+    node() {
+        ls = rs = cnt = 0;
+        mxv = smxv = -1;
+        mnv = gap = INFLL;
     }
-    inline int Fi(int x) {
-        if (fa[x] != x) fa[x] = Fi(fa[x]);
-        return fa[x];
+    // node(int a, int b, int c, int d, int e, int f, int g):
+    // ls(a),rs(b),mnv(c), mxv(d),smxv(e),gap(f),cnt(g) {}
+}cw[MXE];
+int tot_n;
+void push_up(int rt) {
+    cw[rt].mnv = min(cw[cw[rt].ls].mnv, cw[cw[rt].rs].mnv);
+    cw[rt].gap = min(cw[cw[rt].ls].gap, cw[cw[rt].rs].gap);
+    if(cw[cw[rt].rs].mnv != INFLL && cw[cw[rt].ls].mxv != -1) cw[rt].gap 
+    = min(cw[rt].gap, cw[cw[rt].rs].mnv - cw[cw[rt].ls].mxv);
+    if(cw[cw[rt].ls].mxv > cw[cw[rt].rs].mxv) {
+        cw[rt].mxv = cw[cw[rt].ls].mxv;
+        cw[rt].smxv = max(cw[cw[rt].ls].smxv, cw[cw[rt].rs].mxv);
+    }else if(cw[cw[rt].ls].mxv < cw[cw[rt].rs].mxv) {
+        cw[rt].mxv = cw[cw[rt].rs].mxv;
+        cw[rt].smxv = max(cw[cw[rt].rs].smxv, cw[cw[rt].ls].mxv);
+    }else {
+        cw[rt].mxv = cw[cw[rt].ls].mxv;
+        cw[rt].smxv = cw[cw[rt].ls].mxv;
     }
-    inline int lca(int x, int y) {
-        ++ Tim;
-        while (vis[x] != Tim) {
-            if (x) {
-                x = Fi(x);
-                if (vis[x] == Tim) return x;
-                vis[x] = Tim;
-                if (match[x] != 0)
-                    x = Fi(pre[match[x]]);
-                else
-                    x = 0;
-            }
-            swap(x, y);
+}
+void insert_wst(int v, int l, int r, int &rt) {
+    if(rt == 0) rt = ++ tot_n;
+    if(l == r) {
+        if(cw[rt].cnt == 0) {
+            cw[rt].mnv = cw[rt].mxv = l;
+            cw[rt].smxv = -1;
+            cw[rt].gap = INFLL;
+            cw[rt].cnt = 1;
+        }else {
+            cw[rt].smxv = l;
+            cw[rt].gap = 0;
+            ++ cw[rt].cnt;
         }
-        return x;
+        return ;
     }
-    inline void change(int x, int y, int k) {  
-        //把奇环上的点缩成一个点，并且把原来是奇点的点变成偶点，加入队列
-        while (Fi(x) != k) {
-            pre[x] = y;
-            int z = match[x];
-            if (id[z] == 1) {
-                id[z] = 0;
-                dui[++tail] = z;
-            }
-            if (Fi(z) == z) fa[z] = k;
-            if (Fi(x) == x) fa[x] = k;
-            y = z;
-            x = pre[y];
+    int mid = (l + r) >> 1;
+    if(v <= mid) insert_wst(v, l, mid, cw[rt].ls);
+    else insert_wst(v, mid + 1, r, cw[rt].rs);
+    push_up(rt);
+}
+void erase_wst(int v, int l, int r, int rt) {
+    if(rt == 0) return;
+    if(l == r) {
+        if(cw[rt].cnt > 2) {
+            -- cw[rt].cnt;
+        }else if(cw[rt].cnt == 2) {
+            cw[rt].mnv = cw[rt].mxv = l;
+            cw[rt].smxv = -1;
+            cw[rt].gap = INFLL;
+            cw[rt].cnt = 1;
+        }else {
+            cw[rt].mnv = INFLL;
+            cw[rt].mxv = -1;
+            cw[rt].smxv = -1;
+            cw[rt].gap = INFLL;
+            cw[rt].cnt = 0;
         }
+        return ;
     }
-
-    inline bool bfs(int ini) {
-        for (int i = 1; i <= n; i++) id[i] = -1, fa[i] = i;
-        hed = tail = 0;
-        dui[++tail] = ini;
-        id[ini] = 0;
-        int u;
-        while (hed < tail) {
-            u = dui[++hed];
-            for (int i = head[u]; i; i = nex[i]) {
-                int v = to[i];
-                if (id[v] == -1) {
-                    pre[v] = u;
-                    id[v] = 1;
-                    if (!match[v]) {
-                        int last, t, now = v;
-                        while (now != 0) {
-                            t = pre[now];
-                            last = match[t];
-                            match[t] = now;
-                            match[now] = t;
-                            now = last;
-                        }
-                        return true;
-                    }
-                    id[match[v]] = 0;
-                    dui[++tail] = match[v];
-                } else if (id[v] == 0 && Fi(u) != Fi(v)) {  
-                    //出现奇环且不是在同一个环中
-                    int g = lca(u, v);
-                    change(u, v, g);
-                    change(v, u, g);
-                }
-            }
-        }
-        return false;
+    int mid = (l + r) >> 1;
+    if(v <= mid) erase_wst(v, l, mid, cw[rt].ls);
+    else erase_wst(v, mid + 1, r, cw[rt].rs);
+    push_up(rt);
+}
+//left two val max sum
+pair<int,int> query1_wst(int v, int l, int r, int rt) {
+    // if(rt == 0) rt = ++ tot_n;
+    if(rt == 0) return mk(-1, -1);
+    if(v >= r) return mk(cw[rt].mxv, cw[rt].smxv);
+    int mid = (l + r) >> 1;
+    if(v <= mid) return query1_wst(v, l, mid, cw[rt].ls);
+    else {
+        pair<int, int> a = mk(cw[cw[rt].ls].mxv, cw[cw[rt].ls].smxv);
+        pair<int, int> b = query1_wst(v, mid + 1, r, cw[rt].rs);
+        int A, B;
+        if(a.first >= b.first) A = a.first, B = max(a.second, b.first);
+        else A = b.first, B = max(a.first, b.second);
+        return mk(A, B);
     }
-    void init(int _n) {
-        n = _n;
-        eCnt = Tim = 0;
-        for (int i = 1; i <= n; ++i) {
-            head[i] = match[i] = vis[i] = pre[i] = 0;
-        }
+}
+//right min gap
+int64 query2_wst(int v, int l, int r, int rt) {
+    // if(rt == 0) rt = ++ tot_n;
+    if(rt == 0) return INFLL;
+    if(v <= l) return cw[rt].gap;
+    int mid = (l + r) >> 1;
+    if(v > mid) return query2_wst(v, mid + 1, r, cw[rt].rs);
+    else {
+        int64 a = query2_wst(v, l, mid, cw[rt].ls);
+        int64 b = cw[cw[rt].rs].gap;
+        if(cw[cw[rt].ls].mxv >= v) b = min(b, cw[cw[rt].rs].mnv - cw[cw[rt].ls].mxv);
+        return min(a, b);
     }
-    int max_match() {
-        int ans = 0;
-        for (int i = 1; i <= n; i++) if (!match[i] && bfs(i)) ++ans;
-        // printf("%d\n", ans);
-        // for (int i = 1; i <= n; i++) printf("%d ", match[i]);
-        // puts("");
-        return ans;
+}
+//right min val
+int64 query3_wst(int v, int l, int r, int rt) {
+    // if(rt == 0) rt = ++ tot_n;
+    if(rt == 0) return INFLL;
+    if(v <= l) return cw[rt].mnv;
+    int mid = (l + r) >> 1;
+    if(v > mid) return query3_wst(v, mid + 1, r, cw[rt].rs);
+    else {
+        int64 a = query3_wst(v, l, mid, cw[rt].ls);
+        int64 b = cw[cw[rt].rs].mnv;
+        return min(a, b);
     }
-} dhs;
-int n, m, sum_du, inde;
-int id[MXN][MXN], contest[MXN][2], du[MXN];
-int ein[MXN][2];
+}
 int main() {
 #ifndef ONLINE_JUDGE
     freopen("D:in.in", "r", stdin);
     freopen("D:out.out", "w", stdout);
 #endif
-    int tim = 1, cas = 0;
-    while(~scanf("%d%d", &n, &m)) {
-        // n = read(), m = read();
-        sum_du = inde = 0;
-        for(int i = 1; i <= n; ++i) du[i] = 0;
-        for(int i = 1; i <= n; ++i) {
-            id[i][0] = read();
-        }
-        for(int i = 1; i <= m; ++i) {
-            ein[i][0] = read();
-            ein[i][1] = read();
-            ++ du[ein[i][0]];
-            ++ du[ein[i][1]];
-            contest[i][0] = ++ inde;
-            contest[i][1] = ++ inde;
-        }
-        int flag = 0;
-        for(int i = 1; i <= n; ++i) {
-            if(id[i][0] > du[i]) flag = 1;
-            if(flag) continue;
-            sum_du += id[i][0];
-            for(int j = 1; j <= id[i][0]; ++j) {
-                id[i][j] = ++ inde;
+    m = read();
+    int opt, x, flag, rt = 0;
+    int64 gap, mval, ret;
+    pair<int, int> tmp;
+    while(m --) {
+        opt = read(), x = read();
+        if(opt == 1) {
+            insert_wst(x, 1, MXR, rt);
+        }else if(opt == 2) {
+            erase_wst(x, 1, MXR, rt);
+        }else {
+            flag = 0;
+            //x是最大值，查看左边最大两个值的和
+            tmp = query1_wst(x, 1, MXR, rt);
+            if(tmp.first + tmp.second > x) flag = 1;
+            else {
+                //x是最小值，查看右边最小间隙
+                gap = query2_wst(x, 1, MXR, rt);
+                if(gap < x) flag = 1;
+                else if(tmp.first != -1) {
+                    //x是中间值，取左边一个和右边一个
+                    mval = query3_wst(x + 1, 1, MXR, rt);
+                    if(x + tmp.first > mval) flag = 1;
+                }
             }
+            printf("%s\n", flag?"Yes":"No");
         }
-        // printf("Case %d: ", ++ cas);
-        if(flag || sum_du % 2 == 1) {
-            printf("No\n");
-            continue;
-        }
-        dhs.init(inde);
-        for(int i = 1, a, b; i <= m; ++i) {
-            a = ein[i][0], b = ein[i][1];
-            dhs.add_edge(contest[i][0], contest[i][1]);
-            for(int j = 1; j <= id[a][0]; ++j) {
-                dhs.add_edge(id[a][j], contest[i][0]);
-            }
-            for(int j = 1; j <= id[b][0]; ++j) {
-                dhs.add_edge(id[b][j], contest[i][1]);
-            }
-        }
-        printf("%s\n", dhs.max_match() == inde / 2?"Yes":"No");
     }
+    // debug(cw[0].ls, cw[0].rs, cw[0].cnt, cw[0].mxv, cw[0].mnv, cw[0].smxv, cw[0].gap)
 #ifndef ONLINE_JUDGE
     system("pause");
 #endif
