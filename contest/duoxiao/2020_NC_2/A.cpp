@@ -12,7 +12,7 @@ $f(s, t)$as the maximum $i$ that satisfy $s_{1\dots i} = t_{|t|-i+1 \dots |t|}$
 **备注**
 
 **AC_CODE**
-[代码地址](https://github.com/Cwolf9/Cwolf9_code_lib-ACM/blob/master/contest/duoxiao/2020_NC_1/H.cpp)
+[代码地址](https://github.com/Cwolf9/Cwolf9_code_lib-ACM/blob/master/contest/duoxiao/2020_NC_2/A.cpp)
 */
 #pragma comment(linker, "/STACK:102400000,102400000")
 //#include<bits/stdc++.h>
