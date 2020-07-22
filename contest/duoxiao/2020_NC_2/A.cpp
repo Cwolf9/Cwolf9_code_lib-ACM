@@ -93,6 +93,8 @@ struct AC_Auto {
         int nex[CHAR_SIZE];
         int fail, cnt, is, last, len, sz, inson;
     } cw[MXN_T];
+    vector<int> ft[MXN];//fail tree
+    int fsz[MXN];//fail tree's subtree size
     int siz, rt;
     void init() {
         siz = rt = 0;
@@ -168,40 +170,32 @@ struct AC_Auto {
             }
         }
     }
+    void dfsf(int rt) {
+        fsz[rt] = cw[rt].sz;
+        for(int i = 0; i < 26; ++i) {
+            if(cw[rt].nex[i] != -1) {
+                dfsf(cw[rt].nex[i]);
+                cw[rt].sz += cw[cw[rt].nex[i]].sz;
+            }
+        }
+    }
     void get_first_ans() {
+        dfs(0);
+        for(int i = 1; i <= siz; ++i) ft[cw[i].fail].eb(i);
+        dfsf(0);
         for(int i = 0; i < n; ++i) {
             ans += (int64)slen[i] * slen[i] % mod;
             if(ans >= mod) ans %= mod;
-            ++ cw[cw[word[i]].fail].cnt;
             rt = 0;
             for(int j = 0, now; j < slen[i]; ++j) {
                 now = idx(ss[st_str[i] + j]);
                 rt = cw[rt].nex[now];
                 vis[rt] = i + 1;
             }
-            if(vis[cw[word[i]].fail] == i + 1) ++ cw[cw[word[i]].fail].inson;
-            // debug(vis[cw[word[i]].fail], i + 1)
-        }
-        dfs(0);
-        for(int i = 1; i <= siz; ++i) {
-            //debug(cw[i].sz, cw[i].cnt, cw[i].len, cw[i].is)
-            ans += (int64)cw[i].sz * (cw[i].cnt-cw[i].inson) %mod * cw[i].len%mod * cw[i].len%mod;
-            ans += (int64)cw[i].inson * (cw[i].sz-cw[i].inson) %mod * cw[i].len%mod * cw[i].len%mod;
-            if(cw[i].is) {
-                int tmp = cw[cw[i].fail].fail;
-                while(tmp > 0) {
-                    ans += (int64)cw[i].is * (cw[tmp].sz-cw[tmp].inson)%mod * cw[tmp].len%mod * cw[tmp].len % mod;
-                    debug(cw[i].is, tmp, cw[tmp].sz, cw[tmp].inson)
-                    tmp = cw[tmp].fail;
-                }
+            int tmp = cw[rt].fail, las = 0;
+            while(tmp > 0) {
+                if(vis[tmp] != i + 1) ans += ;
             }
-            if(ans >= mod) ans %= mod;
-            if(cw[i].is) {
-                ans += (int64)(cw[i].sz-cw[i].is) * cw[i].is %mod * cw[i].len%mod * cw[i].len%mod;
-            }else {
-                ans += (int64)cw[i].sz * cw[i].is %mod * cw[i].len%mod * cw[i].len%mod;
-            }
-            if(ans >= mod) ans %= mod;
         }
     }
 }aho;

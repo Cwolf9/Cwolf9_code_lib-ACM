@@ -70,7 +70,8 @@
         "typeindex": "cpp",
         "typeinfo": "cpp",
         "valarray": "cpp",
-        "hash_map": "cpp"
+        "hash_map": "cpp",
+        "rope": "cpp"
     },
     "python.formatting.provider": "black"
 }
