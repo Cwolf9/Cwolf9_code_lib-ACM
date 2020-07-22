@@ -87,7 +87,8 @@ int main() {
         if(cw[n].p == cw[n-1].p) flag = 0;
         for(int i = 2; i <= n; ++i) {
             if(cw[i].p == cw[i-1].p && cw[i].a < cw[i-1].a) ;
-            else if(cw[i].p == cw[i-1].p && cw[i].a == cw[i-1].a) ++ cw[ti].cnt;
+            //else if(cw[i].p == cw[i-1].p && cw[i].a == cw[i-1].a) ++ cw[ti].cnt;
+            else if(cw[i].p == cw[ti].p && cw[i].a == cw[ti].a) ++ cw[ti].cnt;
             else cw[++ ti] = cw[i];
         }
         n = ti;
@@ -103,7 +104,7 @@ int main() {
         n = ti;
         //前面是预处理
         for(int i = 1; i <= n; ++i) {
-            // debug(cw[i].p, cw[i].a)
+            // debug(cw[i].p, cw[i].a, cw[i].cnt)
             is[i] = rm[i] = 0;
             cw[i].id = i;
         }
@@ -126,6 +127,7 @@ int main() {
                 Q.pop();
                 if(rm[n1.id]) continue;
                 if(rs[n1.id] == ed) {
+                    // debug(n1.id, cw[n1.id].cnt)
                     if(cw[n1.id].cnt == 1) is[n1.id] = 1;
                     ed = n1.id;
                     if(n1.id == 1) break;

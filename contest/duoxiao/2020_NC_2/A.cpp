@@ -1,5 +1,18 @@
 /*
+**链接**
+传送门: [here](https://ac.nowcoder.com/acm/contest/5667/A)
+**题意**
+$n(1e5),\sum |s_i| \le 1e6$
+求$\sum_{i=1}^n\sum_{j=1}^nf(si,sj)\;mod\;998244353$
+$f(s, t)$as the maximum $i$ that satisfy $s_{1\dots i} = t_{|t|-i+1 \dots |t|}$
 
+**思路**
+为字符串 $u$ 找其他字符串的前缀和 $u$ 的后缀所产生的贡献。每个节点保存字典树子树中$end node$信息。遍历后缀连接树，前面遍历过的节点都是我的后缀为每个字符串记录一下遍历到当前节点匹配的最长前缀即可。回溯时记得还原。
+
+**备注**
+
+**AC_CODE**
+[代码地址](https://github.com/Cwolf9/Cwolf9_code_lib-ACM/blob/master/contest/duoxiao/2020_NC_1/H.cpp)
 */
 #pragma comment(linker, "/STACK:102400000,102400000")
 //#include<bits/stdc++.h>
@@ -80,52 +93,48 @@ const int64 INFLL = 0x3f3f3f3f3f3f3f3fLL;
 const int INF = 0x3f3f3f3f;
 const int mod = 998244353;
 const int MOD = 1e9 + 7;  // 998244353
-const int MXN = 1e6 + 2e5 + 5;
+const int MXN = 1e6 + 1e5 + 5;
 const int MXE = 2e6 + 6;
 int n, m, k;
 char ss[MXN];
-int st_str[MXN], word[MXN], slen[MXN], vis[MXN];
+int st_str[MXN], slen[MXN];
 int64 ans;
 const int MXN_T = 1e6 + 105;
 const int CHAR_SIZE = 26;
 struct AC_Auto {
     struct Trie {
         int nex[CHAR_SIZE];
-        int fail, cnt, is, last, len, sz, inson;
+        int fail, is, len;
+        //int last;
     } cw[MXN_T];
     vector<int> ft[MXN];//fail tree
-    int fsz[MXN];//fail tree's subtree size
+    vector<int> stnode[MXN];//the key node in subtree u
+    vector<int> lasLen[MXN];
     int siz, rt;
     void init() {
         siz = rt = 0;
         clr(cw[siz].nex, -1);
-        cw[siz].fail = cw[siz].cnt = cw[siz].is = 0;
-        cw[siz].last = 0;
+        cw[siz].fail = cw[siz].is = 0;
         cw[siz].len = 0;
-        cw[siz].sz = 0;
-        cw[siz].inson = 0;
     }
     int idx(char c) {
         return c - 'a';
     }
-    void add_str(char *s, int len, int id) {
+    void add_str(char *s, int len, int id) {//id's index start from 0
         rt = 0;
         for (int i = 0, now; i < len; ++i) {
             now = idx(s[i]);
             if (cw[rt].nex[now] == -1) {
                 cw[rt].nex[now] = ++siz;
                 clr(cw[siz].nex, -1);
-                cw[siz].fail = cw[siz].cnt = cw[siz].is = 0;
-                cw[siz].last = 0;
+                cw[siz].fail = cw[siz].is = 0;
                 cw[siz].len = 0;
-                cw[siz].sz = 0;
-                cw[siz].inson = 0;
             }
             rt = cw[rt].nex[now];
             cw[rt].len = i + 1;
+            stnode[rt].eb(id);
         }
         ++ cw[rt].is;
-        word[id] = rt;
     }
     void build_ac() {
         queue<int> Q;
@@ -152,7 +161,7 @@ struct AC_Auto {
                         if (v == -1) cw[pos].fail = 0;
                     }
                     //last[u] = val[f[u]] ? f[u] : last[f[u]];后缀链接，表示节点rt沿着失配指针往回走遇到的下一个单词节点编号
-                    cw[pos].last = cw[cw[pos].fail].is?cw[pos].fail:cw[cw[pos].fail].last;
+                    //cw[pos].last = cw[cw[pos].fail].is?cw[pos].fail:cw[cw[pos].fail].last;
                     Q.push(pos);
                 }else {//建新的边补全图（可选可不选,会改变遍历方式
                 //    if(cw[u].fail >= 0) cw[u].nex[i] = cw[cw[u].fail].nex[i];
@@ -161,45 +170,39 @@ struct AC_Auto {
             }
         }
     }
-    void dfs(int rt) {
-        cw[rt].sz = cw[rt].is;
-        for(int i = 0; i < 26; ++i) {
-            if(cw[rt].nex[i] != -1) {
-                dfs(cw[rt].nex[i]);
-                cw[rt].sz += cw[cw[rt].nex[i]].sz;
-            }
-        }
-    }
+    //上面ac自动机模板
+    int64 res;
+    //为字符串 u 找其他字符串的前缀和 u的后缀所产生的贡献
+    //每个节点保存字典树子树中key node信息
+    //遍历后缀连接树，前面遍历过的节点都是我的后缀
+    //为每个字符串记录一下遍历到当前节点匹配的最长前缀即可
+    //回溯时记得还原
     void dfsf(int rt) {
-        fsz[rt] = cw[rt].sz;
-        for(int i = 0; i < 26; ++i) {
-            if(cw[rt].nex[i] != -1) {
-                dfsf(cw[rt].nex[i]);
-                cw[rt].sz += cw[cw[rt].nex[i]].sz;
-            }
+        int64 tmp;
+        for(int x: stnode[rt]) {//a*a+b*(b+2*a) - a*a
+            tmp = cw[rt].len - lasLen[x].back();
+            res = (res + tmp*(2*lasLen[x].back()+tmp)%mod) % mod;
+            lasLen[x].eb(cw[rt].len);
+        }
+        ans = (ans + res * cw[rt].is % mod) % mod;
+        // debug(rt, cw[rt].is, res, ans)
+        for(int u: ft[rt]) {
+            dfsf(u);
+        }
+        for(int x: stnode[rt]) {
+            tmp = lasLen[x].back();
+            lasLen[x].pop_back();
+            tmp -= lasLen[x].back();
+            res = (res - (int64)tmp*(2*lasLen[x].back()+tmp)%mod+mod) % mod;
         }
     }
     void get_first_ans() {
-        dfs(0);
+        res = 0;
+        for(int i = 0; i < n; ++i) lasLen[i].eb(0);
         for(int i = 1; i <= siz; ++i) ft[cw[i].fail].eb(i);
         dfsf(0);
-        for(int i = 0; i < n; ++i) {
-            ans += (int64)slen[i] * slen[i] % mod;
-            if(ans >= mod) ans %= mod;
-            rt = 0;
-            for(int j = 0, now; j < slen[i]; ++j) {
-                now = idx(ss[st_str[i] + j]);
-                rt = cw[rt].nex[now];
-                vis[rt] = i + 1;
-            }
-            int tmp = cw[rt].fail, las = 0;
-            while(tmp > 0) {
-                if(vis[tmp] != i + 1) ans += ;
-            }
-        }
     }
 }aho;
-
 
 int main() {
 #ifndef ONLINE_JUDGE
