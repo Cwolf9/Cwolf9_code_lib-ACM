@@ -8,11 +8,13 @@ type 2: 2 u, query F_u
 **思路**
 度数大于$\sqrt(m)$的超级点不超多$\sqrt(m)$个。
 小点暴力算，超级点用分块或者bit，线段树
-分块复杂度$O(n*\sqrt(n))$
+分块复杂度$O(n*\sqrt(n))$, 1170ms
 线段树复杂度$O(n*\sqrt(n)*log(n))$, 1560MS
 树状数组+二分求mex复杂度$O(n*\sqrt(n)*log(n)*log(n))$, 1092MS
 树状数组求mex复杂度$O(n*\sqrt(n)*log(n)*log(n))$, 1762MS
 动态开点线段树TLE
+分块维护每个块内数字第一次出现的次数，$O(1)$修改，$O(\sqrt(n))$查询
+线段树维护mex其实就是维护最小值
 **备注**
 
 */
