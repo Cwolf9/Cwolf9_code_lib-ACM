@@ -1,12 +1,12 @@
 /*
 **链接**
-传送门: [here](http://acm.hdu.edu.cn/showproblem.php?pid=6759)
+传送门: [here](http://acm.hdu.edu.cn/showproblem.php?pid=6755)
 **题意**
 
 **思路**
 
 **备注**
-去年多校也有一个车子过红绿灯贪心题HDU Vacation
+https://blog.csdn.net/u014609452/article/details/53039223
 */
 #pragma comment(linker, "/STACK:102400000,102400000")
 //#include<bits/stdc++.h>
