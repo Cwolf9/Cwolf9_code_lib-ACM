@@ -127,10 +127,7 @@ int main() {
     scanf("%s", s + 1);
     n = strlen(s + 1);
     reverse(s + 1, s + n + 1);
-    for(int i = 1; i <= n; ++i) s[i] -= 'a';
-    for(int i = 1; i <= n; ++i) {
-        if(top && s[stk[]])
-    }
+    
 #ifndef ONLINE_JUDGE
     system("pause");
 #endif

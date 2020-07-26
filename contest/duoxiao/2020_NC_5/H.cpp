@@ -1,15 +1,17 @@
 /*
- 
+
+
 */
 #pragma comment(linker, "/STACK:102400000,102400000")
+//#include<bits/stdc++.h>
 #include <assert.h>
-#include <bits/stdc++.h>
- 
+#include<unordered_map>
 #include <algorithm>
 #include <cstdio>
 #include <cstring>
 #include <ctime>
 #include <iostream>
+#include <map>
 #include <queue>
 #include <set>
 #include <vector>
@@ -29,15 +31,15 @@
 #define my_unique(x) sort(all(x)), x.erase(unique(all(x)), x.end())
 using namespace std;
 #pragma optimize("-O3")
-typedef long long LL;
-typedef unsigned long long uLL;
+typedef long long int64;
+typedef unsigned long long uint64;
 typedef pair<int, int> pii;
 // mt19937 rng(time(NULL));
 // mt19937_64 rng64(chrono::steady_clock::now().time_since_epoch().count());
 // mt19937_64 generator(std::clock());
 // shuffle(arr, arr + n, generator);
-inline LL read() {
-    LL x = 0;
+inline int64 read() {
+    int64 x = 0;
     int f = 0;
     char ch = getchar();
     while (ch < '0' || ch > '9') f |= (ch == '-'), ch = getchar();
@@ -45,7 +47,7 @@ inline LL read() {
         x = (x << 3) + (x << 1) + ch - '0', ch = getchar();
     return x = f ? -x : x;
 }
-inline void write(LL x, bool f) {
+inline void write(int64 x, bool f) {
     if (x == 0) {
         putchar('0');
         if (f) putchar('\n');
@@ -85,7 +87,7 @@ void debug_out(const T &f, const R &... r) {
     debug_out(r...);
 }
 #define debug(...) cout << "[" << #__VA_ARGS__ << "]: ", debug_out(__VA_ARGS__);
-// #define LLDO
+#define LLDO
 #ifdef LLDO
 const char ptout[] = "%lld";
 #else
@@ -102,64 +104,26 @@ void print(const T &f, const R &... r) {
     putchar(' ');
     print(r...);
 }
- 
+
 const int HMOD[] = {1000000009, 1004535809};
-const LL BASE[] = {1572872831, 1971536491};
-const LL INFLL = 0x3f3f3f3f3f3f3f3fLL;
+const int64 BASE[] = {1572872831, 1971536491};
+const int64 INFLL = 0x3f3f3f3f3f3f3f3fLL;
 const int INF = 0x3f3f3f3f;
 const int mod = 998244353;
 const int MOD = 1e9 + 7;  // 998244353
-const int MXN = 5e5 + 5;
+const int MXN = 2e5 + 5;
 const int MXE = 2e6 + 6;
-int n, m, k;
-int ar[MXN], p[MXN], br[MXN];
-pii cw[MXN], tmp;
+const int MXR = 1000000001;
+int n;
+
 int main() {
 #ifndef ONLINE_JUDGE
     freopen("D:in.in", "r", stdin);
     freopen("D:out.out", "w", stdout);
 #endif
-    int tim = read();
-    while (tim--) {
-        n = read(), k = read(), m = read();
-        int flag = 1;
-        for(int i = 1, ret; i <= n; ++i) {
-            ar[i] = read();
-            if(ar[i] > m) flag = 0;
-            br[i] = min(m - ar[i], k);
-            cw[i] = mk(-br[i], br[i]);
-        }
-        tmp = cw[1];
-        int up = 0;//1 up, -1 down, 0 both ok
-        if(cw[1].fi == 0) up = 1;
-        for(int i = 2; i <= n; ++i) {
-            if(up == 1) {
-                if(tmp.se + 1 <= cw[i].se) {
-                    tmp.fi --;
-                    tmp.se ++;
-                }else flag = 0;
-            }else if(up == -1) {
-                if(tmp.fi == 0) flag = 0;
-                else tmp.fi = max(tmp.fi + 1, cw[i].fi), tmp.se = - tmp.fi;
-                if(tmp.fi == 0) up = 1;
-            }else {
-                up = 0;
-                tmp.fi ++;
-                tmp.se --;
-                if(cw[i].fi > tmp.fi) tmp = cw[i];
-                if(tmp.fi == 0) up = 1;
-                else if(tmp.fi > 0) flag = 0;
-            }
-            if(cw[i].fi == -k) {
-                tmp = cw[i];
-                up = 0;
-            }
-            // debug(i, up, tmp.fi, tmp.se)
-        }
-        printf("%s\n", flag?"Yes":"No");
-    }
+    n = read();
+    
 #ifndef ONLINE_JUDGE
-    cout << "time cost:" << 1.0 * clock() / CLOCKS_PER_SEC << "ms" << endl;
     system("pause");
 #endif
     return 0;

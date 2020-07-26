@@ -1,4 +1,13 @@
 /*
+**链接**
+传送门: [here](http://acm.hdu.edu.cn/showproblem.php?pid=6761)
+**题意**
+下标从$1$开始，求出每个前缀字符串的min index ti, 就是该字符串字典序最小的后缀。
+输出 $\sum ti\times 1112^i,\;mod1e9+7$
+**思路**
+
+
+**备注**
 
 */
 #pragma comment(linker, "/STACK:102400000,102400000")

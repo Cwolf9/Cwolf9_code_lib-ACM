@@ -7,67 +7,59 @@ using namespace std;
 const int INF = 0x3f3f3f3f;
 const int mod = 1e9 + 7;
 const int MXN = 1e3 + 5;
-int n, m, k;
-int du[MXN];
-inline int lowbit(int x) {
-    return x & (-x);
-}
-vector<int> tree[MXN], ori[MXN];
-void insewrt(int x, int v, int id) {
-    int N = du[id] + 2;
-    ori[id][x] = v;
-    while (x <= N) {
-        tree[id][x] = ori[id][x];
-        v = lowbit(x);
-        for (int i = 1; i < v; i <<= 1) {
-            tree[id][x] = max(tree[id][x], tree[id][x - i]);
+class Solution {
+public:
+    /**
+     * 
+     * @param niuniu int整型vector 牛牛占领的p个星球的编号
+     * @param niumei int整型vector 牛妹占领的q个星球的编号
+     * @param path int整型vector<vector<>> m条隧道，每条隧道有三个数分别是ui,vi,wi。ui,vi分别是隧道的两边星球的编号，wi是它们之间的距离
+     * @param nn int整型 星球个数n
+     * @return int整型
+     */
+    vector<pair<int,int> > mp[200005];
+    int dis[200005];
+    int Length(vector<int>& niuniu, vector<int>& niumei, vector<vector<int> >& path, int nn) {
+        // write code here
+        for(vector<int> &x: path) {
+            mp[x[0]].emplace_back(make_pair(x[1], x[2]));
+            mp[x[1]].emplace_back(make_pair(x[0], x[2]));
         }
-        x += lowbit(x);
-    }
-}
-int query(int x, int y, int id) {
-    int ans = 0;
-    while (y >= x) {
-        ans = max(ans, ori[id][y]);
-        for (--y; y - lowbit(y) >= x; y -= lowbit(y)) {
-            ans = max(ans, tree[id][y]);
+        priority_queue<pair<int,int>,vector<pair<int,int>> ,greater<pair<int,int>> >Q;
+        vector<int> vis(nn + 1, 0);
+        vector<int> dis(nn + 1, 2000000002);
+        for(int x: niuniu) {
+            dis[x] = 0;
+            Q.push(make_pair(dis[x],x));
         }
+        while(!Q.empty()){
+            pair<int,int> a=Q.top();Q.pop();
+            int u=a.second;
+            if(vis[u])continue;
+            vis[u]=1;
+            for(int i=0; i < mp[u].size(); ++i){
+                int v=mp[u][i].first;
+                if(vis[v])continue;
+                if(dis[v]>dis[u]+mp[u][i].second){
+                    dis[v]=dis[u]+mp[u][i].second;
+                    Q.push(make_pair(dis[v],v));
+                }
+            }
+        }
+        int ans = 2000000002;
+        for(int x: niumei) {
+            ans = min(ans, dis[x]);
+        }
+        if(ans == 2000000002) ans = -1;
+        return ans;
     }
-    return ans;
-}
+};
 int main() {
 #ifndef ONLINE_JUDGE
     freopen("D:in.in", "r", stdin);
     freopen("D:out.out", "w", stdout);
 #endif
-    srand(time(NULL));
-    while(~scanf("%d%d", &n, &m)) {
-        for(int i = 1; i <= 500; ++i) {
-            ori[i].clear();
-            ori[i].shrink_to_fit();
-            tree[i].clear();
-            tree[i].shrink_to_fit();
-        }
-        int id = rand()%500 + 1;
-        du[id] = n - 1;
-        tree[id].resize(du[id] + 5);
-        ori[id].resize(du[id] + 5);
-        for(int i = 0, x; i <= du[id]; ++i) {
-            scanf("%d", &x);
-            insewrt(i + 1, x, id);
-        }
-        char s[2];
-        int x, y;
-        while(m --) {
-            scanf("%s", s);
-            scanf("%d%d", &x, &y);
-            if(s[0] == 'U') {
-                insewrt(x, y, id);
-            }else {
-                printf("%d\n", query(x, y, id));
-            }
-        }
-    }
+
 #ifndef ONLINE_JUDGE
     system("pause");
 #endif

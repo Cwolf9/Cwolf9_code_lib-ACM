@@ -1,13 +1,10 @@
 /*
-先处理恰好匹配的x个，再处理错位的y个。
-注意先要让出现次数最多的数字的出现次数尽可能小，这样才能保证有解一定能求出解来。
-注意已经匹配的不能用去错位置换。
-如果先处理错位的y个，再处理恰好匹配的x个，会出现无解的情况，因为可能有一个数字出现次数特别多，导致无法完成y个错位。
+ 
 */
 #pragma comment(linker, "/STACK:102400000,102400000")
 #include <assert.h>
 #include <bits/stdc++.h>
-
+ 
 #include <algorithm>
 #include <cstdio>
 #include <cstring>
@@ -105,19 +102,17 @@ void print(const T &f, const R &... r) {
     putchar(' ');
     print(r...);
 }
-
+ 
 const int HMOD[] = {1000000009, 1004535809};
 const LL BASE[] = {1572872831, 1971536491};
 const LL INFLL = 0x3f3f3f3f3f3f3f3fLL;
 const int INF = 0x3f3f3f3f;
 const int mod = 998244353;
 const int MOD = 1e9 + 7;  // 998244353
-const int MXN = 2e5 + 5;
+const int MXN = 2e3 + 5;
 const int MXE = 2e6 + 6;
 int n, m, k;
-int ar[MXN], is[MXN], num[MXN], br[MXN], bid[MXN];
-vector<int> mp[MXN];
-priority_queue<pair<int, int> > pq;
+
 int main() {
 #ifndef ONLINE_JUDGE
     freopen("D:in.in", "r", stdin);
@@ -125,97 +120,8 @@ int main() {
 #endif
     int tim = read();
     while (tim--) {
-        n = read(), m = read(), k = read() - m;
-        for (int i = 1; i <= n + 1; ++i) {
-            is[i] = num[i] = bid[i] = 0;
-            mp[i].clear();
-        }
-        int aim = 0, flag = 1;
-        for (int i = 1; i <= n; ++i) {
-            ar[i] = read();
-            br[i] = ar[i];
-            ++ num[ar[i]];
-            mp[ar[i]].eb(i);
-        }
-        while(!pq.empty()) pq.pop();
-        for (int i = 1; i <= n + 1; ++i) {
-            if (num[i]) pq.push(mk(num[i], i));
-            else aim = i;
-        }
-        while(m > 0) {
-            pii u = pq.top(); pq.pop();
-            for(; m > 0 && (int)mp[u.se].size() > 0; ) {
-                is[mp[u.se].back()] = bid[mp[u.se].back()] = 1;
-                // debug(mp[u.se].back())
-                mp[u.se].pop_back();
-                -- m;
-                break;
-            }
-            if(mp[u.se].size()) pq.push(mk(mp[u.se].size(), u.se));
-        }
-        while(m == 0 && k > 0) {
-            if((int)pq.size() == 0) {
-                flag = 0;
-                break;
-            }else if((int)pq.size() == 1) {
-                int tmp = pq.top().se, pos;
-                // debug(tmp)
-                for(int i = 1; i <= n && k > 0; ++i) {
-                    if(is[i] && bid[i] == 0 && ar[i] != tmp && br[i] != tmp && (int)mp[tmp].size() > 0) {
-                        pos = mp[tmp].back();
-                        is[pos] = 1;
-                        br[pos] = br[i];
-                        br[i] = tmp;
-                        mp[tmp].pop_back();
-                        -- k;
-                    }
-                }
-                if(k > 0) flag = 0;
-                break;
-            }
-            pii u = pq.top(); pq.pop();
-            pii v = pq.top(); pq.pop();
-            for(; k > 0 && (int)mp[v.se].size() > 0; ) {
-                // debug(k, mp[u.se].size(), mp[v.se].size(), u.se)
-                if(k == 1) {
-                    // int tmp = u.se, pos;
-                    // for(int i = 1; i <= n && k > 0; ++i) {
-                    //     if(is[i] && bid[i] == 0 && ar[i] != tmp && br[i] != tmp && (int)mp[tmp].size() > 0) {
-                    //         pos = mp[tmp].back();
-                    //         is[pos] = 1;
-                    //         br[pos] = br[i];
-                    //         br[i] = tmp;
-                    //         mp[tmp].pop_back();
-                    //         -- k;
-                    //     }
-                    // }
-                    if(k > 0) {
-                        swap(br[mp[u.se].back()], br[mp[v.se].back()]);
-                        br[mp[v.se].back()] = aim;
-                        is[mp[u.se].back()] = 1;
-                        mp[u.se].pop_back();
-                        mp[v.se].pop_back();
-                        -- k;
-                    }
-                }else {
-                    swap(br[mp[u.se].back()], br[mp[v.se].back()]);
-                    is[mp[u.se].back()] = is[mp[v.se].back()] = 1;
-                    mp[u.se].pop_back();
-                    mp[v.se].pop_back();
-                    k -= 2;
-                }
-            }
-            if(mp[v.se].size()) pq.push(mk(mp[v.se].size(), v.se));
-            if(mp[u.se].size()) pq.push(mk(mp[u.se].size(), u.se));
-        }
-        for(int i = 1; i <= n; ++i) if(is[i] == 0) br[i] = aim;
-        if(flag == 0 || m > 0) printf("NO\n");
-        else {
-            printf("YES\n");
-            for(int i = 1; i <= n; ++i) {
-                printf("%d%c", br[i], " \n"[i == n]);
-            }
-        }
+        n = read(), k = read(), m = read();
+        
     }
 #ifndef ONLINE_JUDGE
     cout << "time cost:" << 1.0 * clock() / CLOCKS_PER_SEC << "ms" << endl;
