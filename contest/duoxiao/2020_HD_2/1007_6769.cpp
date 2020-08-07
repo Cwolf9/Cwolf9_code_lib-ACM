@@ -2,9 +2,14 @@
 **链接**
 传送门: [here](http://acm.hdu.edu.cn/showproblem.php?pid=6769)
 **题意**
-
+$n(2e4),k(20)$，$n$个节点的树，每条边有两种长度属性$(a,b)$，已知恰好有$k$条边长度
+属性为$a$，其他边均为$b$，问这种树的直径最小可能时多少。
 **思路**
-
+二分答案+树形DP
+初始化$dp[u][0]=0,dp[u][1-k]=INF$
+$dp[u][i]$表示u的子树内有$i$条边选择树形值$a$的情况下的最长叶子路径
+状态转移时确保直径小于等于$mid$即可。
+若$dp[1][k]\le mid$表示有解。
 **备注**
 */
 #pragma comment(linker, "/STACK:102400000,102400000")
@@ -95,7 +100,7 @@ const int64 INFLL = 0x3f3f3f3f3f3f3f3fLL;
 const int INF = 0x3f3f3f3f;
 const int mod = 998244353;// 998244353
 const int MOD = 1e9 + 7;
-const int MXN = 2e5 + 5;
+const int MXN = 2e4 + 5;
 const int MXE = 2e6 + 6;
 int n, m;
 class node {
@@ -110,23 +115,24 @@ int64 dp[MXN][25], ndp[25];
 int sz[MXN];
 void dfs(int u, int ba, int64 lim) {
     sz[u] = 1;
-    clr(dp[u], 0x3f);
+    memset(dp[u], 0x3f, sizeof(int64) * (m + 1));
     dp[u][0] = 0;
     for(node &V: mp[u]) {
         if(V.v == ba) continue;
         dfs(V.v, u, lim);
         int up1 = min(sz[u], m + 1), up2 = min(sz[V.v] + 1, m + 1);
-        clr(ndp, 0x3f);
+        memset(ndp, 0x3f, sizeof(int64) * (m + 1));
         for(int i = 0; i < up1; ++i) {
-            for(int j = 0; j < up2; ++j) {
-                if(i + j <= m && dp[u][i] + dp[V.v][j] + V.b <= lim) 
+            for(int j = 0; j < up2 && i + j <= m; ++j) {
+                if(dp[u][i] + dp[V.v][j] + V.b <= lim) 
                     ndp[i+j] = min(ndp[i+j], max(dp[u][i], dp[V.v][j] + V.b));
                 if(i + j + 1 <= m && dp[u][i] + dp[V.v][j] + V.a <= lim) 
                     ndp[i+j+1] = min(ndp[i+j+1], max(dp[u][i], dp[V.v][j] + V.a));
             }
         }
         sz[u] += sz[V.v];
-        for(int i = 0; i <= min(m, sz[u] - 1); ++i) {
+        up1 = min(m, sz[u] - 1);
+        for(int i = 0; i <= up1; ++i) {
             dp[u][i] = ndp[i];
             //debug(u, V.v, i, ndp[i])
         }
@@ -140,14 +146,16 @@ int main() {
     int tim = read();
     while(tim --) {
         n = read(), m = read();
+        for(int i = 1; i <= n; ++i) mp[i].clear();
+        int64 L = 1, R = 0, mid, ans = -1;
         for(int i = 1, a; i < n; ++i) {
             a = read();
             A.rd();
             mp[a].eb(A);
             swap(a, A.v);
             mp[a].eb(A);
+            R += max(A.a, A.b);
         }
-        int64 L = 1, R = 2e13+1, mid, ans = -1;
         //dfs(1, -1, 6);
         while(L <= R) {
             mid = (L + R) >> 1;
