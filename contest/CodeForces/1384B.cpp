@@ -29,7 +29,6 @@
 #define my_unique(x) sort(all(x)), x.erase(unique(all(x)), x.end())
 using namespace std;
 #pragma optimize("-O3")
-typedef long long int64;
 typedef long long LL;
 typedef unsigned long long uLL;
 typedef pair<int, int> pii;
@@ -86,7 +85,7 @@ void debug_out(const T &f, const R &... r) {
     debug_out(r...);
 }
 #define debug(...) cout << "[" << #__VA_ARGS__ << "]: ", debug_out(__VA_ARGS__);
-#define LLDO
+// #define LLDO
 #ifdef LLDO
 const char ptout[] = "%lld";
 #else
@@ -110,58 +109,54 @@ const LL INFLL = 0x3f3f3f3f3f3f3f3fLL;
 const int INF = 0x3f3f3f3f;
 const int mod = 998244353;
 const int MOD = 1e9 + 7;  // 998244353
-const int MXN = 2e5 + 5;
+const int MXN = 5e5 + 5;
 const int MXE = 2e6 + 6;
 int n, m, k;
-int ans = INF;
-int val[MXN], dp[MXN][2];
-vector<int> mp[MXN];
-void dfs(int u, int ba) {
-    dp[u][val[u]] = 0;
-    dp[u][!val[u]] = 1;
-    for(int v: mp[u]) {
-        if(v == ba) continue;
-        dfs(v, u);
-        dp[u][val[u]] += dp[v][val[u]];
-        dp[u][!val[u]] += dp[v][!val[u]] + (val[u] == val[v]?-1:0);
-    }
-    if(u == 1) ans = sml(ans, dp[u][0], dp[u][1]);
-}
-void dfs2(int u, int ba) {
-    if(ba) {
-        int tmp1 = dp[ba][val[ba]];
-        int tmp2 = dp[ba][!val[ba]];
-        dp[ba][val[ba]] -= dp[u][val[ba]];
-        dp[ba][!val[ba]] -= dp[u][!val[ba]] + (val[u]==val[ba]?-1:0);
-        dp[u][val[u]] += dp[ba][val[u]];
-        dp[u][!val[u]] += dp[ba][!val[u]] + (val[u] == val[ba]?-1:0);
-        // debug(ans, u, dp[u][0], dp[u][1])
-        ans = sml(ans, dp[u][0], dp[u][1]);
-        dp[ba][val[ba]] = tmp1;
-        dp[ba][!val[ba]] = tmp2;
-    }
-    for(int v: mp[u]) {
-        if(v == ba) continue;
-        dfs2(v, u);
-    }
-}
+int ar[MXN], p[MXN], br[MXN];
+pii cw[MXN], tmp;
 int main() {
 #ifndef ONLINE_JUDGE
     freopen("D:in.in", "r", stdin);
     freopen("D:out.out", "w", stdout);
 #endif
-    int tim = 1;
-    while (tim --) {
-        n = read();
-        for(int i = 1; i <= n; ++i) val[i] = read();
-        for(int i = 1, a, b; i < n; ++i) {
-            a = read(), b = read();
-            mp[a].eb(b);
-            mp[b].eb(a);
+    int tim = read();
+    while (tim--) {
+        n = read(), k = read(), m = read();
+        int flag = 1;
+        for(int i = 1, ret; i <= n; ++i) {
+            ar[i] = read();
+            if(ar[i] > m) flag = 0;
+            br[i] = min(m - ar[i], k);
+            cw[i] = mk(-br[i], br[i]);
         }
-        dfs(1, 0);
-        dfs2(1, 0);
-        printf("%d\n", ans);
+        tmp = cw[1];
+        int up = 0;//1 up, -1 down, 0 both ok
+        if(cw[1].fi == 0) up = 1;
+        for(int i = 2; i <= n; ++i) {
+            if(up == 1) {
+                if(tmp.se + 1 <= cw[i].se) {
+                    tmp.fi --;
+                    tmp.se ++;
+                }else flag = 0;
+            }else if(up == -1) {
+                if(tmp.fi == 0) flag = 0;
+                else tmp.fi = max(tmp.fi + 1, cw[i].fi), tmp.se = - tmp.fi;
+                if(tmp.fi == 0) up = 1;
+            }else {
+                up = 0;
+                tmp.fi ++;
+                tmp.se --;
+                if(cw[i].fi > tmp.fi) tmp = cw[i];
+                if(tmp.fi == 0) up = 1;
+                else if(tmp.fi > 0) flag = 0;
+            }
+            if(cw[i].fi == -k) {
+                tmp = cw[i];
+                up = 0;
+            }
+            // debug(i, up, tmp.fi, tmp.se)
+        }
+        printf("%s\n", flag?"Yes":"No");
     }
 #ifndef ONLINE_JUDGE
     cout << "time cost:" << 1.0 * clock() / CLOCKS_PER_SEC << "ms" << endl;

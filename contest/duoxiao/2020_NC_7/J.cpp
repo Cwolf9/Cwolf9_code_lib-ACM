@@ -6,7 +6,7 @@
 **备注**
 */
 #pragma comment(linker, "/STACK:102400000,102400000")
-//#include<bits/stdc++.h>
+#include<bits/stdc++.h>
 #include <cstdio>
 #include <cstring>
 #include <iostream>
@@ -75,7 +75,7 @@ void debug_out(const T &f, const R &... r) {
     debug_out(r...);
 }
 #define debug(...) cout << "[" << #__VA_ARGS__ << "]: ", debug_out(__VA_ARGS__);
-
+ 
 #define LLDO
 #ifdef LLDO
     const char ptout[] = "%lld";
@@ -86,37 +86,138 @@ template <typename T>
 void print(const T &f) {printf(ptout, f);putchar('\n');}
 template <typename T, typename... R>
 void print(const T &f, const R &... r) {printf(ptout, f);putchar(' ');print(r...);}
-
+ 
 const int HMOD[] = {1000000009, 1004535809};
 const int64 BASE[] = {1572872831, 1971536491};
 const int64 INFLL = 0x3f3f3f3f3f3f3f3fLL;
 const int INF = 0x3f3f3f3f;
 const int mod = 998244353;// 998244353
 const int MOD = 1e9 + 7;
-const int MXN = 2e5 + 5;
+const int MXN = 28 * 26 + 5;
 const int MXE = 2e6 + 6;
-
+// char s[MXN];
+vector<int> mp[MXN], mp2[MXN], mp3[MXN];
+set<int> son[MXN];
+int vis[MXN];
+void dfs_pre(int u, int ba, int s) {
+    vis[u] = 1;
+    for(int x: son[u]) {
+        son[s].insert(x);
+    }
+    for(int v: mp[u]) {
+        if(vis[v] || v == ba) continue;
+        dfs_pre(v, u, s);
+    }
+}
+void dfs(int u, int ba, int s, int f) {
+    // debug(u, ba, s, f)
+    // for(int x: son[u]) {
+    //     debug(x)
+    // }
+    vis[u] = 1;
+    if(f == 1) {
+        for(int x: son[u]) {
+            son[s].insert(x);
+        }
+    }
+    for(int v: mp[u]) {
+        if(vis[v] || v == ba) continue;
+        dfs(v, u, s, 1);
+    }
+    for(int v: mp3[u]) {
+        if(vis[v] || v == ba) continue;
+        dfs(v, u, s, 3);
+    }
+    if(!son[u/26-1].empty() && f == 3) {
+        for(int v: mp2[u]) {
+            if(vis[v] || v == ba) continue;
+            dfs(v, u, s, 1);
+        }
+    }
+}
 int main() {
 #ifndef ONLINE_JUDGE
     freopen("D:in.in", "r", stdin);
     freopen("D:out.out", "w", stdout);
 #endif
-    int tim = read();
+    int tim = 5;
+    scanf("%d\n", &tim);
+    // getchar();
+    string s;
     while(tim --) {
-        int64 m = read(), d = read(), w = read();
-        if(d == 1) {
-            print(0LL);
+        getline(cin ,s);
+        // cout << s << endl;
+        int id1 = 0, f1 = 0, s1 = 0, id2 = 0, f2 = -1, s2 = 0, pos = 0, len = s.length();
+        // printf("%s\n", s);
+        for(; pos < len; ++pos) {
+            if(s[pos] == '=') {
+                break;
+            }
+            if(isupper(s[pos])) {
+                id1 = s[pos] - 'A';
+            }else if(s[pos] == '.') f1 = 1;
+            else if(pos >= 1 && islower(s[pos])) {
+                f1 = 1;
+                s1 = s[pos] - 'a';
+            }
+        }
+        if(s[pos] != '=') {
             continue;
         }
-        int64 md = min(m, d);
-        int64 Gcd = __gcd(d - 1, w);
-        w /= Gcd;
-        if(w > md) {
-            print(0LL);
-            continue;
+        for(++ pos; pos < len; ++pos) {
+            if(isupper(s[pos])) {
+                id2 = s[pos] - 'A';
+                f2 = 0;
+            }else if(s[pos] == '.') f2 = 1;
+            else if(islower(s[pos])) {
+                if(f2 == 1) {
+                    f2 = 1;
+                    s2 = s[pos] - 'a';
+                }else {
+                    f2 = -1;
+                    s2 = s[pos] - 'a';
+                }
+            }
         }
-        int64 cnt = md / w;
-        print(cnt * md - w * (cnt*(cnt+1)/2));
+        // debug(f1, f2, id1, id2)
+        if(f1 == 1) {
+            if(f2 == 1) {
+                assert(0);
+            }else if(f2 == -1) {
+                assert(0);
+            }else {
+                mp2[(id1+1) * 26 + s1].eb(id2);//A.f = B
+            }
+        }else {
+            if(f2 == 1) {
+                mp3[id1].eb((id2+1) * 26 + s2);//B = A.f
+            }else if(f2 == -1) {
+                son[id1].insert(s2);
+                // debug(id1, s2)
+            }else {
+                mp[id1].eb(id2);
+            }
+        }
+    }
+    for(int i = 0; i < 26; ++i) {
+        clr(vis, 0);
+        dfs_pre(i, -1, i);
+    }
+    for(int t = 0; t < 1000; ++t) {
+        for(int i = 0; i < 26; ++i) {
+            clr(vis, 0);
+            dfs(i, -1, i, 1);
+        }
+    }
+    // debug(son[1].size())
+    for(int i = 0; i < 26; ++i) {
+        clr(vis, 0);
+        dfs(i, -1, i, 1);
+        printf("%c: ", 'A' + i);
+        for(int x: son[i]) {
+            printf("%c", 'a' + x);
+        }
+        puts("");
     }
 #ifndef ONLINE_JUDGE
     // cout << "time cost:" << 1.0 * clock() / CLOCKS_PER_SEC << "ms" << endl;

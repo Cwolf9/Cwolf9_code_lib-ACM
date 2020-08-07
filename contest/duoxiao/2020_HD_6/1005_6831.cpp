@@ -1,15 +1,28 @@
 /*
- 
+**链接**
+传送门: [here](http://acm.hdu.edu.cn/showproblem.php?pid=6831)
+**题意**
+求114514191911451419191145141919一个最短前缀，添加任意(,),+,*后数值为$n(5000)$.
+**思路**
+$O(13^3*n^2)$区间dp即可。
+**备注**
 */
+#define LH_LOCAL
+#define LLDO
 #pragma comment(linker, "/STACK:102400000,102400000")
-#include <assert.h>
 #include <bits/stdc++.h>
- 
 #include <algorithm>
+#include <array>
+#include <bitset>
+#include <cassert>
+#include <complex>
 #include <cstdio>
 #include <cstring>
 #include <ctime>
+#include <deque>
 #include <iostream>
+#include <list>
+#include <map>
 #include <queue>
 #include <set>
 #include <vector>
@@ -23,6 +36,8 @@
 #define SZ(x) ((int)(x).size())
 #define all(x) (x).begin(), (x).end()
 #define clr(a, b) memset((a), (b), sizeof((a)))
+#define rep(i, s, t) for (register int i = s; i < t; ++i)
+#define per(i, s, t) for (register int i = s; i >= t; --i)
 #define iis                           \
     std::ios::sync_with_stdio(false); \
     cin.tie(0)
@@ -30,15 +45,14 @@
 using namespace std;
 #pragma optimize("-O3")
 typedef long long int64;
-typedef long long LL;
-typedef unsigned long long uLL;
+typedef unsigned long long uint64;
 typedef pair<int, int> pii;
 // mt19937 rng(time(NULL));
 // mt19937_64 rng64(chrono::steady_clock::now().time_since_epoch().count());
 // mt19937_64 generator(std::clock());
 // shuffle(arr, arr + n, generator);
-inline LL read() {
-    LL x = 0;
+inline int64 read() {
+    int64 x = 0;
     int f = 0;
     char ch = getchar();
     while (ch < '0' || ch > '9') f |= (ch == '-'), ch = getchar();
@@ -46,7 +60,7 @@ inline LL read() {
         x = (x << 3) + (x << 1) + ch - '0', ch = getchar();
     return x = f ? -x : x;
 }
-inline void write(LL x, bool f) {
+inline void write(int64 x, bool f) {
     if (x == 0) {
         putchar('0');
         if (f) putchar('\n');
@@ -85,8 +99,12 @@ void debug_out(const T &f, const R &... r) {
     cout << f << " ";
     debug_out(r...);
 }
+#ifdef LH_LOCAL
 #define debug(...) cout << "[" << #__VA_ARGS__ << "]: ", debug_out(__VA_ARGS__);
-#define LLDO
+#else
+#define debug(...) ;
+#endif
+
 #ifdef LLDO
 const char ptout[] = "%lld";
 #else
@@ -103,69 +121,70 @@ void print(const T &f, const R &... r) {
     putchar(' ');
     print(r...);
 }
- 
+
 const int HMOD[] = {1000000009, 1004535809};
-const LL BASE[] = {1572872831, 1971536491};
-const LL INFLL = 0x3f3f3f3f3f3f3f3fLL;
+const int64 BASE[] = {1572872831, 1971536491};
+const int64 INFLL = 0x3f3f3f3f3f3f3f3fLL;
 const int INF = 0x3f3f3f3f;
-const int mod = 998244353;
-const int MOD = 1e9 + 7;  // 998244353
+const int mod = 1e9 + 7;  // 998244353
+const int MOD = 1e9 + 7;
 const int MXN = 2e5 + 5;
 const int MXE = 2e6 + 6;
-int n, m, k;
-int ans = INF;
-int val[MXN], dp[MXN][2];
-vector<int> mp[MXN];
-void dfs(int u, int ba) {
-    dp[u][val[u]] = 0;
-    dp[u][!val[u]] = 1;
-    for(int v: mp[u]) {
-        if(v == ba) continue;
-        dfs(v, u);
-        dp[u][val[u]] += dp[v][val[u]];
-        dp[u][!val[u]] += dp[v][!val[u]] + (val[u] == val[v]?-1:0);
+int n;
+char str[35] = "0114514191911451419191145141919";
+bool dp[35][35][5005];
+int ans[5005];
+#ifdef LH_LOCAL
+int stoi(string s) {
+    int ans = 0;
+    for(char c: s) {
+        ans = ans * 10 + c - '0';
     }
-    if(u == 1) ans = sml(ans, dp[u][0], dp[u][1]);
+    return ans;
 }
-void dfs2(int u, int ba) {
-    if(ba) {
-        int tmp1 = dp[ba][val[ba]];
-        int tmp2 = dp[ba][!val[ba]];
-        dp[ba][val[ba]] -= dp[u][val[ba]];
-        dp[ba][!val[ba]] -= dp[u][!val[ba]] + (val[u]==val[ba]?-1:0);
-        dp[u][val[u]] += dp[ba][val[u]];
-        dp[u][!val[u]] += dp[ba][!val[u]] + (val[u] == val[ba]?-1:0);
-        // debug(ans, u, dp[u][0], dp[u][1])
-        ans = sml(ans, dp[u][0], dp[u][1]);
-        dp[ba][val[ba]] = tmp1;
-        dp[ba][!val[ba]] = tmp2;
-    }
-    for(int v: mp[u]) {
-        if(v == ba) continue;
-        dfs2(v, u);
-    }
-}
+#endif
 int main() {
-#ifndef ONLINE_JUDGE
+#ifdef LH_LOCAL
     freopen("D:in.in", "r", stdin);
     freopen("D:out.out", "w", stdout);
 #endif
-    int tim = 1;
-    while (tim --) {
-        n = read();
-        for(int i = 1; i <= n; ++i) val[i] = read();
-        for(int i = 1, a, b; i < n; ++i) {
-            a = read(), b = read();
-            mp[a].eb(b);
-            mp[b].eb(a);
+    string s = str;
+    clr(ans, 0x3f);
+    for (int len = 1; len <= 12; ++len) {
+        for (int i = 1, j; i + len - 1 <= 12; ++i) {
+            j = i + len - 1;
+            if (len <= 4) {
+                int x = stoi(s.substr(i, len));
+                dp[i][j][x] = 1;
+                if(ans[x] == INF && i == 1) ans[x] = len;
+            }
+            for (int k = i; k < j; ++k) {
+                for (int a = 1; a <= 5000; ++a) {
+                    if (dp[i][k][a] == 0) continue;
+                    for (int b = 1; b <= 5000; ++b) {
+                        if (dp[k + 1][j][b] == 0) continue;
+                        if (a + b <= 5000) {
+                            dp[i][j][a + b] = 1;
+                            if(ans[a + b] == INF && i == 1) ans[a + b] = len;
+                        }
+                        if (a * b <= 5000) {
+                            dp[i][j][a * b] = 1;
+                            if(ans[a * b] == INF && i == 1) ans[a * b] = len;
+                        }
+                    }
+                }
+            }
         }
-        dfs(1, 0);
-        dfs2(1, 0);
-        printf("%d\n", ans);
     }
-#ifndef ONLINE_JUDGE
-    cout << "time cost:" << 1.0 * clock() / CLOCKS_PER_SEC << "ms" << endl;
-    system("pause");
+    ans[3] = ans[7] = -1;
+    int tim = read();
+    while (tim--) {
+        n = read();
+        printf("%d\n", ans[n]);
+    }
+#ifdef LH_LOCAL
+    // cout << "time cost:" << 1.0 * clock() / CLOCKS_PER_SEC << "ms" << endl;
+    // system("pause");
 #endif
     return 0;
 }

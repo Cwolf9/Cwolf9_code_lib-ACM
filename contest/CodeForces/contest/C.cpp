@@ -22,6 +22,8 @@
 #define eb emplace_back
 #define SZ(x) ((int)(x).size())
 #define all(x) (x).begin(), (x).end()
+#define rep(i,s,t) for(register int i=s;i<t;++i)
+#define per(i,s,t) for(register int i=s;i>=t;--i)
 #define clr(a, b) memset((a), (b), sizeof((a)))
 #define iis                           \
     std::ios::sync_with_stdio(false); \
@@ -112,56 +114,16 @@ const int mod = 998244353;
 const int MOD = 1e9 + 7;  // 998244353
 const int MXN = 2e5 + 5;
 const int MXE = 2e6 + 6;
-int n, m, k;
-int ans = INF;
-int val[MXN], dp[MXN][2];
-vector<int> mp[MXN];
-void dfs(int u, int ba) {
-    dp[u][val[u]] = 0;
-    dp[u][!val[u]] = 1;
-    for(int v: mp[u]) {
-        if(v == ba) continue;
-        dfs(v, u);
-        dp[u][val[u]] += dp[v][val[u]];
-        dp[u][!val[u]] += dp[v][!val[u]] + (val[u] == val[v]?-1:0);
-    }
-    if(u == 1) ans = sml(ans, dp[u][0], dp[u][1]);
-}
-void dfs2(int u, int ba) {
-    if(ba) {
-        int tmp1 = dp[ba][val[ba]];
-        int tmp2 = dp[ba][!val[ba]];
-        dp[ba][val[ba]] -= dp[u][val[ba]];
-        dp[ba][!val[ba]] -= dp[u][!val[ba]] + (val[u]==val[ba]?-1:0);
-        dp[u][val[u]] += dp[ba][val[u]];
-        dp[u][!val[u]] += dp[ba][!val[u]] + (val[u] == val[ba]?-1:0);
-        // debug(ans, u, dp[u][0], dp[u][1])
-        ans = sml(ans, dp[u][0], dp[u][1]);
-        dp[ba][val[ba]] = tmp1;
-        dp[ba][!val[ba]] = tmp2;
-    }
-    for(int v: mp[u]) {
-        if(v == ba) continue;
-        dfs2(v, u);
-    }
-}
+int n;
+int64 m, d, w;
 int main() {
 #ifndef ONLINE_JUDGE
     freopen("D:in.in", "r", stdin);
     freopen("D:out.out", "w", stdout);
 #endif
-    int tim = 1;
-    while (tim --) {
-        n = read();
-        for(int i = 1; i <= n; ++i) val[i] = read();
-        for(int i = 1, a, b; i < n; ++i) {
-            a = read(), b = read();
-            mp[a].eb(b);
-            mp[b].eb(a);
-        }
-        dfs(1, 0);
-        dfs2(1, 0);
-        printf("%d\n", ans);
+    int tim = read();
+    while (tim--) {
+        
     }
 #ifndef ONLINE_JUDGE
     cout << "time cost:" << 1.0 * clock() / CLOCKS_PER_SEC << "ms" << endl;

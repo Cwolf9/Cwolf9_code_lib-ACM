@@ -95,7 +95,77 @@ const int mod = 998244353;// 998244353
 const int MOD = 1e9 + 7;
 const int MXN = 2e5 + 5;
 const int MXE = 2e6 + 6;
-
+int n, m, s, t, x;
+char ip[MXN];
+int vis[MXN][2];
+int64 dis[MXN][2];
+vector<pii> mp[MXN];
+typedef pair<int64, pii> ppii;
+void dij(){
+    priority_queue<ppii,vector<ppii> ,greater<ppii> >Q;
+    while(!Q.empty()) Q.pop();
+    for(int i = 1; i <= n; ++i) {
+        dis[i][0] = dis[i][1] = INFLL;
+        vis[i][0] = vis[i][1] = 0;
+    }
+    if(ip[s] == 'L') {
+        dis[s][0] = 0;
+        Q.push(mk(0, mk(s, 0)));
+    }else if(ip[s] == 'R') {
+        dis[s][1] = 0;
+        Q.push(mk(0, mk(s, 1)));
+    }else {
+        dis[s][0] = 0;
+        Q.push(mk(0, mk(s, 0)));
+        dis[s][1] = 0;
+        Q.push(mk(0, mk(s, 1)));
+    }
+    while(!Q.empty()) {
+        ppii a=Q.top(); Q.pop();
+        int u=a.se.fi, id = a.se.se;
+        if(dis[u][id] < a.fi) continue;
+        // debug(u, id, dis[u][id])
+        // if(vis[u][id]) continue;
+        // vis[u][id] = 1;
+        for(pii V: mp[u]) {
+            int v = V.fi;
+            if(ip[v] == 'M') {
+                if(dis[v][id] > dis[u][id] + V.se) {
+                    dis[v][id] = dis[u][id] + V.se;
+                    Q.push(mk(dis[v][id], mk(v, id)));
+                }
+                if(dis[v][!id] > dis[u][id] + V.se + x) {
+                    dis[v][!id] = dis[u][id] + V.se + x;
+                    Q.push(mk(dis[v][!id], mk(v, !id)));
+                }
+            }else if(ip[v] == 'L') {
+                if(id == 0) {
+                    if(dis[v][id] > dis[u][id] + V.se + 0) {
+                        dis[v][id] = dis[u][id] + V.se + 0;
+                        Q.push(mk(dis[v][id], mk(v, id)));
+                    }
+                }else {
+                    if(dis[v][!id] > dis[u][id] + V.se + x) {
+                        dis[v][!id] = dis[u][id] + V.se + x;
+                        Q.push(mk(dis[v][!id], mk(v, !id)));
+                    }
+                }
+            }else {
+                if(id == 0) {
+                    if(dis[v][!id] > dis[u][id] + V.se + x) {
+                        dis[v][!id] = dis[u][id] + V.se + x;
+                        Q.push(mk(dis[v][!id], mk(v, !id)));
+                    }
+                }else {
+                    if(dis[v][id] > dis[u][id] + V.se + 0) {
+                        dis[v][id] = dis[u][id] + V.se + 0;
+                        Q.push(mk(dis[v][id], mk(v, id)));
+                    }
+                }
+            }
+        }
+    }
+}
 int main() {
 #ifndef ONLINE_JUDGE
     freopen("D:in.in", "r", stdin);
@@ -103,20 +173,16 @@ int main() {
 #endif
     int tim = read();
     while(tim --) {
-        int64 m = read(), d = read(), w = read();
-        if(d == 1) {
-            print(0LL);
-            continue;
+        n = read(), m = read(), s = read(), t = read(), x = read();
+        scanf("%s", ip + 1);
+        for(int i = 1; i <= n; ++i) mp[i].clear();
+        for(int i = 1, a, b, c; i <= m; ++i) {
+            a = read();b = read();c = read();
+            mp[a].eb(mk(b, c));
+            mp[b].eb(mk(a, c));
         }
-        int64 md = min(m, d);
-        int64 Gcd = __gcd(d - 1, w);
-        w /= Gcd;
-        if(w > md) {
-            print(0LL);
-            continue;
-        }
-        int64 cnt = md / w;
-        print(cnt * md - w * (cnt*(cnt+1)/2));
+        dij();
+        printf("%lld\n", min(dis[t][0], dis[t][1]));
     }
 #ifndef ONLINE_JUDGE
     // cout << "time cost:" << 1.0 * clock() / CLOCKS_PER_SEC << "ms" << endl;

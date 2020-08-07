@@ -109,13 +109,13 @@ const int HMOD[] = {1000000009, 1004535809};
 const int64 BASE[] = {1572872831, 1971536491};
 const int64 INFLL = 0x3f3f3f3f3f3f3f3fLL;
 const int INF = 0x3f3f3f3f;
-const int mod = 998244353;
+// const int mod = 998244353;
 const int MOD = 1e9 + 9;  // 998244353
 const int MXN = 2e5 + 5;
 const int MXE = 2e6 + 6;
 int n, m, k;
 int ar[MXN];
-int64 sum[MXN<<2], add[MXN<<2], asn[MXN<<2];
+int64 sum[MXN<<2], asn[MXN<<2];
 int ksm(int a, int b) {
     int res = 1;
     while(b > 0) {
@@ -126,10 +126,9 @@ int ksm(int a, int b) {
     return res;
 }
 void build(int l, int r, int rt) {
-    add[rt] = 1;
-    asn[rt] = 0;
+    asn[rt] = -1;
     if(l == r) {
-        sum[rt] = l + 1;
+        sum[rt] = ar[l] + 1;
         return;
     }
     int mid = (l + r) >> 1;
@@ -137,13 +136,48 @@ void build(int l, int r, int rt) {
     build(mid + 1, r, rt << 1 | 1);
     sum[rt] = sum[rt << 1] * sum[rt << 1 | 1] % MOD;
 }
-void update(int L, int R, int id, int v, int l, int r, int rt) {
+void push_down(int rt, int l, int mid, int r) {
+    if(asn[rt] == -1) return;
+    asn[rt << 1] = asn[rt << 1 | 1] = asn[rt];
+    sum[rt << 1] = ksm(asn[rt], mid - l + 1) % MOD;
+    sum[rt << 1 | 1] = ksm(asn[rt], r - mid) % MOD;
+    asn[rt] = -1;
+}
+void update(int L, int R, int v, int l, int r, int rt) {
     if(L <= l && r <= R) {
-        if(id == 1) {
-            add[rt] = v * add[rt] % MOD;;
-            sum[rt] = sum[rt] * ksm(v, r - l + 1) % MOD;
-        }
+        asn[rt] = v + 1;
+        sum[rt] = ksm(v + 1, r - l + 1);
         return ;
+    }
+    int mid = (l + r) >> 1;
+    push_down(rt, l, mid, r);
+    if(L > mid) update(L, R, v, mid + 1, r, rt << 1 | 1);
+    else if(R <= mid) update(L, R, v, l, mid, rt << 1);
+    else {
+        update(L, mid, v, l, mid, rt << 1);
+        update(mid + 1, R, v, mid + 1, r, rt << 1 | 1);
+    }
+    sum[rt] = sum[rt << 1] * sum[rt << 1 | 1] % MOD;
+}
+void single(int p, int v, int l, int r, int rt) {
+    if(l == r) {
+        sum[rt] = v + 1;
+        return ;
+    }
+    int mid = (l + r) >> 1;
+    push_down(rt, l, mid, r);
+    if(p <= mid) single(p, v, l, mid, rt << 1);
+    else single(p, v, mid + 1, r, rt << 1 | 1);
+    sum[rt] = sum[rt << 1] * sum[rt << 1 | 1] % MOD;
+}
+int64 query(int L, int R, int l, int r, int rt) {
+    if(L <= l && r <= R) return sum[rt];
+    int mid = (l + r) >> 1;
+    push_down(rt, l, mid, r);
+    if(L > mid) return query(L, R, mid + 1, r, rt << 1 | 1);
+    else if(R <= mid) return query(L, R, l, mid, rt << 1);
+    else {
+        return (query(L, mid, l, mid, rt << 1) * query(mid + 1, R, mid + 1, r, rt << 1 | 1)) % MOD;
     }
 }
 int main() {
@@ -152,50 +186,29 @@ int main() {
     freopen("D://out.out", "w", stdout);
 #endif
     n = read(), m = read();
-    for(int i = 1; i <= n; ++i) ar[i] = read();
+    assert(n >= 1 && n <= 100000 && m >= 1 && m <= 200000);
+    for(int i = 1; i <= n; ++i) ar[i] = read(), assert(ar[i] >= 0 && ar[i] <= 1000000000);
+    build(1, n, 1);
     while(m -- ) {
-
+        int opt = read();
+        assert(opt <= 3 && opt >= 1);
+        if(opt == 1) {
+            int l = read(), r = read(), v = read();
+            assert(1 <= l && l <= r && r <= n && v >= 0 && v <= 1000000000);
+            update(l, r, v, 1, n, 1);
+        }else if(opt == 2) {
+            int p = read(), v = read();
+            assert(1 <= p && p <= n && v >= 0 && v <= 1000000000);
+            single(p, v, 1, n, 1);
+        }else {
+            int l = read(), r = read();
+            assert(1 <= l && l <= r && r <= n);
+            printf("%lld\n", query(l, r, 1, n, 1));
+        }
     }
 #ifndef ONLINE_JUDGE
-    cout << "time cost:" << 1.0 * clock() / CLOCKS_PER_SEC << "ms" << endl;
+    // cout << "time cost:" << 1.0 * clock() / CLOCKS_PER_SEC << "ms" << endl;
     // system("pause");
 #endif
     return 0;
 }
-/*
-const int N = 1e4 + 7;const int INF = 0x3f3f3f3f;
-LL n, m;int ar[N];LL dp[19][19][3000];
-LL dfs(int pos,int mid,int cur,bool lead,bool limit){
-  if(pos==-1) return cur==0;
-  if(cur<0) return 0;
-  if(!limit&&dp[pos][mid][cur]!=-1)return dp[pos][mid][cur];
-  int up = limit? ar[pos]: 9;
-  LL sum = 0;
-  for(int i = 0; i <= up; ++i){
-    int tmp = (pos-mid)*i;
-    sum += dfs(pos-1,mid,cur+tmp,lead&&i==0,limit&&i==ar[pos]);
-  }
-  if(!limit) dp[pos][mid][cur] = sum;
-  return sum;
-}
-LL solve(LL x){
-  if(x<0) return 0;
-  else if(x==0) return 1;
-  int pos = 0;
-  while(x){
-    ar[pos++] = x % 10;
-    x /= 10;
-  }
-  LL sum = 0;
-  for(int i = pos-1; i >= 0; --i){
-    sum += dfs(pos-1, i, 0, 1, 1);
-  }
-  return sum-(pos-1);
-}
-void solve(){
-    memset(dp, -1, sizeof(dp));
-    scanf("%lld%lld", &n, &m);
-    printf("%lld\n", solve(m)-solve(n-1));
-}
-
-*/

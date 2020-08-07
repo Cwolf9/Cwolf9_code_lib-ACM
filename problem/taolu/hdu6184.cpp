@@ -90,8 +90,14 @@ int main() {
         tim = 1;
         for(int i = 1, a, b; i <= m; ++i) {
             a = A[i], b = B[i];
-            for(int j = head[a]; ~j; j = cw[j].nex) vis[cw[j].v] = tim, last[cw[j].v] = cw[j].id;
-            for(int j = head[b]; ~j; j = cw[j].nex) if(vis[cw[j].v] == tim) ++ ans[i], ++ ans[cw[j].id], ++ ans[last[cw[j].v]];
+            for(int j = head[a]; ~j; j = cw[j].nex) {
+                vis[cw[j].v] = tim, last[cw[j].v] = cw[j].id;
+            }
+            for(int j = head[b]; ~j; j = cw[j].nex) {
+                if(vis[cw[j].v] == tim) {
+                    ++ ans[i], ++ ans[cw[j].id], ++ ans[last[cw[j].v]];
+                }
+            }
             ++ tim;
         }
         LL ANS = 0;

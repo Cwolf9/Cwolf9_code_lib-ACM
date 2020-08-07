@@ -1,12 +1,14 @@
 /*
 **链接**
-传送门: [here]()
+传送门: [here](http://acm.hdu.edu.cn/showproblem.php?pid=6769)
 **题意**
+
 **思路**
+
 **备注**
 */
 #pragma comment(linker, "/STACK:102400000,102400000")
-//#include<bits/stdc++.h>
+#include <bits/stdc++.h>
 #include <cstdio>
 #include <cstring>
 #include <iostream>
@@ -41,10 +43,10 @@ using namespace std;
 typedef long long int64;
 typedef unsigned long long uint64;
 typedef pair<int, int> pii;
-// mt19937 rng(time(NULL));
+mt19937_64 rng(chrono::steady_clock::now().time_since_epoch().count());
 // mt19937_64 rng64(chrono::steady_clock::now().time_since_epoch().count());
 // mt19937_64 generator(std::clock());
-// shuffle(arr, arr + n, generator);
+// shuffle(arr, arr + n, rng);
 inline int64 read() {
     int64 x = 0;int f = 0;char ch = getchar();
     while (ch < '0' || ch > '9') f |= (ch == '-'), ch = getchar();
@@ -95,7 +97,41 @@ const int mod = 998244353;// 998244353
 const int MOD = 1e9 + 7;
 const int MXN = 2e5 + 5;
 const int MXE = 2e6 + 6;
-
+int n, m;
+class node {
+    public:
+    int v, a, b;
+    void rd() {
+        v = read(), a = read(), b = read();
+    }
+}A;
+vector<node> mp[MXN];
+int64 dp[MXN][25], ndp[25];
+int sz[MXN];
+void dfs(int u, int ba, int64 lim) {
+    sz[u] = 1;
+    clr(dp[u], 0x3f);
+    dp[u][0] = 0;
+    for(node &V: mp[u]) {
+        if(V.v == ba) continue;
+        dfs(V.v, u, lim);
+        int up1 = min(sz[u], m + 1), up2 = min(sz[V.v] + 1, m + 1);
+        clr(ndp, 0x3f);
+        for(int i = 0; i < up1; ++i) {
+            for(int j = 0; j < up2; ++j) {
+                if(i + j <= m && dp[u][i] + dp[V.v][j] + V.b <= lim) 
+                    ndp[i+j] = min(ndp[i+j], max(dp[u][i], dp[V.v][j] + V.b));
+                if(i + j + 1 <= m && dp[u][i] + dp[V.v][j] + V.a <= lim) 
+                    ndp[i+j+1] = min(ndp[i+j+1], max(dp[u][i], dp[V.v][j] + V.a));
+            }
+        }
+        sz[u] += sz[V.v];
+        for(int i = 0; i <= min(m, sz[u] - 1); ++i) {
+            dp[u][i] = ndp[i];
+            //debug(u, V.v, i, ndp[i])
+        }
+    }
+}
 int main() {
 #ifndef ONLINE_JUDGE
     freopen("D:in.in", "r", stdin);
@@ -103,20 +139,23 @@ int main() {
 #endif
     int tim = read();
     while(tim --) {
-        int64 m = read(), d = read(), w = read();
-        if(d == 1) {
-            print(0LL);
-            continue;
+        n = read(), m = read();
+        for(int i = 1, a; i < n; ++i) {
+            a = read();
+            A.rd();
+            mp[a].eb(A);
+            swap(a, A.v);
+            mp[a].eb(A);
         }
-        int64 md = min(m, d);
-        int64 Gcd = __gcd(d - 1, w);
-        w /= Gcd;
-        if(w > md) {
-            print(0LL);
-            continue;
+        int64 L = 1, R = 2e13+1, mid, ans = -1;
+        //dfs(1, -1, 6);
+        while(L <= R) {
+            mid = (L + R) >> 1;
+            dfs(1, -1, mid);
+            if(dp[1][m] <= mid) ans = mid, R = mid - 1;
+            else L = mid + 1;
         }
-        int64 cnt = md / w;
-        print(cnt * md - w * (cnt*(cnt+1)/2));
+        printf("%lld\n", ans);
     }
 #ifndef ONLINE_JUDGE
     // cout << "time cost:" << 1.0 * clock() / CLOCKS_PER_SEC << "ms" << endl;

@@ -1,15 +1,16 @@
 /*
- 
+
 */
 #pragma comment(linker, "/STACK:102400000,102400000")
 #include <assert.h>
 #include <bits/stdc++.h>
- 
+
 #include <algorithm>
 #include <cstdio>
 #include <cstring>
 #include <ctime>
 #include <iostream>
+#include <map>
 #include <queue>
 #include <set>
 #include <vector>
@@ -30,15 +31,14 @@
 using namespace std;
 #pragma optimize("-O3")
 typedef long long int64;
-typedef long long LL;
-typedef unsigned long long uLL;
+typedef unsigned long long uint64;
 typedef pair<int, int> pii;
 // mt19937 rng(time(NULL));
 // mt19937_64 rng64(chrono::steady_clock::now().time_since_epoch().count());
 // mt19937_64 generator(std::clock());
 // shuffle(arr, arr + n, generator);
-inline LL read() {
-    LL x = 0;
+inline int64 read() {
+    int64 x = 0;
     int f = 0;
     char ch = getchar();
     while (ch < '0' || ch > '9') f |= (ch == '-'), ch = getchar();
@@ -46,7 +46,7 @@ inline LL read() {
         x = (x << 3) + (x << 1) + ch - '0', ch = getchar();
     return x = f ? -x : x;
 }
-inline void write(LL x, bool f) {
+inline void write(int64 x, bool f) {
     if (x == 0) {
         putchar('0');
         if (f) putchar('\n');
@@ -103,66 +103,84 @@ void print(const T &f, const R &... r) {
     putchar(' ');
     print(r...);
 }
- 
+
 const int HMOD[] = {1000000009, 1004535809};
-const LL BASE[] = {1572872831, 1971536491};
-const LL INFLL = 0x3f3f3f3f3f3f3f3fLL;
+const int64 BASE[] = {1572872831, 1971536491};
+const int64 INFLL = 0x3f3f3f3f3f3f3f3fLL;
 const int INF = 0x3f3f3f3f;
-const int mod = 998244353;
+const int mod = 55566677;
 const int MOD = 1e9 + 7;  // 998244353
-const int MXN = 2e5 + 5;
+// const int MXN = 1e6 + 5;
 const int MXE = 2e6 + 6;
 int n, m, k;
-int ans = INF;
-int val[MXN], dp[MXN][2];
-vector<int> mp[MXN];
-void dfs(int u, int ba) {
-    dp[u][val[u]] = 0;
-    dp[u][!val[u]] = 1;
-    for(int v: mp[u]) {
-        if(v == ba) continue;
-        dfs(v, u);
-        dp[u][val[u]] += dp[v][val[u]];
-        dp[u][!val[u]] += dp[v][!val[u]] + (val[u] == val[v]?-1:0);
+struct Point {
+    int x;
+    int y;
+};
+class Solution {
+public:
+    /**
+     * 
+     * @param array int整型一维数组 array
+     * @param arrayLen int array数组长度
+     * @return long长整型
+     */
+    typedef long long ll;
+    static const int MXN = 1e5 + 5;
+    int n;
+    int ar[MXN], lmn[MXN], rmn[MXN], lmx[MXN], rmx[MXN];
+    ll ans;
+    long long MaxMin(int* array, int arrayLen) {
+        // write code here
+        n = arrayLen;
+        for(int i = 0; i < n; ++i) {
+            ar[i + 1] = array[i];
+        }
+        vector<int> sk1, sk2, sk3, sk4;
+        for(int i = 1; i <= n; ++i) {
+            while(!sk1.empty() && ar[sk1.back()] >= ar[i]) sk1.pop_back();
+            lmn[i] = sk1.empty()?0:sk1.back();
+            while(!sk2.empty() && ar[sk2.back()] <= ar[i]) sk2.pop_back();
+            lmx[i] = 0;
+            int L = 0, R = sk2.size() - 1, mid;
+            while(L <= R) {
+                mid = (L + R) >> 1;
+                if(ar[sk2[mid]] >= ar[i] + ar[i]) lmx[i] = sk2[mid], L = mid + 1;
+                else R = mid - 1;
+            }
+            sk1.push_back(i), sk2.push_back(i);
+        }
+        for(int i = n; i >= 1; --i) {
+            while(!sk3.empty() && ar[sk3.back()] > ar[i]) sk3.pop_back();
+            rmn[i] = sk3.empty()?n+1:sk3.back();
+            while(!sk4.empty() && ar[sk4.back()] <= ar[i]) sk4.pop_back();
+            rmx[i] = n + 1;
+            int L = 0, R = sk4.size() - 1, mid;
+            while(L <= R) {
+                mid = (L + R) >> 1;
+                if(ar[sk4[mid]] >= ar[i] + ar[i]) rmx[i] = sk4[mid], L = mid + 1;
+                else R = mid - 1;
+            }
+            sk3.push_back(i), sk4.push_back(i);
+        }
+        ans = 0;
+        for(int i = 1; i <= n; ++i) {
+            ans += 1LL*max(0, lmx[i]-lmn[i]) * (rmn[i]-i) + 1LL*max(0,rmn[i]-rmx[i])*(i-lmn[i]);
+            ans -= 1LL*max(0, lmx[i]-lmn[i]) * max(0,rmn[i]-rmx[i]);
+            // debug(ans)
+            // debug(lmn[i], lmx[i], rmn[i], rmx[i])
+        }
+        return ans;
     }
-    if(u == 1) ans = sml(ans, dp[u][0], dp[u][1]);
-}
-void dfs2(int u, int ba) {
-    if(ba) {
-        int tmp1 = dp[ba][val[ba]];
-        int tmp2 = dp[ba][!val[ba]];
-        dp[ba][val[ba]] -= dp[u][val[ba]];
-        dp[ba][!val[ba]] -= dp[u][!val[ba]] + (val[u]==val[ba]?-1:0);
-        dp[u][val[u]] += dp[ba][val[u]];
-        dp[u][!val[u]] += dp[ba][!val[u]] + (val[u] == val[ba]?-1:0);
-        // debug(ans, u, dp[u][0], dp[u][1])
-        ans = sml(ans, dp[u][0], dp[u][1]);
-        dp[ba][val[ba]] = tmp1;
-        dp[ba][!val[ba]] = tmp2;
-    }
-    for(int v: mp[u]) {
-        if(v == ba) continue;
-        dfs2(v, u);
-    }
-}
+};
 int main() {
 #ifndef ONLINE_JUDGE
     freopen("D:in.in", "r", stdin);
     freopen("D:out.out", "w", stdout);
 #endif
-    int tim = 1;
-    while (tim --) {
-        n = read();
-        for(int i = 1; i <= n; ++i) val[i] = read();
-        for(int i = 1, a, b; i < n; ++i) {
-            a = read(), b = read();
-            mp[a].eb(b);
-            mp[b].eb(a);
-        }
-        dfs(1, 0);
-        dfs2(1, 0);
-        printf("%d\n", ans);
-    }
+    int ar[4] = {2, 1, 1, 2};
+    Solution ss;
+    ss.MaxMin(ar, 4);
 #ifndef ONLINE_JUDGE
     cout << "time cost:" << 1.0 * clock() / CLOCKS_PER_SEC << "ms" << endl;
     system("pause");

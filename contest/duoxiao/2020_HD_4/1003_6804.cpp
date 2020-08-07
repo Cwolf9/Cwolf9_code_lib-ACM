@@ -1,12 +1,19 @@
 /*
 **链接**
-传送门: [here]()
+传送门: [here](http://acm.hdu.edu.cn/showproblem.php?pid=6804)
 **题意**
+$1\le n,m\le 1e3,-1e3\le wi\le 1e3,-1e9\le vi\le 1e9$，在两堆物品中分别选出一些
+物品，满足两堆物品$\sum_{n} wi=\sum_{m} wi$，求出最大的$\sum vi$.
 **思路**
+证明看出题人官方题解。
+将某一堆物品$wi$取反并合并，相当于求选出一些物品满足$\sum wi=0$条件的$\sum vi$最大值。
+合并后的物品随机打乱，做普通背包$dp$，并设置背包上下限$[-T,T]$，仅在此范围内做$dp$即可。
+当物品以一种随机顺序加入背包时，最优解在某一阶段的状态均在$0$附近振荡。
+
 **备注**
 */
 #pragma comment(linker, "/STACK:102400000,102400000")
-//#include<bits/stdc++.h>
+#include <bits/stdc++.h>
 #include <cstdio>
 #include <cstring>
 #include <iostream>
@@ -41,10 +48,10 @@ using namespace std;
 typedef long long int64;
 typedef unsigned long long uint64;
 typedef pair<int, int> pii;
-// mt19937 rng(time(NULL));
+mt19937_64 rng(chrono::steady_clock::now().time_since_epoch().count());
 // mt19937_64 rng64(chrono::steady_clock::now().time_since_epoch().count());
 // mt19937_64 generator(std::clock());
-// shuffle(arr, arr + n, generator);
+// shuffle(arr, arr + n, rng);
 inline int64 read() {
     int64 x = 0;int f = 0;char ch = getchar();
     while (ch < '0' || ch > '9') f |= (ch == '-'), ch = getchar();
@@ -93,9 +100,12 @@ const int64 INFLL = 0x3f3f3f3f3f3f3f3fLL;
 const int INF = 0x3f3f3f3f;
 const int mod = 998244353;// 998244353
 const int MOD = 1e9 + 7;
-const int MXN = 2e5 + 5;
+const int MXN = 1e5 + 5;
 const int MXE = 2e6 + 6;
-
+int n, m;
+vector<pii > ar;
+int64 dp[MXN];
+int base = 3e4 + 10;
 int main() {
 #ifndef ONLINE_JUDGE
     freopen("D:in.in", "r", stdin);
@@ -103,20 +113,31 @@ int main() {
 #endif
     int tim = read();
     while(tim --) {
-        int64 m = read(), d = read(), w = read();
-        if(d == 1) {
-            print(0LL);
-            continue;
+        n = read(), m = read();
+        ar.clear();
+        for(int i = 1, a, b; i <= n; ++i) {
+            a = read(), b = read();
+            ar.eb(mk(a, b));
         }
-        int64 md = min(m, d);
-        int64 Gcd = __gcd(d - 1, w);
-        w /= Gcd;
-        if(w > md) {
-            print(0LL);
-            continue;
+        for(int i = 1, a, b; i <= m; ++i) {
+            a = read(), b = read();
+            ar.eb(mk(-a, b));
         }
-        int64 cnt = md / w;
-        print(cnt * md - w * (cnt*(cnt+1)/2));
+        shuffle(all(ar), rng);
+        for(int i = 0; i <= base + base; ++i) dp[i] = -INFLL;
+        dp[base] = 0;
+        for(int i = 0; i < SZ(ar); ++i) {
+            if(ar[i].fi >= 0) {
+                for(int j = min(base << 1, (base << 1) + ar[i].fi); j - ar[i].fi >= 0 && j >= 0; --j) {
+                    if(dp[j - ar[i].fi] != -INFLL) dp[j] = max(dp[j], dp[j-ar[i].fi] + ar[i].se);
+                }
+            }else {
+                for(int j = 0; j <= (base << 1) + ar[i].fi; ++j) {
+                    if(dp[j - ar[i].fi] != -INFLL) dp[j] = max(dp[j], dp[j-ar[i].fi] + ar[i].se);
+                }
+            }
+        }
+        printf("%lld\n", dp[base]);
     }
 #ifndef ONLINE_JUDGE
     // cout << "time cost:" << 1.0 * clock() / CLOCKS_PER_SEC << "ms" << endl;
