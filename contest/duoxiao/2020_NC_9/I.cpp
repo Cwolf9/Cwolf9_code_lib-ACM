@@ -1,9 +1,34 @@
-// #define LH_LOCAL
-// #define LLDO
-#include <bits/stdc++.h>
+/*
+**链接**
+传送门: [here]()
+**题意**
+**思路**
+**备注**
+*/
+//#define LH_LOCAL
+#define LLDO
+#pragma comment(linker, "/STACK:102400000,102400000")
+//#include<bits/stdc++.h>
+#include <cstdio>
+#include <cstring>
+#include <iostream>
+#include <algorithm>
+#include <vector>
+#include <array>
+#include <map>
+#include <queue>
+#include <set>
+#include <deque>
+#include <list>
+#include <bitset>
+#include <complex>
+#include <cassert>
+#include <ctime>
 #define fi first
 #define se second
+#define endl '\n'
 #define o2(x) (x) * (x)
+#define BASE_MAX 31
 #define mk make_pair
 #define eb emplace_back
 #define SZ(x) ((int)(x).size())
@@ -14,6 +39,7 @@
 #define iis std::ios::sync_with_stdio(false);cin.tie(0)
 #define my_unique(x) sort(all(x)), x.erase(unique(all(x)), x.end())
 using namespace std;
+#pragma optimize("-O3")
 typedef long long int64;
 typedef unsigned long long uint64;
 typedef pair<int, int> pii;
@@ -26,6 +52,14 @@ inline int64 read() {
     while (ch < '0' || ch > '9') f |= (ch == '-'), ch = getchar();
     while (ch >= '0' && ch <= '9') x = (x << 3) + (x << 1) + ch - '0', ch =
     getchar(); return x = f ? -x : x;
+}
+inline void write(int64 x, bool f) {
+    if (x == 0) {putchar('0');if (f) putchar('\n');return;}
+    if (x < 0) { putchar('-');x = -x;}
+    static char s[23];int l = 0;
+    while (x != 0) s[l++] = x % 10 + 48, x /= 10;
+    while (l) putchar(s[--l]);
+    if (f) putchar('\n');
 }
 int lowbit(int x) { return x & (-x); }
 template <class T>
@@ -57,42 +91,57 @@ void print(const T &f) {printf(ptout, f);putchar('\n');}
 template <typename T, typename... R>
 void print(const T &f, const R &... r) {printf(ptout, f);putchar(' ');print(r...);}
 
+const int HMOD[] = {1000000009, 1004535809};
+const int64 BASE[] = {1572872831, 1971536491};
+const int64 INFLL = 0x3f3f3f3f3f3f3f3fLL;
 const int INF = 0x3f3f3f3f;
 const int mod = 998244353;// 998244353
 const int MOD = 1e9 + 7;
 const int MXN = 2e5 + 5;
-int n, m;
-int dp[305][305];
+const int MXE = 2e6 + 6;
+int n;
+int vs[MXN], ar[MXN];
 int main() {
 #ifdef LH_LOCAL
     freopen("D:in.in", "r", stdin);
-    // freopen("D:out.out", "w", stdout);
+    freopen("D:out.out", "w", stdout);
 #endif
     int tim = read();
     while(tim --) {
         n = read();
-        if(n == 1) {
-            printf("1\n");
-        }else if(n == 2) {
-            printf("10\n00\n");
-        }else if(n % 2 == 0) {
-            for(int i = 1; i <= n; ++i) {
-                for(int j = 1; j <= n; ++j) {
-                    if(i % 2 == 1 && j % 2 == 1) printf("1");
-                    else if(i == n && j == n) printf("1");
-                    else printf("0");
-                }
-                printf("\n");
-            }
-        }else {
-            for(int i = 1; i <= n; ++i) {
-                for(int j = 1; j <= n; ++j) {
-                    if(i % 2 == 1 && j % 2 == 1) printf("1");
-                    else printf("0");
-                }
-                printf("\n");
+        vector<int> vt;
+        int cnt = 0;
+        for(int i = 0, x; i < n; ++i) {
+            x = read();
+            if(x == 0) ++ cnt;
+            else vt.eb(x);
+        }
+        n = vt.size();
+        for(int i = 0; i < n; ++i) vs[i] = vt[i];
+        sort(vs, vs + n);
+        int y = vs[0];
+        ar[1] = vs[1];
+        int p = 2;
+        while(cnt --) ar[p++] = 0;
+        for(int i = 2; i < n; ++i) ar[p++] = vs[i];
+        // for(int i = 1; i < p; ++i) debug(ar[i])
+        reverse(ar + 1, ar + p);
+        for(int i = 1; i < p; ++i) {
+            ar[i] *= y;
+        }
+        for(int i = 1; i < p; ++i) {
+            if(ar[i] >= 10) {
+                ar[i + 1] += ar[i] / 10;
+                ar[i] %= 10;
+                if(i == p - 1) ++ p;
             }
         }
+        for(int i = p - 1; i >= 1; --i) {
+            printf("%d", ar[i]);
+            ar[i] = vs[i] = 0;
+        }
+        ar[0] = vs[0] = 0;
+        printf("\n");
     }
 #ifdef LH_LOCAL
     // cout << "time cost:" << 1.0 * clock() / CLOCKS_PER_SEC << "s" << endl;

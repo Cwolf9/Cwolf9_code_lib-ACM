@@ -1,4 +1,4 @@
-// #define LH_LOCAL
+#define LH_LOCAL
 // #define LLDO
 #include <bits/stdc++.h>
 #define fi first
@@ -62,38 +62,34 @@ const int mod = 998244353;// 998244353
 const int MOD = 1e9 + 7;
 const int MXN = 2e5 + 5;
 int n, m;
-int dp[305][305];
+int64 ans;
+int val[MXN], node[MXN], fa[MXN];
+vector<pii > xjb[MXN], mp[MXN];
+multiset<int, greater<int> >st1[MXN];
+multiset<int> st2[MXN];
+void dfs(int u, int ba) {
+    for(pii eg: mp[u]) {
+        if(eg.fi == ba) continue;
+        st1->insert(val[eg.se]);
+        st2->insert(val[eg.se]);
+        mp[u].eb(eg);
+        node[eg.fi] = eg.se;
+        dfs(eg.fi, u);
+    }
+}
 int main() {
 #ifdef LH_LOCAL
     freopen("D:in.in", "r", stdin);
-    // freopen("D:out.out", "w", stdout);
+    freopen("D:out.out", "w", stdout);
 #endif
-    int tim = read();
-    while(tim --) {
-        n = read();
-        if(n == 1) {
-            printf("1\n");
-        }else if(n == 2) {
-            printf("10\n00\n");
-        }else if(n % 2 == 0) {
-            for(int i = 1; i <= n; ++i) {
-                for(int j = 1; j <= n; ++j) {
-                    if(i % 2 == 1 && j % 2 == 1) printf("1");
-                    else if(i == n && j == n) printf("1");
-                    else printf("0");
-                }
-                printf("\n");
-            }
-        }else {
-            for(int i = 1; i <= n; ++i) {
-                for(int j = 1; j <= n; ++j) {
-                    if(i % 2 == 1 && j % 2 == 1) printf("1");
-                    else printf("0");
-                }
-                printf("\n");
-            }
-        }
+    n = read(), m = read();
+    for(int i = 1, a, b; i < n; ++i) {
+        a = read(), b = read();
+        val[i] = read();
+        xjb[a].eb(mk(b, i));
+        xjb[b].eb(mk(a, i));
     }
+    dfs(1, 0);
 #ifdef LH_LOCAL
     // cout << "time cost:" << 1.0 * clock() / CLOCKS_PER_SEC << "s" << endl;
     // system("pause");

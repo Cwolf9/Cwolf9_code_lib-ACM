@@ -8,6 +8,7 @@
             "defines": [
                 "_DEBUG",
                 "UNICODE",
+                "LH_LOCAL",
                 "_UNICODE"
             ],
             "compilerPath": "/usr/bin/gcc",

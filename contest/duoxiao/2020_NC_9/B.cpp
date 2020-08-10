@@ -5,8 +5,8 @@
 **思路**
 **备注**
 */
-#define LH_LOCAL
-// #define LLDO
+//#define LH_LOCAL
+#define LLDO
 #pragma comment(linker, "/STACK:102400000,102400000")
 //#include<bits/stdc++.h>
 #include <cstdio>
@@ -96,11 +96,48 @@ const int64 BASE[] = {1572872831, 1971536491};
 const int64 INFLL = 0x3f3f3f3f3f3f3f3fLL;
 const int INF = 0x3f3f3f3f;
 const int mod = 998244353;// 998244353
-// const int MOD = 1e9 + 7;
+const int MOD = 1e9 + 7;
 const int MXN = 2e5 + 5;
 const int MXE = 2e6 + 6;
-char s[MXN], t[MXN];
-
+int n;
+vector<pii > mp[MXN];
+int ar[MXN], leaf[MXN];
+int64 dep[MXN], sum, sum2, dp[MXN], wt[MXN];
+class node {
+    public:
+    int cost;
+    int64 income;
+    int64 wt;
+    bool operator<(const node&B) const{
+        return income - cost - wt > B.income - B.cost - B.wt;
+    }
+};
+vector<node> son[MXN];
+void dfs(int u, int ba) {
+    leaf[u] = 1;
+    wt[u] = 0;
+    dp[u] = ar[u];
+    son[u].clear();
+    for(pii V: mp[u]) {
+        if(V.fi == ba) continue;
+        leaf[u] = 0;
+        dep[V.fi] = dep[u] + V.se;
+        dfs(V.fi, u);
+        son[u].eb(node{V.se, dp[V.fi], wt[V.fi]});
+    }
+    sort(all(son[u]));
+    // debug(1, u, dp[u], wt[u])
+    for(node &x: son[u]) {
+        // debug(0, x.income, x.cost)
+        wt[u] += max(0LL, x.cost - dp[u]) + max(0LL, 
+        x.wt + x.cost - x.income- max(0LL, dp[u] - x.cost) );
+        dp[u] = max(0LL, dp[u] - x.cost);
+        dp[u] += x.income - x.cost - x.wt;
+        dp[u] = max(dp[u], 0LL);
+        // debug(u, dp[u], wt[u])
+    }
+    dp[u] = max(dp[u], 0LL);
+}
 int main() {
 #ifdef LH_LOCAL
     freopen("D:in.in", "r", stdin);
@@ -108,38 +145,22 @@ int main() {
 #endif
     int tim = read();
     while(tim --) {
-        int n = read();
-        scanf("%s%s", s, t);
-        int cnt = 0;
-        for(int i = n; i <= n + 10; ++i) s[i] = t[i] = '0';
-        // debug(n)
-        int tm = 0;
-        for(int i = 0; i <= n + 10; ++i) {
-            if(s[i] == '0' && t[i] == '1') ++ cnt;
-            else if(s[i] == '1' && t[i] == '0') {
-                debug(i)
-                int x = min(10, i);
-                int ed = i, ret1 = 0, ret2 = 1 << x;
-                while(ed < n + 10 && s[ed] == '1') {
-                    ret1 += (s[ed] != t[ed]);
-                    ++ ed;
-                }
-                for(int j = i; j < ed; ++j) ret2 += (t[j] == '1');
-                
-                if(ret1 > ret2) {
-
-                }
-                cnt += min(ret1, ret2);
-                s[ed] = '1';
-                if(s[ed+1] != '0') {
-                    i = ed - 1;
-                }else {
-                    i = ed;
-                    cnt += (s[ed] != t[ed]);
-                }
-            }
+        n = read();
+        sum = sum2 = 0;
+        for(int i = 1; i <= n; ++i) {
+            ar[i] = read();
+            sum += ar[i];
+            mp[i].clear();
         }
-        print(cnt);
+        for(int i = 1, a, b, c; i < n; ++i) {
+            a = read(), b = read(), c = read();
+            mp[a].eb(mk(b, c));
+            mp[b].eb(mk(a, c));
+            sum2 += c + c;
+        }
+        dep[1] = 0;
+        dfs(1, 0);
+        print(max(0LL, wt[1]));
     }
 #ifdef LH_LOCAL
     // cout << "time cost:" << 1.0 * clock() / CLOCKS_PER_SEC << "s" << endl;

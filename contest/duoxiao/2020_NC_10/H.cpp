@@ -1,4 +1,4 @@
-// #define LH_LOCAL
+#define LH_LOCAL
 // #define LLDO
 #include <bits/stdc++.h>
 #define fi first
@@ -66,7 +66,7 @@ int dp[305][305];
 int main() {
 #ifdef LH_LOCAL
     freopen("D:in.in", "r", stdin);
-    // freopen("D:out.out", "w", stdout);
+    freopen("D:out.out", "w", stdout);
 #endif
     int tim = read();
     while(tim --) {
@@ -79,7 +79,8 @@ int main() {
             for(int i = 1; i <= n; ++i) {
                 for(int j = 1; j <= n; ++j) {
                     if(i % 2 == 1 && j % 2 == 1) printf("1");
-                    else if(i == n && j == n) printf("1");
+                    else if(i % 4 == 0 && j % 4 == 0) printf("1");
+                    else if(i == j && i % 2 == 0 && j % 2 == 0 && i != 2 && j != 2) printf("1");
                     else printf("0");
                 }
                 printf("\n");
@@ -88,6 +89,9 @@ int main() {
             for(int i = 1; i <= n; ++i) {
                 for(int j = 1; j <= n; ++j) {
                     if(i % 2 == 1 && j % 2 == 1) printf("1");
+                    else if(i % 4 == 0 && j % 4 == 0 && i != n - 1 && j != n - 1) printf("1");
+                    else if(i == j && i % 2 == 0 && j % 2 == 0 && i != 2 && j != 2 
+                        && i != n - 1 && j != n - 1) printf("1");
                     else printf("0");
                 }
                 printf("\n");

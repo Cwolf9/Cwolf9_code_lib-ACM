@@ -1,83 +1,27 @@
-/*
- 
-*/
-#pragma comment(linker, "/STACK:102400000,102400000")
-#include <assert.h>
+#define LH_LOCAL
+// #define LLDO
 #include <bits/stdc++.h>
- 
-#include <algorithm>
-#include <cstdio>
-#include <cstring>
-#include <ctime>
-#include <iostream>
-#include <queue>
-#include <set>
-#include <vector>
 #define fi first
 #define se second
-#define endl '\n'
 #define o2(x) (x) * (x)
-#define BASE_MAX 31
 #define mk make_pair
 #define eb emplace_back
 #define SZ(x) ((int)(x).size())
 #define all(x) (x).begin(), (x).end()
 #define clr(a, b) memset((a), (b), sizeof((a)))
-#define iis                           \
-    std::ios::sync_with_stdio(false); \
-    cin.tie(0)
+#define rep(i,s,t) for(register int i=s;i<t;++i)
+#define per(i,s,t) for(register int i=s;i>=t;--i)
+#define iis std::ios::sync_with_stdio(false);cin.tie(0)
 #define my_unique(x) sort(all(x)), x.erase(unique(all(x)), x.end())
 using namespace std;
-#pragma optimize("-O3")
 typedef long long int64;
-typedef long long LL;
-typedef unsigned long long uLL;
+typedef unsigned long long uint64;
 typedef pair<int, int> pii;
-// mt19937 rng(time(NULL));
-// mt19937_64 rng64(chrono::steady_clock::now().time_since_epoch().count());
-// mt19937_64 generator(std::clock());
-// shuffle(arr, arr + n, generator);
-inline LL read() {
-    LL x = 0;
-    int f = 0;
-    char ch = getchar();
+inline int64 read() {
+    int64 x = 0;int f = 0;char ch = getchar();
     while (ch < '0' || ch > '9') f |= (ch == '-'), ch = getchar();
-    while (ch >= '0' && ch <= '9')
-        x = (x << 3) + (x << 1) + ch - '0', ch = getchar();
-    return x = f ? -x : x;
-}
-inline void write(LL x, bool f) {
-    if (x == 0) {
-        putchar('0');
-        if (f) putchar('\n');
-        return;
-    }
-    if (x < 0) {
-        putchar('-');
-        x = -x;
-    }
-    static char s[23];
-    int l = 0;
-    while (x != 0) s[l++] = x % 10 + 48, x /= 10;
-    while (l) putchar(s[--l]);
-    if (f) putchar('\n');
-}
-int lowbit(int x) { return x & (-x); }
-template <class T>
-T big(const T &a1, const T &a2) {
-    return a1 > a2 ? a1 : a2;
-}
-template <class T>
-T sml(const T &a1, const T &a2) {
-    return a1 < a2 ? a1 : a2;
-}
-template <typename T, typename... R>
-T big(const T &f, const R &... r) {
-    return big(f, big(r...));
-}
-template <typename T, typename... R>
-T sml(const T &f, const R &... r) {
-    return sml(f, sml(r...));
+    while (ch >= '0' && ch <= '9') x = (x << 3) + (x << 1) + ch - '0', ch =
+    getchar(); return x = f ? -x : x;
 }
 void debug_out() { cout << '\n'; }
 template <typename T, typename... R>
@@ -85,87 +29,48 @@ void debug_out(const T &f, const R &... r) {
     cout << f << " ";
     debug_out(r...);
 }
+#ifdef LH_LOCAL
 #define debug(...) cout << "[" << #__VA_ARGS__ << "]: ", debug_out(__VA_ARGS__);
-#define LLDO
-#ifdef LLDO
-const char ptout[] = "%lld";
 #else
-const char ptout[] = "%d";
+#define debug(...) ;
+#endif
+#ifdef LLDO
+    const char ptout[] = "%lld";
+#else
+    const char ptout[] = "%d";
 #endif
 template <typename T>
-void print(const T &f) {
-    printf(ptout, f);
-    putchar('\n');
-}
+void print(const T &f) {printf(ptout, f);putchar('\n');}
 template <typename T, typename... R>
-void print(const T &f, const R &... r) {
-    printf(ptout, f);
-    putchar(' ');
-    print(r...);
-}
- 
-const int HMOD[] = {1000000009, 1004535809};
-const LL BASE[] = {1572872831, 1971536491};
-const LL INFLL = 0x3f3f3f3f3f3f3f3fLL;
+void print(const T &f, const R &... r) {printf(ptout, f);putchar(' ');print(r...);}
+
 const int INF = 0x3f3f3f3f;
-const int mod = 998244353;
-const int MOD = 1e9 + 7;  // 998244353
-const int MXN = 2e5 + 5;
-const int MXE = 2e6 + 6;
-int n, m, k;
-int ans = INF;
-int val[MXN], dp[MXN][2];
-vector<int> mp[MXN];
-void dfs(int u, int ba) {
-    dp[u][val[u]] = 0;
-    dp[u][!val[u]] = 1;
-    for(int v: mp[u]) {
-        if(v == ba) continue;
-        dfs(v, u);
-        dp[u][val[u]] += dp[v][val[u]];
-        dp[u][!val[u]] += dp[v][!val[u]] + (val[u] == val[v]?-1:0);
-    }
-    if(u == 1) ans = sml(ans, dp[u][0], dp[u][1]);
-}
-void dfs2(int u, int ba) {
-    if(ba) {
-        int tmp1 = dp[ba][val[ba]];
-        int tmp2 = dp[ba][!val[ba]];
-        dp[ba][val[ba]] -= dp[u][val[ba]];
-        dp[ba][!val[ba]] -= dp[u][!val[ba]] + (val[u]==val[ba]?-1:0);
-        dp[u][val[u]] += dp[ba][val[u]];
-        dp[u][!val[u]] += dp[ba][!val[u]] + (val[u] == val[ba]?-1:0);
-        // debug(ans, u, dp[u][0], dp[u][1])
-        ans = sml(ans, dp[u][0], dp[u][1]);
-        dp[ba][val[ba]] = tmp1;
-        dp[ba][!val[ba]] = tmp2;
-    }
-    for(int v: mp[u]) {
-        if(v == ba) continue;
-        dfs2(v, u);
-    }
-}
+const int mod = 998244353;// 998244353
+const int MOD = 1e9 + 7;// 998244353
+const int MXN = 1e6 + 5;
+int n, m;
+int cnt[9];
 int main() {
-#ifndef ONLINE_JUDGE
+#ifdef LH_LOCAL
     freopen("D:in.in", "r", stdin);
-    freopen("D:out.out", "w", stdout);
+    // freopen("D:out.out", "w", stdout);
 #endif
-    int tim = 1;
-    while (tim --) {
-        n = read();
-        for(int i = 1; i <= n; ++i) val[i] = read();
-        for(int i = 1, a, b; i < n; ++i) {
-            a = read(), b = read();
-            mp[a].eb(b);
-            mp[b].eb(a);
-        }
-        dfs(1, 0);
-        dfs2(1, 0);
-        printf("%d\n", ans);
-    }
-#ifndef ONLINE_JUDGE
-    cout << "time cost:" << 1.0 * clock() / CLOCKS_PER_SEC << "ms" << endl;
-    system("pause");
-#endif
+    
     return 0;
 }
+/*
+蜘蛛侠和蝙蝠侠是美国的超级英雄，而且在电影里面，蜘蛛侠是一个正义且充满正能量的形象，
+经常行侠仗义和打击犯罪，低调地不露脸地维护城市乃至世界的安全。用一句诗句来形容就是：事了拂衣去，深藏身与名。
+我觉得用侠来形容蜘蛛侠非常合适。因为侠本义是指武艺高强，肯见义勇为，舍己助人的品行。
+The Charm of Wuxia Culture指通过自己的能力不求回报地去帮助比自己弱小的人，对社会作出贡献.
+我个人感觉可能还有一个原因是，蜘蛛侠读起来比较顺口，而蜘蛛人有点拗口。
+中国文化中的侠的蜘蛛侠都是喜欢伸张正义，用自己的能力为社会做贡献，是一种追求和理想。
+不同之处在于蜘蛛侠是神奇的超能力，弘扬个人英雄主义，而中国文化的侠是靠的武功和人格魅力，离不开集体的作用。
+Spider-Man and Batman are American superheroes, and in the movie, Spider-Man is a justice boy full of positive energy.
+Spider-Man and Batman often act chivalrously and fight crimes, and maintain the safety of the city and the world in a low-key and not showing their face. To use a verse to describe it is: When things happen, go away, hide your body and name.
+I think it is very appropriate to describe Spider-Man as a Xia. Because the original meaning of Xia refers to the character of high martial arts, willing to do what is right, and sacrifice oneself to help others.
+The Charm of Wuxia Culture refers to helping people who are weaker than themselves through their own abilities without asking for return, and making contributions to society.
+I personally feel that there may be another reason that Spider-Man reads more smoothly, while Spider-Man is a little confusing.
+Spider-Man and Xia in Chinese culture both like to do justice and use their abilities to contribute to society, which is a pursuit and ideal.
+The difference is that Spider-Man is a magical superpower and promotes personal heroism, while the Chinese cultural Xia relies on martial arts and personality charm. It is inseparable from the collective role.
+*/

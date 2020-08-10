@@ -1,4 +1,4 @@
-// #define LH_LOCAL
+#define LH_LOCAL
 // #define LLDO
 #include <bits/stdc++.h>
 #define fi first
@@ -62,37 +62,36 @@ const int mod = 998244353;// 998244353
 const int MOD = 1e9 + 7;
 const int MXN = 2e5 + 5;
 int n, m;
-int dp[305][305];
+int ar[MXN];
+bool check(int mid) {
+    int64 ret = 0;
+    for(int i = 1; i <= n; ++i) {
+        if(ar[i] > mid) {
+            if(ret < ar[i] - mid) return false;
+            else ret -= ar[i] - mid;
+        }else {
+            ret += mid - ar[i];
+        }
+    }
+    return mid;
+}
 int main() {
 #ifdef LH_LOCAL
     freopen("D:in.in", "r", stdin);
-    // freopen("D:out.out", "w", stdout);
+    freopen("D:out.out", "w", stdout);
 #endif
     int tim = read();
     while(tim --) {
         n = read();
-        if(n == 1) {
-            printf("1\n");
-        }else if(n == 2) {
-            printf("10\n00\n");
-        }else if(n % 2 == 0) {
-            for(int i = 1; i <= n; ++i) {
-                for(int j = 1; j <= n; ++j) {
-                    if(i % 2 == 1 && j % 2 == 1) printf("1");
-                    else if(i == n && j == n) printf("1");
-                    else printf("0");
-                }
-                printf("\n");
-            }
-        }else {
-            for(int i = 1; i <= n; ++i) {
-                for(int j = 1; j <= n; ++j) {
-                    if(i % 2 == 1 && j % 2 == 1) printf("1");
-                    else printf("0");
-                }
-                printf("\n");
-            }
+        int Mx = 0;
+        for(int i = 1; i <= n; ++i) ar[i] = read(), Mx = max(Mx, ar[i]);
+        int L = 1, R = Mx, mid, ans = Mx;
+        while(L <= R) {
+            mid = (L + R) >> 1;
+            if(check(mid)) ans = mid, R = mid - 1;
+            else L = mid + 1;
         }
+        printf("%d\n", ans);
     }
 #ifdef LH_LOCAL
     // cout << "time cost:" << 1.0 * clock() / CLOCKS_PER_SEC << "s" << endl;

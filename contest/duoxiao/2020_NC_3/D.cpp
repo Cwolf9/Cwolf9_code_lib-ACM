@@ -2,14 +2,8 @@
 链接
 https://ac.nowcoder.com/acm/contest/5668/D
 题意
-给你ab，1<=a,b<=2000000 ， 你要输出bcde, 且 d < b and f < b and 1 <=c,e<=4e12
-满足： c/d - e/f = a/b
-无解输出-1
+
 思路
-左边等于 (c*f-e*d)/(df) = k*gcd(d,f)/df = a/b
-把b分成两个互质的数，分给d和f，这样的话就是 k = a，构造一个c和e就好了
-如果b不能分成两个互质的数，那么b = p^k，如果gcd(a,b)=1就无解
-否者就让 d=f= b/p， c - e = a/p，如果a=p就无解，否则就有解。
 
 备注
 
@@ -35,7 +29,7 @@ using namespace std;
 typedef long long int64;
 typedef unsigned long long uint64;
 typedef pair<int, int> pii;
-// mt19937 rng(time(NULL));
+mt19937 rng(time(NULL));
 // mt19937_64 rng64(chrono::steady_clock::now().time_since_epoch().count());
 // mt19937_64 generator(std::clock());
 // shuffle(arr, arr + n, generator);
@@ -89,25 +83,11 @@ void debug_out(const T &f, const R &... r) {
 }
 #define debug(...) cout << "[" << #__VA_ARGS__ << "]: ", debug_out(__VA_ARGS__);
 
-const int MXN = 2e6 + 5;
+const int MXN = 2e3 + 5;
 int n, m;
-int fa[MXN];
-int  is[MXN], tim[MXN], kong[MXN];
-int head[MXN], tot, last[MXN];
-class node {
-    public:
-    int v, nex;
-}cw[MXN + MXN];
-void add_edge(int a, int b) {
-    cw[++ tot].v = b, cw[tot].nex = head[a];
-    if(head[a] == -1) last[a] = tot;
-    head[a] = tot; 
-    cw[++ tot].v = a, cw[tot].nex = head[b];
-    if(head[b] == -1) last[b] = tot;
-    head[b] = tot;
-}
-int Fi(int x) {
-    return fa[x] == x? x: fa[x] = Fi(fa[x]);
+int ar[MXN];
+int mrnd() {
+    return rng() % 100000000 + rng() % 10 + 100000;
 }
 int main() {
 #ifndef ONLINE_JUDGE
@@ -117,36 +97,69 @@ int main() {
     int tims = read();
     while(tims --) {
         n = read(), m = read();
-        tot = -1;
-        for(int i = 0; i < n; ++i) {
-            fa[i] = i;
-            head[i] = -1;
-            last[i] = -1;
-        }
-        for(int i = 1, a, b; i <= m; ++i) {
-            a = read(), b = read();
-            add_edge(a, b);
-        }
-        int q = read(), opt;
-        while(q --) {
-            opt = read();
-            int pa = Fi(opt), pb;
-            if(pa != opt) continue;
-            head[n] = -1;
-            for(int i = head[opt]; ~i; i = cw[i].nex) {
-                pb = Fi(cw[i].v);
-                if(pa != pb) {
-                    if(head[n] == -1) head[n] = head[pb], last[n] = last[pb];
-                    else {
-                        cw[last[pb]].nex = head[n];
-                        head[n] = head[pb];
-                    }
-                    fa[pb] = pa;
+        if(m < 4 || m > 4 * n || m % 2 == 1) {
+            printf("No\n");
+        }else if(m == n * 4) {
+            printf("Yes\n");
+            while(n --) {
+                int x = mrnd();
+                int y = mrnd();
+                printf("%d %d\n", x, y);
+            }
+        }else {
+            int y = 0, x;
+            for(int i = 1; i <= 50; ++i) {
+                if((m - i - i) % 2 == 0 && (m - i - i) / 2 * i == n) {
+                    y = i;
+                    break;
                 }
             }
-            head[opt] = head[n], last[opt] = last[n];
+            if(y) {
+                printf("Yes\n");
+                x = (m - y - y) / 2;
+                for(int i = 1; i <= x; ++i) {
+                    for(int j = 1; j <= y; ++j) {
+                        printf("%d %d\n", i, j);
+                    }
+                }
+                continue;
+            }
+            vector<pii> vs;
+            int flag = 0;
+            for(int t = 1; t <= 55 && flag == 0; ++t) {
+                int cnt = 0, c = 0;
+                while(m > 4 && (m - t - t)/2 * t > n && m - t - t > 0) {
+                    ++ cnt;
+                    m -= 4;
+                    -- n;
+                }
+                // debug(m, t, c, cnt)
+                for(c = 1; ; ++ c) {
+                    if(t + t + c + c >= m) {
+                        break;
+                    }
+                }
+                if(t + t + c + c == m && t + c - 1 <= n && t * c >= n) {
+                    printf("Yes\n");
+                    for(int i = 1; i <= c; ++i) printf("%d 1\n", i);
+                    for(int i = 2; i <= t; ++i) printf("1 %d\n", i);
+                    n -= t + c - 1;
+                    for(int i = 2; i <= c; ++i) {
+                        for(int j = 2; j <= t; ++j) {
+                            if(n > 0) printf("%d %d\n", i, j), -- n;
+                        }
+                    }
+                    while(cnt --) {
+                        int x = mrnd();
+                        int y = mrnd();
+                        printf("%d %d\n", x, y);
+                    }
+                    // debug(t, c)
+                    flag = 1;
+                }else m += cnt * 4, n += cnt;
+            }
+            if(flag == 0) printf("No\n");
         }
-        for(int i = 0; i < n; ++i) printf("%d%c", Fi(i), " \n"[i == n - 1]);
     }
 #ifndef ONLINE_JUDGE
     system("pause");

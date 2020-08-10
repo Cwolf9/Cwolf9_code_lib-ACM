@@ -1,29 +1,18 @@
 /*
-**链接**
-传送门: [here]()
-**题意**
-**思路**
-**备注**
+
 */
-#define LH_LOCAL
-// #define LLDO
 #pragma comment(linker, "/STACK:102400000,102400000")
-//#include<bits/stdc++.h>
+#include<bits/stdc++.h>
+#include <assert.h>
+#include <algorithm>
 #include <cstdio>
 #include <cstring>
+#include <ctime>
 #include <iostream>
-#include <algorithm>
-#include <vector>
-#include <array>
 #include <map>
 #include <queue>
 #include <set>
-#include <deque>
-#include <list>
-#include <bitset>
-#include <complex>
-#include <cassert>
-#include <ctime>
+#include <vector>
 #define fi first
 #define se second
 #define endl '\n'
@@ -34,9 +23,9 @@
 #define SZ(x) ((int)(x).size())
 #define all(x) (x).begin(), (x).end()
 #define clr(a, b) memset((a), (b), sizeof((a)))
-#define rep(i,s,t) for(register int i=s;i<t;++i)
-#define per(i,s,t) for(register int i=s;i>=t;--i)
-#define iis std::ios::sync_with_stdio(false);cin.tie(0)
+#define iis                           \
+    std::ios::sync_with_stdio(false); \
+    cin.tie(0)
 #define my_unique(x) sort(all(x)), x.erase(unique(all(x)), x.end())
 using namespace std;
 #pragma optimize("-O3")
@@ -50,8 +39,8 @@ typedef pair<int, int> pii;
 inline int64 read() {
     int64 x = 0;int f = 0;char ch = getchar();
     while (ch < '0' || ch > '9') f |= (ch == '-'), ch = getchar();
-    while (ch >= '0' && ch <= '9') x = (x << 3) + (x << 1) + ch - '0', ch =
-    getchar(); return x = f ? -x : x;
+    while (ch >= '0' && ch <= '9') x = (x << 3) + (x << 1) + ch - '0', ch = getchar();
+    return x = f ? -x : x;
 }
 inline void write(int64 x, bool f) {
     if (x == 0) {putchar('0');if (f) putchar('\n');return;}
@@ -72,19 +61,13 @@ template <typename T, typename... R>
 T sml(const T &f, const R &... r) {return sml(f, sml(r...));}
 void debug_out() { cout << '\n'; }
 template <typename T, typename... R>
-void debug_out(const T &f, const R &... r) {
-    cout << f << " ";
-    debug_out(r...);
-}
-#ifdef LH_LOCAL
+void debug_out(const T &f, const R &... r) {cout << f << " ";debug_out(r...);}
 #define debug(...) cout << "[" << #__VA_ARGS__ << "]: ", debug_out(__VA_ARGS__);
-#else
-#define debug(...) ;
-#endif
+#define LLDO
 #ifdef LLDO
-    const char ptout[] = "%lld";
+const char ptout[] = "%lld";
 #else
-    const char ptout[] = "%d";
+const char ptout[] = "%d";
 #endif
 template <typename T>
 void print(const T &f) {printf(ptout, f);putchar('\n');}
@@ -95,55 +78,56 @@ const int HMOD[] = {1000000009, 1004535809};
 const int64 BASE[] = {1572872831, 1971536491};
 const int64 INFLL = 0x3f3f3f3f3f3f3f3fLL;
 const int INF = 0x3f3f3f3f;
-const int mod = 998244353;// 998244353
-// const int MOD = 1e9 + 7;
-const int MXN = 2e5 + 5;
+const int mod = 55566677;
+const int MOD = 1e9 + 7;  // 998244353
+const int MXN = 1e6 + 5;
 const int MXE = 2e6 + 6;
-char s[MXN], t[MXN];
-
-int main() {
-#ifdef LH_LOCAL
-    freopen("D:in.in", "r", stdin);
-    freopen("D:out.out", "w", stdout);
-#endif
-    int tim = read();
-    while(tim --) {
-        int n = read();
-        scanf("%s%s", s, t);
-        int cnt = 0;
-        for(int i = n; i <= n + 10; ++i) s[i] = t[i] = '0';
-        // debug(n)
-        int tm = 0;
-        for(int i = 0; i <= n + 10; ++i) {
-            if(s[i] == '0' && t[i] == '1') ++ cnt;
-            else if(s[i] == '1' && t[i] == '0') {
-                debug(i)
-                int x = min(10, i);
-                int ed = i, ret1 = 0, ret2 = 1 << x;
-                while(ed < n + 10 && s[ed] == '1') {
-                    ret1 += (s[ed] != t[ed]);
-                    ++ ed;
-                }
-                for(int j = i; j < ed; ++j) ret2 += (t[j] == '1');
-                
-                if(ret1 > ret2) {
-
-                }
-                cnt += min(ret1, ret2);
-                s[ed] = '1';
-                if(s[ed+1] != '0') {
-                    i = ed - 1;
-                }else {
-                    i = ed;
-                    cnt += (s[ed] != t[ed]);
+int n, m, k;
+struct Point {
+    int x;
+    int y;
+};
+class Solution {
+public:
+    int minCost(int n, vector<int>& cuts) {
+        cuts.emplace_back(0);
+        cuts.emplace_back(n);
+        n = cuts.size();
+        sort(cuts.begin(), cuts.end());
+        vector<vector<int>> dp(n + 1, vector<int>(n + 1, 1000000000));
+        for(int d = 1; d <= n; ++d) {
+            if(d == 1) {
+                for(int i = 1; i <= n; ++i) dp[i][i] = 0;
+                continue;
+            }else if(d == 2) {
+                for(int i = 1; i < n; ++i) dp[i][i+1] = 0;
+                continue;
+            }
+            for(int i = 1; i + d - 1 <= n; ++i) {
+                int j = i + d - 1;
+                for(int k = i + 1; k < j; ++k) {
+                    dp[i][j] = min(dp[i][j], dp[i][k] + dp[k][j] + cuts[j-1] - cuts[i-1]);
                 }
             }
         }
-        print(cnt);
+        // debug(dp[1][n])
+        return dp[1][n];
     }
-#ifdef LH_LOCAL
-    // cout << "time cost:" << 1.0 * clock() / CLOCKS_PER_SEC << "s" << endl;
-    // system("pause");
+};
+int main() {
+#ifndef ONLINE_JUDGE
+    freopen("D:in.in", "r", stdin);
+    freopen("D:out.out", "w", stdout);
+#endif
+    vector<int> ar = vector<int>{5, 6, 1, 4, 2};
+    vector<vector<int> > br = vector<vector<int> >{{1,2,3},{1,2,3}};
+    vector<Point> par = vector<Point>{{1, 2},{3,4}};
+    Solution ss;
+    ss.minCost(9, ar);
+#ifndef ONLINE_JUDGE
+    cout << "time cost:" << 1.0 * clock() / CLOCKS_PER_SEC << "ms" << endl;
+    system("pause");
 #endif
     return 0;
 }
+

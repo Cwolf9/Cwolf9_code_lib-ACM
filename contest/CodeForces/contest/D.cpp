@@ -1,32 +1,9 @@
-/*
-**链接**
-传送门: [here]()
-**题意**
-**思路**
-**备注**
-*/
-#pragma comment(linker, "/STACK:102400000,102400000")
-//#include<bits/stdc++.h>
-#include <cstdio>
-#include <cstring>
-#include <iostream>
-#include <algorithm>
-#include <vector>
-#include <array>
-#include <map>
-#include <queue>
-#include <set>
-#include <deque>
-#include <list>
-#include <bitset>
-#include <complex>
-#include <cassert>
-#include <ctime>
+#define LH_LOCAL
+// #define LLDO
+#include <bits/stdc++.h>
 #define fi first
 #define se second
-#define endl '\n'
 #define o2(x) (x) * (x)
-#define BASE_MAX 31
 #define mk make_pair
 #define eb emplace_back
 #define SZ(x) ((int)(x).size())
@@ -37,7 +14,6 @@
 #define iis std::ios::sync_with_stdio(false);cin.tie(0)
 #define my_unique(x) sort(all(x)), x.erase(unique(all(x)), x.end())
 using namespace std;
-#pragma optimize("-O3")
 typedef long long int64;
 typedef unsigned long long uint64;
 typedef pair<int, int> pii;
@@ -50,14 +26,6 @@ inline int64 read() {
     while (ch < '0' || ch > '9') f |= (ch == '-'), ch = getchar();
     while (ch >= '0' && ch <= '9') x = (x << 3) + (x << 1) + ch - '0', ch =
     getchar(); return x = f ? -x : x;
-}
-inline void write(int64 x, bool f) {
-    if (x == 0) {putchar('0');if (f) putchar('\n');return;}
-    if (x < 0) { putchar('-');x = -x;}
-    static char s[23];int l = 0;
-    while (x != 0) s[l++] = x % 10 + 48, x /= 10;
-    while (l) putchar(s[--l]);
-    if (f) putchar('\n');
 }
 int lowbit(int x) { return x & (-x); }
 template <class T>
@@ -74,9 +42,11 @@ void debug_out(const T &f, const R &... r) {
     cout << f << " ";
     debug_out(r...);
 }
+#ifdef LH_LOCAL
 #define debug(...) cout << "[" << #__VA_ARGS__ << "]: ", debug_out(__VA_ARGS__);
-
-#define LLDO
+#else
+#define debug(...) ;
+#endif
 #ifdef LLDO
     const char ptout[] = "%lld";
 #else
@@ -87,39 +57,19 @@ void print(const T &f) {printf(ptout, f);putchar('\n');}
 template <typename T, typename... R>
 void print(const T &f, const R &... r) {printf(ptout, f);putchar(' ');print(r...);}
 
-const int HMOD[] = {1000000009, 1004535809};
-const int64 BASE[] = {1572872831, 1971536491};
-const int64 INFLL = 0x3f3f3f3f3f3f3f3fLL;
 const int INF = 0x3f3f3f3f;
 const int mod = 998244353;// 998244353
-const int MOD = 1e9 + 7;
 const int MXN = 2e5 + 5;
-const int MXE = 2e6 + 6;
-
+int n, m;
 int main() {
-#ifndef ONLINE_JUDGE
+#ifdef LH_LOCAL
     freopen("D:in.in", "r", stdin);
     freopen("D:out.out", "w", stdout);
 #endif
-    int tim = read();
-    while(tim --) {
-        int64 m = read(), d = read(), w = read();
-        if(d == 1) {
-            print(0LL);
-            continue;
-        }
-        int64 md = min(m, d);
-        int64 Gcd = __gcd(d - 1, w);
-        w /= Gcd;
-        if(w > md) {
-            print(0LL);
-            continue;
-        }
-        int64 cnt = md / w;
-        print(cnt * md - w * (cnt*(cnt+1)/2));
-    }
-#ifndef ONLINE_JUDGE
-    // cout << "time cost:" << 1.0 * clock() / CLOCKS_PER_SEC << "ms" << endl;
+    n = read();
+    print(n);
+#ifdef LH_LOCAL
+    // cout << "time cost:" << 1.0 * clock() / CLOCKS_PER_SEC << "s" << endl;
     // system("pause");
 #endif
     return 0;

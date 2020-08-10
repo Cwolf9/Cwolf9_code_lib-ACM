@@ -291,7 +291,7 @@ struct Suffix_Automaton {
 
 
 #include <bits/stdc++.h>
-#define int ll
+#defineint ll
 using namespace std;
 typedef __int128_t ll;
 const int maxn = 4e5+100;
