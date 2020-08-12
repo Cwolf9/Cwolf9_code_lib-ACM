@@ -2,11 +2,10 @@
 链接
 https://ac.nowcoder.com/acm/contest/5668/D
 题意
-
+你需要在全白色的格点图内，涂黑$n$个点，使得存在$m$对黑白点对曼哈顿距离为$1$.
 思路
-
+$O(n^3)$枚举即可
 备注
-
 */
 #pragma comment(linker, "/STACK:102400000,102400000")
 #include<bits/stdc++.h>
@@ -87,7 +86,8 @@ const int MXN = 2e3 + 5;
 int n, m;
 int ar[MXN];
 int mrnd() {
-    return rng() % 100000000 + rng() % 10 + 100000;
+    static int x = 2000000000;
+    return x--/2;
 }
 int main() {
 #ifndef ONLINE_JUDGE
@@ -107,56 +107,31 @@ int main() {
                 printf("%d %d\n", x, y);
             }
         }else {
-            int y = 0, x;
-            for(int i = 1; i <= 50; ++i) {
-                if((m - i - i) % 2 == 0 && (m - i - i) / 2 * i == n) {
-                    y = i;
-                    break;
-                }
-            }
-            if(y) {
-                printf("Yes\n");
-                x = (m - y - y) / 2;
-                for(int i = 1; i <= x; ++i) {
-                    for(int j = 1; j <= y; ++j) {
-                        printf("%d %d\n", i, j);
-                    }
-                }
-                continue;
-            }
             vector<pii> vs;
             int flag = 0;
-            for(int t = 1; t <= 55 && flag == 0; ++t) {
-                int cnt = 0, c = 0;
-                while(m > 4 && (m - t - t)/2 * t > n && m - t - t > 0) {
-                    ++ cnt;
-                    m -= 4;
-                    -- n;
-                }
-                // debug(m, t, c, cnt)
-                for(c = 1; ; ++ c) {
-                    if(t + t + c + c >= m) {
-                        break;
-                    }
-                }
-                if(t + t + c + c == m && t + c - 1 <= n && t * c >= n) {
-                    printf("Yes\n");
-                    for(int i = 1; i <= c; ++i) printf("%d 1\n", i);
-                    for(int i = 2; i <= t; ++i) printf("1 %d\n", i);
-                    n -= t + c - 1;
-                    for(int i = 2; i <= c; ++i) {
-                        for(int j = 2; j <= t; ++j) {
-                            if(n > 0) printf("%d %d\n", i, j), -- n;
+            for(int four = 0; four < n && flag == 0; ++ four) {
+                int tn = n - four, tm = m - four * 4;
+                for(int c = 1; c <= tn && flag == 0 && tm > 0; ++ c) {
+                    for(int r = 1; r <= tn && flag == 0; ++ r) {
+                        if(r + c - 1 <= tn && tn <= r * c && (r + c) * 2 == tm) {
+                            flag = 1;
+                            printf("Yes\n");
+                            while(four --) {
+                                int x = mrnd();
+                                int y = mrnd();
+                                printf("%d %d\n", x, y);
+                            }
+                            for(int i = 1; i <= c; ++i) printf("%d 1\n", i);
+                            for(int i = 2; i <= r; ++i) printf("1 %d\n", i);
+                            tn -= r + c - 1;
+                            for(int i = 2; i <= c; ++i) {
+                                for(int j = 2; j <= r; ++j) {
+                                    if(tn > 0) printf("%d %d\n", i, j), -- tn;
+                                }
+                            }
                         }
                     }
-                    while(cnt --) {
-                        int x = mrnd();
-                        int y = mrnd();
-                        printf("%d %d\n", x, y);
-                    }
-                    // debug(t, c)
-                    flag = 1;
-                }else m += cnt * 4, n += cnt;
+                }
             }
             if(flag == 0) printf("No\n");
         }

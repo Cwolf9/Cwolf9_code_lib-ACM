@@ -1,11 +1,17 @@
 /*
 **链接**
-传送门: [here]()
+传送门: [here](https://ac.nowcoder.com/acm/contest/5667/G)
 **题意**
+$n(150000),m(40000),1\le a_i,b_i\le 1e9$, 问$a[]$有多少个子数组$S$
+满足$\forall i\in\{1,...,m\},S_i\ge b_i.$
 **思路**
+
 **备注**
 */
-#include<bits/stdc++.h>
+#define LH_LOCAL
+#define LLDO
+#pragma comment(linker, "/STACK:102400000,102400000")
+//#include<bits/stdc++.h>
 #include <cstdio>
 #include <cstring>
 #include <iostream>
@@ -23,6 +29,7 @@
 #include <ctime>
 #define fi first
 #define se second
+#define endl '\n'
 #define o2(x) (x) * (x)
 #define BASE_MAX 31
 #define mk make_pair
@@ -35,10 +42,10 @@
 #define iis std::ios::sync_with_stdio(false);cin.tie(0)
 #define my_unique(x) sort(all(x)), x.erase(unique(all(x)), x.end())
 using namespace std;
+#pragma optimize("-O3")
 typedef long long int64;
 typedef unsigned long long uint64;
 typedef pair<int, int> pii;
-typedef pair<int, int64> piL;
 // mt19937 rng(time(NULL));
 // mt19937_64 rng64(chrono::steady_clock::now().time_since_epoch().count());
 // mt19937_64 generator(std::clock());
@@ -48,6 +55,14 @@ inline int64 read() {
     while (ch < '0' || ch > '9') f |= (ch == '-'), ch = getchar();
     while (ch >= '0' && ch <= '9') x = (x << 3) + (x << 1) + ch - '0', ch =
     getchar(); return x = f ? -x : x;
+}
+inline void write(int64 x, bool f) {
+    if (x == 0) {putchar('0');if (f) putchar('\n');return;}
+    if (x < 0) { putchar('-');x = -x;}
+    static char s[23];int l = 0;
+    while (x != 0) s[l++] = x % 10 + 48, x /= 10;
+    while (l) putchar(s[--l]);
+    if (f) putchar('\n');
 }
 int lowbit(int x) { return x & (-x); }
 template <class T>
@@ -64,80 +79,71 @@ void debug_out(const T &f, const R &... r) {
     cout << f << " ";
     debug_out(r...);
 }
+#ifdef LH_LOCAL
 #define debug(...) cout << "[" << #__VA_ARGS__ << "]: ", debug_out(__VA_ARGS__);
+#else
+#define debug(...) ;
+#endif
+#ifdef LLDO
+    const char ptout[] = "%lld";
+#else
+    const char ptout[] = "%d";
+#endif
+template <typename T>
+void print(const T &f) {printf(ptout, f);putchar('\n');}
+template <typename T, typename... R>
+void print(const T &f, const R &... r) {printf(ptout, f);putchar(' ');print(r...);}
 
 const int HMOD[] = {1000000009, 1004535809};
 const int64 BASE[] = {1572872831, 1971536491};
 const int64 INFLL = 0x3f3f3f3f3f3f3f3fLL;
 const int INF = 0x3f3f3f3f;
 const int mod = 998244353;// 998244353
-const int MOD = 1e9 + 7;
-const int MXN = 1e5 + 5;
+// const int MOD = 1e9 + 7;
+const int MXN = (1 << 21) + 5;
 const int MXE = 2e6 + 6;
-int n, q, p;
-bool noprime[305];
-int pp[305], pcnt;
-void init_prime() {
-    noprime[0] = noprime[1] = 1;
-    for(int i = 2; i < 305; ++i) {
-        if(!noprime[i]) pp[pcnt++] = i;
-        for(int j = 0; j < pcnt && i*pp[j] < 305; ++j) {
-            noprime[i*pp[j]] = 1;
-            if(i % pp[j] == 0) break;
-        }
+int n, m;
+int q[MXN];
+int sum[MXN], ans[MXN];
+int ksm(int a, int b) {
+    int res = 1;
+    for (; b; b >>= 1, a = (int64)a * a % mod) {
+        if (b & 1) res = (int64)res * a % mod;
     }
+    return res;
 }
-class point {
-    public:
-    int x, y, t;
-    void rd() {
-        x = read(), y = read(), t = read();
-    }
-}node[MXN];
-int64 sxy[2][MXN], szxy[2][MXN];
-class ST {
-    public:
-    int id;
-    int64 sum[MXN<<2], sz[MXN<<2];
-    void build(int l, int r, int rt) {
-        if(l == r) {
-            sum[rt] = sxy[id][l];
-            sz[rt] = szxy[id][l];
-            return;
-        }
-        int mid = (l + r) >> 1;
-        build(l, mid, rt << 1), build(mid + 1, r, rt << 1 | 1);
-        sum[rt] = sum[rt << 1] + sum[rt << 1 | 1];
-        sz[rt] = sz[rt << 1] + sz[rt << 1 | 1];
-    }
-    piL query(int L, int R, int l, int r, int rt) {
-        if(L <= l && r <= R) {
-            return mk(sz[rt], sum[rt]);
-        }
-        int mid = (l + r) >> 1;
-        if(L > mid) return query(L, R, mid + 1, r, rt << 1 | 1);
-        else if(R <= mid) return query(L, R, l, mid, rt << 1);
-        else {
-            piL a = query(L, mid, l, mid, rt << 1);
-            piL b = query(mid + 1, R, mid + 1, r, rt << 1 | 1);
-            return mk(a.fi + b.fi, a.se + b.se);
-        }
-    }
-}tree[2];
 int main() {
-#ifndef ONLINE_JUDGE
+#ifdef LH_LOCAL
     freopen("D:in.in", "r", stdin);
     freopen("D:out.out", "w", stdout);
 #endif
-    init_prime();
-    debug(pcnt)
-    debug(pcnt * 1e5 * 4 * 2)
-    n = read(), p = read(), q = read();
+    debug(pow(3, 20))
+    n = read();
+    vector<int> vs;
     for(int i = 1; i <= n; ++i) {
-        node[i].rd();
+        int p = read(), b = read();
+        sum[b] += p;
+        if(sum[b] >= mod) sum[b] %= mod;
     }
-#ifndef ONLINE_JUDGE
-    // cout << "time cost:" << 1.0 * clock() / CLOCKS_PER_SEC << "ms" << endl;
+    m = read();
+    int all = 0;
+    for(int i = 1; i <= m; ++i) {
+        q[i] = read();
+        all = max(all, q[i]);
+    }
+    int two = ksm(2, mod - 2);
+    for(int S = 1; S <= all; ++S) {
+        for(int S1 = S & (S - 1); S1 != 0; S1 = (S1 - 1) & S) {
+            ans[S] = (ans[S] + (int64)ans[S1] * ans[S^S1] % mod);
+            if(ans[S] >= mod) ans[S] %= mod;
+        }
+        ans[S] = (int64)ans[S]*two%mod + sum[S];
+        if(ans[S] >= mod) ans[S] %= mod;
+    }
+    for(int i = 1; i <= m; ++i) printf("%d\n", (ans[q[i]]%mod+mod)%mod);
+#ifdef LH_LOCAL
+    // cout << "time cost:" << 1.0 * clock() / CLOCKS_PER_SEC << "s" << endl;
+    // system("pause");
 #endif
     return 0;
 }

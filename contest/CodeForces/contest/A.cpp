@@ -49,7 +49,7 @@ const int mod = 998244353;// 998244353
 const int MOD = 1e9 + 7;// 998244353
 const int MXN = 1e6 + 5;
 int n, m;
-int cnt[9];
+
 int main() {
 #ifdef LH_LOCAL
     freopen("D:in.in", "r", stdin);

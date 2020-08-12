@@ -62,64 +62,16 @@ const int INF = 0x3f3f3f3f;
 const int mod = 998244353;  // 998244353
 const int MXN = 2e5 + 5;
 int n, m;
-int ar[MXN], gap[MXN<<2], sum2[MXN<<2], sum[MXN<<2];
-void build(int l, int r, int rt) {
-    if(l == r) {
-        ar[l] = read();
-        sum[rt] = ar[l] - ar[l-1];
-        gap[rt] = abs(sum[rt]);
-        sum2[rt] = gap[rt];
-        return;
-    }
-    int mid = (l + r) >> 1;
-    build(l, mid, rt << 1), build(mid + 1, r, rt << 1 | 1);
-    gap[rt] = __gcd(gap[rt << 1], gap[rt << 1 | 1]);
-    sum[rt] = sum[rt << 1] + sum[rt << 1 | 1];
-    sum2[rt] = max(sum2[rt << 1], sum2[rt << 1 | 1]);
-}
-
-void update_gap(int p, int v, int l, int r, int rt) {
-    if(l == r) {
-        sum[rt] = ar[l];
-        gap[rt] = abs(ar[l]);
-        sum2[rt] = gap[rt];
-        return ;
-    }
-    int mid = (l + r) >> 1;
-    if(p <= mid) update_gap(p, v, l, mid, rt << 1);
-    else update_gap(p, v, mid + 1, r, rt << 1 | 1);
-    gap[rt] = __gcd(gap[rt << 1], gap[rt << 1 | 1]);
-    sum[rt] = sum[rt << 1] + sum[rt << 1 | 1];
-    sum2[rt] = max(sum2[rt << 1], sum2[rt << 1 | 1]);
-}
-int query_sum(int L, int R, int l, int r, int rt) {
-    if(L <= l && r <= R) return sum[rt];
-    int mid = (l + r) >> 1;
-    if(L > mid) return query_sum(L, R, mid + 1, r, rt << 1 | 1);
-    else if(R <= mid) return query_sum(L, R, l, mid, rt << 1);
-    else {
-        return query_sum(L, mid, l, mid, rt << 1) + 
-        query_sum(mid + 1, R, mid + 1, r, rt << 1 | 1);
-    }
-}
-int query_gap(int L, int R, int l, int r, int rt) {
-    if(L <= l && r <= R) return gap[rt];
-    int mid = (l + r) >> 1;
-    if(L > mid) return query_gap(L, R, mid + 1, r, rt << 1 | 1);
-    else if(R <= mid) return query_gap(L, R, l, mid, rt << 1);
-    else {
-        return __gcd(query_gap(L, mid, l, mid, rt << 1),
-        query_gap(mid + 1, R, mid + 1, r, rt << 1 | 1));
-    }
-}
-int query_sum2(int L, int R, int l, int r, int rt) {
-    if(L <= l && r <= R) return sum2[rt];
-    int mid = (l + r) >> 1;
-    if(L > mid) return query_sum2(L, R, mid + 1, r, rt << 1 | 1);
-    else if(R <= mid) return query_sum2(L, R, l, mid, rt << 1);
-    else {
-        return max(query_sum2(L, mid, l, mid, rt << 1),
-        query_sum2(mid + 1, R, mid + 1, r, rt << 1 | 1));
+bool noprime[MXN];
+int pp[MXN/5], pcnt;
+void init_prime() {
+    noprime[0] = noprime[1] = 1;
+    for(int i = 2; i < MXN; ++i) {
+        if(!noprime[i]) pp[pcnt++] = i;
+        for(int j = 0; j < pcnt && i*pp[j] < MXN; ++j) {
+            noprime[i*pp[j]] = 1;
+            if(i % pp[j] == 0) break;
+        }
     }
 }
 int main() {
@@ -127,23 +79,15 @@ int main() {
     freopen("D:in.in", "r", stdin);
     freopen("D:out.out", "w", stdout);
 #endif
-    n = read(), m = read();
-    build(1, n, 1);
-    for(int i = n; i >= 2; --i) ar[i] -= ar[i-1];
-    while(m -- ) {
-        int opt = read(), l = read(), r = read();
-        if(opt == 1) {
-            int x = read();
-            ar[l] += x;
-            update_gap(l, x, 1, n, 1);
-            if(r < n) {
-                ar[r + 1] -= x;
-                update_gap(r + 1, x, 1, n, 1);
+    init_prime();
+    int64 ans = 1;
+    for(int i = 0; i < 20; ++i) {
+        for(int64 a = pp[i], ta = 1; a <= 1000000000000; a *= pp[i], ++ ta) {
+            for(int64 b = pp[i+1], tb = 1; a * b <= 1000000000000; b *= pp[i+1], ++ tb) {
+                for(int64 c = pp[i+2], tc = 1; a * b * c <= 1000000000000; c *= pp[i+2], ++tc) {
+                    if(tc + tb + tc >= 30) printf("%lld\n", a * b * c);
+                }
             }
-        }else if(opt == 2) {
-            printf("%d\n", l == r?0:query_sum2(l + 1, r, 1, n, 1));
-        }else {
-            printf("%d\n", l == r?query_sum(1, l, 1, n, 1):__gcd(query_sum(1, l, 1, n, 1), query_gap(l + 1, r, 1, n, 1)));
         }
     }
 #ifndef ONLINE_JUDGE
