@@ -1,17 +1,20 @@
 /*
-链接
-https://ac.nowcoder.com/acm/contest/5667/J
-题意
-最开始ar[i] = i, 要你求一个n的排列p[], 满足做 m (大质数) 次 new_ar[i]=p[ar[i]]后的
-new_ar[] 数组为输入给定的arr[]数组。
-思路
-首先你把 i->ar[i] 都首尾相连列出来，表示i变换m次后变成ar[i]。它肯定会形成若干个环，环的大小
-假设是x，那么也就是x个数字相互转换，一定会成大小为 x 的环
-因为 m 是大于 x 的大质数, 那么一定有 {k*m%x|0<= k <x} = {k|0<= k <x}
-我们模拟走x次m步，把环之间相互直接的变换模拟出来，然后还原p数组即可
-复杂度O(n)
-备注
-
+**链接**
+[here](https://ac.nowcoder.com/acm/contest/5667/J)
+**题意**
+最开始$ar[i] = i$, 要你求一个$n$的排列$p[]$, 满足做$m$(大质数)次
+$new\_ar[i]=p[ar[i]]$后的$new\_ar[]$ 数组为输入给定的$arr[]$数组。
+**思路**
+首先你把$i->ar[i]$都首尾相连列出来，表示$i$变换$m$次后变成$ar[i]$。
+它肯定会形成若干个环，环的大小假设是$x$，那么也就是$x$个数字相互转换，一定
+会成大小为$x$的环因为$m$是大于$x$的大质数,那么一定有
+${k*m\%x|0\le k \lt x} = {k|0\le k\lt x}$.
+我们模拟走$x$次$m$步，把环之间相互直接的变换模拟出来，然后还原$p$数组即可。
+复杂度 $O(n)$
+**备注**
+ICPC NEAU Programming Contest 2020~~ E. 随便置换
+**AC_CODE**
+[代码地址](https://github.com/Cwolf9/Cwolf9_code_lib-ACM/blob/master/contest/duoxiao/2020_NC_2/J.cpp)
 */
 #pragma comment(linker, "/STACK:102400000,102400000")
 //#include<bits/stdc++.h>

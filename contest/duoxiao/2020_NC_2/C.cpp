@@ -1,10 +1,16 @@
 /*
-  
+**链接**
+传送门: [here](https://ac.nowcoder.com/acm/contest/5667/C)
+**题意**
+$n(2e5)$无根树，用最少的链覆盖所有的边，输出一种解即可。
+**思路**
+暴力可以过
+**备注**
+**AC_CODE**
 */
 #pragma comment(linker, "/STACK:102400000,102400000")
 //#include<bits/stdc++.h>
 #include <assert.h>
-  
 #include <algorithm>
 #include <cstdio>
 #include <cstring>
