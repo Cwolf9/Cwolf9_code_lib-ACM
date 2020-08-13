@@ -48,14 +48,40 @@ const int INF = 0x3f3f3f3f;
 const int mod = 998244353;// 998244353
 const int MOD = 1e9 + 7;// 998244353
 const int MXN = 1e6 + 5;
-int n, m;
-
+int n, m, d;
+int ar[MXN];
+int64 sum[MXN], sum2[MXN];
 int main() {
 #ifdef LH_LOCAL
     freopen("D:in.in", "r", stdin);
-    // freopen("D:out.out", "w", stdout);
+    freopen("D:out.out", "w", stdout);
 #endif
-    
+    n = read(), d = read(), m = read();
+    for(int i = 1, x; i <= n; ++i) {
+        x = read();
+        ar[i] = x;
+    }
+    sort(ar + 1, ar + n + 1);
+    int p = upper_bound(ar + 1, ar + n + 1, m) - ar;
+    for(int i = 1, j = p - 1; j >= 1; --j, ++i) {
+        sum[i] = sum[i - 1] + ar[j];
+    }
+    for(int i = 1, j = n; j >= 1; --j, ++i) {
+        sum2[i] = sum2[i - 1] + ar[j];
+    }
+    int64 ans = 0;
+    if(p >= n) {
+        for(int i = 1, x; i <= n; ++i) ans += ar[i];
+        printf("%lld\n", ans);
+        return 0;
+    }
+    for(int i = 0; i < p; ++i) {
+        int y = (n - i) / (d + 1);
+        if((n - i) % (d + 1)) ++ y;
+        // debug(i, y, sum[i] + sum2[y])
+        ans = max(ans, sum[i] + sum2[y]);
+    }
+    printf("%lld\n", ans);
     return 0;
 }
 /*

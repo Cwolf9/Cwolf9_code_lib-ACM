@@ -1,3 +1,13 @@
+/*
+**链接**
+传送门: [here](http://acm.hdu.edu.cn/showproblem.php?pid=6862)
+**题意**
+蜂窝中任意起点最多拐弯次数不重复走完半径为$r(500)$的全部正六边形格。
+**思路**
+每次都可以拐弯，找规律先走最外两层，然后是一个子问题。
+**备注**
+类似18ICPC焦作F题
+*/
 #define LH_LOCAL
 // #define LLDO
 #include <bits/stdc++.h>
@@ -60,56 +70,22 @@ void print(const T &f, const R &... r) {printf(ptout, f);putchar(' ');print(r...
 const int INF = 0x3f3f3f3f;
 const int mod = 998244353;// 998244353
 const int MOD = 1e9 + 7;
-const int MXN = 2e5 + 5;
-int n, m, k;
-vector<pii> mp[MXN];
-int c[10], du[MXN], pre[MXN];
-int vis[MXN], cnt ,inde;
-void dfs(int u, int ba) {
-    pre[u] = ba;
-    vis[u] = inde;
-    int v = mp[u][c[du[u]] - 1].se;
-    // debug(u, v, vis[v], inde)
-    if(vis[v] == inde) {
-        int x = u;
-        ++ cnt;
-        while(x != v) {
-            ++ cnt;
-            x = pre[x];
-        }
-        return;
-    }else if(vis[v] == 0) dfs(v, u);
+const int MXN = 1e3 + 5;
+int n, m;
+int r;
+vector<int> vs;
+vector<int> two = vector<int>{3,4,5,6,1,3};
+void ppv(vector<int>&a) {
+    for(int x: a) printf("%d", x);
+    printf("\n");
 }
-int ans = 0, tim = 0;
-int up = 1, t;
-unordered_map<int64, int> ump;
-void check() {
-    int64 x = 0;
-    for(int i = 1; i <= k; ++i) {
-        x = x * 10 + c[i];
-    }
-    if(ump.find(x) != ump.end()) {
-        -- t;
-        return;
-    }
-    ump[x] = 1;
-    cnt = 0;
-    memset(vis, 0, sizeof(int) * (n + 1));
-    for(int i = 1; i <= n; ++i) if(!vis[i]) {
-        inde = i;
-        dfs(i, 0);
-    }
-    if(cnt == n) {
-        ++ ans;
-        // debug(x, ans)
-    }
-}
-void cdfs(int u) {
-    for(int i = 1; i <= u; ++i) {
-        c[u] = i;
-        if(u == k) {
-            check();
-        }else cdfs(u + 1);
+int fir[7] = {0,3,4,5,6,1,2};
+int dir[7][2] = {0,0,4,2,5,3,6,4,1,5,2,6,3,1};
+void gan(int id, int num) {
+    vs.eb(fir[id]);
+    for(int i = 0; i < num; ++i) {
+        vs.eb(dir[id][0]);
+        vs.eb(dir[id][1]);
     }
 }
 int main() {
@@ -117,36 +93,23 @@ int main() {
     freopen("D:in.in", "r", stdin);
     freopen("D:out.out", "w", stdout);
 #endif
-    // int xx = 1;
-    // for(int i = 2; i <= 10; ++i) {
-    //     xx *= i;
-    //     debug(i, xx)
-    // }
-    n = read(), m = read(), k = read();
-    for(int i = 2; i <= k; ++i) up *= i;
-    up = min(up, 5000);
-    for(int i = 1, a, b, c; i <= m; ++i) {
-        a = read(), b = read(), c = read();
-        mp[a].eb(mk(c, b));
+    int tim = read();
+    while(tim --) {
+        r = read();
+        while(r > 2) {
+            for(int i = 1; i <= 6; ++i) {
+                gan(i, r - 2);
+            }
+            vs.pop_back();
+            vs.eb(4);
+            r -= 2;
+        }
+        if(r == 2) {
+            for(int x: two) vs.eb(x);
+        }
+        ppv(vs);
+        vs.clear();
     }
-    // debug(n)
-    for(int i = 1; i <= n; ++i) {
-        sort(all(mp[i]));
-        du[i] = SZ(mp[i]);
-        // debug(i, du[i])
-    }
-    if(k <= 6) {
-        cdfs(1);
-        printf("%d\n", ans);
-        return 0;
-    }
-    for(t = 1; t <= up; ++t) {
-        ++ tim;
-        if(tim >= 1000000) break;
-        for(int i = 1; i <= k; ++i) c[i] = rand()%i+1;
-        check();
-    }
-    printf("%d\n", ans);
 #ifdef LH_LOCAL
     // cout << "time cost:" << 1.0 * clock() / CLOCKS_PER_SEC << "s" << endl;
     // system("pause");

@@ -62,33 +62,20 @@ const int INF = 0x3f3f3f3f;
 const int mod = 998244353;  // 998244353
 const int MXN = 2e5 + 5;
 int n, m;
-bool noprime[MXN];
-int pp[MXN/5], pcnt;
-void init_prime() {
-    noprime[0] = noprime[1] = 1;
-    for(int i = 2; i < MXN; ++i) {
-        if(!noprime[i]) pp[pcnt++] = i;
-        for(int j = 0; j < pcnt && i*pp[j] < MXN; ++j) {
-            noprime[i*pp[j]] = 1;
-            if(i % pp[j] == 0) break;
-        }
-    }
-}
+pii cw[MXN];
 int main() {
 #ifndef ONLINE_JUDGE
     freopen("D:in.in", "r", stdin);
     freopen("D:out.out", "w", stdout);
 #endif
-    init_prime();
-    int64 ans = 1;
-    for(int i = 0; i < 20; ++i) {
-        for(int64 a = pp[i], ta = 1; a <= 1000000000000; a *= pp[i], ++ ta) {
-            for(int64 b = pp[i+1], tb = 1; a * b <= 1000000000000; b *= pp[i+1], ++ tb) {
-                for(int64 c = pp[i+2], tc = 1; a * b * c <= 1000000000000; c *= pp[i+2], ++tc) {
-                    if(tc + tb + tc >= 30) printf("%lld\n", a * b * c);
-                }
-            }
+    int tim = read();
+    while(tim --) {
+        n = read();
+        for(int i = 1; i <= n; ++i) {
+            cw[i].fi = read(), cw[i].se = read();
         }
+        sort(cw + 1, cw + n + 1);
+        
     }
 #ifndef ONLINE_JUDGE
 #endif

@@ -132,6 +132,14 @@ int main() {
     init_prime();
     debug(pcnt)
     debug(pcnt * 1e5 * 4 * 2)
+    int64 tmp = 1;
+    for(int i = 0; ; ++i) {
+        tmp *= pp[i];
+        if(tmp >= 1000000) {
+            debug(i);
+            break;
+        }
+    }
     n = read(), p = read(), q = read();
     for(int i = 1; i <= n; ++i) {
         node[i].rd();

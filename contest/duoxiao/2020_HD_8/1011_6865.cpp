@@ -1,4 +1,4 @@
-#define LH_LOCAL
+// #define LH_LOCAL
 // #define LLDO
 #include <bits/stdc++.h>
 #define fi first
@@ -58,95 +58,106 @@ template <typename T, typename... R>
 void print(const T &f, const R &... r) {printf(ptout, f);putchar(' ');print(r...);}
 
 const int INF = 0x3f3f3f3f;
-const int mod = 998244353;// 998244353
+const int mod = 1e9 + 7;// 998244353
 const int MOD = 1e9 + 7;
-const int MXN = 2e5 + 5;
-int n, m, k;
-vector<pii> mp[MXN];
-int c[10], du[MXN], pre[MXN];
-int vis[MXN], cnt ,inde;
-void dfs(int u, int ba) {
-    pre[u] = ba;
-    vis[u] = inde;
-    int v = mp[u][c[du[u]] - 1].se;
-    // debug(u, v, vis[v], inde)
-    if(vis[v] == inde) {
-        int x = u;
-        ++ cnt;
-        while(x != v) {
-            ++ cnt;
-            x = pre[x];
+const int MXN = 3e5 + 5;
+const int BASE_MAX = 30;
+int n, m, q;
+int k;
+int ar[MXN], br[MXN];
+struct Base {
+    int b[BASE_MAX + 1];
+    int& operator [](int x) {
+        return b[x];
+    }
+    int operator [](int x)const {
+        return b[x];
+    }
+    void clear(int f) {
+        if(f == 0) memset(b, 0, sizeof(int)*(BASE_MAX+1));
+        else {
+            for(int i = 0; i <= BASE_MAX; ++i) b[i] = (1<<i);
         }
-        return;
-    }else if(vis[v] == 0) dfs(v, u);
+    }
+    int check(int x) {
+        for(int i = BASE_MAX; i >= 0; --i) {
+            if(x & (1 << i)) x ^= b[i];
+        }
+        return x;
+    }
+    void out() {
+        for(int i = 0; i <= BASE_MAX; ++i) printf("%d ", b[i]);
+        printf("\n");
+    }
+}bs;
+bool insert(int x, int *bs) {
+    for(int j = BASE_MAX; j >= 0; --j) {
+        if(!(x >> j)) continue;
+        if(bs[j]) x ^= bs[j];
+        else {
+            bs[j] = x;
+            for(int k = j-1; k >= 0; --k) if(bs[k]&&(bs[j]&(1LL<<k))) bs[j]^=bs[k];
+            for(int k = j+1; k <= BASE_MAX; ++k) if(bs[k]&(1LL<<j)) bs[k]^=bs[j];
+            return true;
+        }
+    }
+    return false;
 }
-int ans = 0, tim = 0;
-int up = 1, t;
-unordered_map<int64, int> ump;
-void check() {
-    int64 x = 0;
-    for(int i = 1; i <= k; ++i) {
-        x = x * 10 + c[i];
-    }
-    if(ump.find(x) != ump.end()) {
-        -- t;
-        return;
-    }
-    ump[x] = 1;
-    cnt = 0;
-    memset(vis, 0, sizeof(int) * (n + 1));
-    for(int i = 1; i <= n; ++i) if(!vis[i]) {
-        inde = i;
-        dfs(i, 0);
-    }
-    if(cnt == n) {
-        ++ ans;
-        // debug(x, ans)
+int two[MXN];
+int nex[MXN];
+void get_next(){
+    nex[0] = -1;
+    for(int i = 0,k = -1;i < m;){
+        if(k==-1||br[i] == br[k]){
+            ++k;++i;
+            nex[i]=k;
+        }else k = nex[k];
     }
 }
-void cdfs(int u) {
-    for(int i = 1; i <= u; ++i) {
-        c[u] = i;
-        if(u == k) {
-            check();
-        }else cdfs(u + 1);
+int64 kmp(){
+    int64 ans = 0;
+    int i = 0, j = 0;
+    while(i < n&&j<m) {
+        if(j==-1||ar[i] == br[j]){
+            i++;j++;
+            if(j==m){
+                int ti = i - m;
+                // debug(i, ti)
+                ans = (ans + two[ti])%mod;
+                j = nex[j];
+            }
+        }else j=nex[j];
     }
+    return ans;
 }
 int main() {
 #ifdef LH_LOCAL
     freopen("D:in.in", "r", stdin);
     freopen("D:out.out", "w", stdout);
 #endif
-    // int xx = 1;
-    // for(int i = 2; i <= 10; ++i) {
-    //     xx *= i;
-    //     debug(i, xx)
-    // }
-    n = read(), m = read(), k = read();
-    for(int i = 2; i <= k; ++i) up *= i;
-    up = min(up, 5000);
-    for(int i = 1, a, b, c; i <= m; ++i) {
-        a = read(), b = read(), c = read();
-        mp[a].eb(mk(c, b));
+    two[0] = 1;
+    for(int i = 1; i < MXN; ++i) two[i] = two[i-1] * 2 % mod;
+    int tim = read();
+    while(tim --) {
+        n = read(), m = read(), k = read();
+        bs.clear(0);
+        for(int i = 1; i <= n; ++i) ar[i] = read();
+        for(int i = 1; i <= m; ++i) br[i] = read();
+        for(int i = 1, x; i <= k; ++i) {
+            x = read();
+            insert(x, bs.b);
+        }
+        for(int i = 1; i <= n; ++i) {
+            ar[i-1] = bs.check(ar[i]);
+            // debug(i, ar[i-1])
+        }
+        for(int i = 1; i <= m; ++i) {
+            br[i-1] = bs.check(br[i]);
+            // debug(i, br[i-1])
+        }
+        get_next();
+        printf("%lld\n", kmp());
     }
-    // debug(n)
-    for(int i = 1; i <= n; ++i) {
-        sort(all(mp[i]));
-        du[i] = SZ(mp[i]);
-        // debug(i, du[i])
-    }
-    if(k <= 6) {
-        cdfs(1);
-        printf("%d\n", ans);
-        return 0;
-    }
-    for(t = 1; t <= up; ++t) {
-        ++ tim;
-        if(tim >= 1000000) break;
-        for(int i = 1; i <= k; ++i) c[i] = rand()%i+1;
-        check();
-    }
-    printf("%d\n", ans);
 #ifdef LH_LOCAL
     // cout << "time cost:" << 1.0 * clock() / CLOCKS_PER_SEC << "s" << endl;
     // system("pause");
