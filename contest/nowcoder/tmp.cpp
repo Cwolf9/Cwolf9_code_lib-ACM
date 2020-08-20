@@ -74,13 +74,13 @@ const int mod = 998244353;// 998244353
 const int MOD = 1e9 + 7;
 const int MXN = 1e5 + 5;
 const int MXE = 2e6 + 6;
-int n, q, p;
+int n, q;
 bool noprime[305];
-int pp[305], pcnt;
+int pp[305], pcnt, rp[305];
 void init_prime() {
     noprime[0] = noprime[1] = 1;
     for(int i = 2; i < 305; ++i) {
-        if(!noprime[i]) pp[pcnt++] = i;
+        if(!noprime[i]) pp[pcnt++] = i, rp[i] = pcnt - 1;
         for(int j = 0; j < pcnt && i*pp[j] < 305; ++j) {
             noprime[i*pp[j]] = 1;
             if(i % pp[j] == 0) break;
@@ -94,19 +94,32 @@ class point {
         x = read(), y = read(), t = read();
     }
 }node[MXN];
-int64 sxy[2][MXN], szxy[2][MXN];
-class ST {
+int sxy[62][2][MXN];
+class ST2 {
     public:
-    int id;
-    int64 sum[MXN<<2], sz[MXN<<2];
+    int id, id2;
+    int64 sum[MXN<<2];
+    int sz[MXN<<2];
     void build(int l, int r, int rt) {
         if(l == r) {
-            sum[rt] = sxy[id][l];
-            sz[rt] = szxy[id][l];
+            sum[rt] = (int64)sxy[id][id2][l] * l;
+            sz[rt] = sxy[id][id2][l];
             return;
         }
         int mid = (l + r) >> 1;
         build(l, mid, rt << 1), build(mid + 1, r, rt << 1 | 1);
+        sum[rt] = sum[rt << 1] + sum[rt << 1 | 1];
+        sz[rt] = sz[rt << 1] + sz[rt << 1 | 1];
+    }
+    void modify(int p, int f, int v, int l, int r, int rt) {
+        if(l == r) {
+            sz[rt] += f;
+            sum[rt] += f * v;
+            return;
+        }
+        int mid = (l + r) >> 1;
+        if(p <= mid) modify(p, f, v, l, mid, rt << 1);
+        else modify(p, f, v, mid + 1, r, rt << 1 | 1);
         sum[rt] = sum[rt << 1] + sum[rt << 1 | 1];
         sz[rt] = sz[rt << 1] + sz[rt << 1 | 1];
     }
@@ -123,7 +136,8 @@ class ST {
             return mk(a.fi + b.fi, a.se + b.se);
         }
     }
-}tree[2];
+}tree[62][2];
+
 int main() {
 #ifndef ONLINE_JUDGE
     freopen("D:in.in", "r", stdin);
@@ -140,9 +154,35 @@ int main() {
             break;
         }
     }
-    n = read(), p = read(), q = read();
+    n = read(), q = read();
     for(int i = 1; i <= n; ++i) {
         node[i].rd();
+        node[i].t = rp[node[i].t];
+        ++ sxy[node[i].t][0][node[i].x];
+        ++ sxy[node[i].t][1][node[i].y];
+    }
+    for(int i = 0; i < pcnt; ++i) {
+        tree[i]->build(1, 100000, 1);
+    }
+    int opt, x, y, z;
+    while(q --) {
+        opt = read();
+        if(opt == 1) {
+            z = read(), x = read(), y = read();
+            tree[node[z].t]->modify(node[z].x, -1, node[z].y, 1, 100000, 1);
+            tree[node[z].t]->modify(x, 1, y, 1, 100000, 1);
+            node[z].x = x, node[z].y = y;
+        }else {
+            x = read(), y = read(), z = read();
+            int64 ans = 0;
+            for(int i = 0; i < pcnt && z >= pp[i]; ++i) {
+                if(z % pp[i] == 0) {
+                    while(z % pp[i] == 0) z /= pp[i];
+                    
+                }
+                if(z == 1) break;
+            }
+        }
     }
 #ifndef ONLINE_JUDGE
     // cout << "time cost:" << 1.0 * clock() / CLOCKS_PER_SEC << "ms" << endl;
