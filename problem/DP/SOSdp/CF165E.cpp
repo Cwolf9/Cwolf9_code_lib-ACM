@@ -1,13 +1,12 @@
 /*
 **链接**
-传送门: [here](https://codeforces.com/contest/1208/problem/F)
+传送门: [here](https://codeforces.com/contest/165/problem/E)
 **题意**
 $n(1e6)$
-$1\le i\lt j\lt k\le n$, 求max(a_i|(a_j&a_k))
+对每个$a_i$输出一个$a_j$, 满足$a_i&a_j == 0$.
 **思路**
 SOSdp
-从右往左枚举$a_i$，然后从高位开始枚举答案每一位。
-递归向上更新$dp[mask][i]$, 当$dp[mask][i]>=2$时就不必更新了，每个状态最多被访问两次。
+a&b = 0 等价于 a\in b的补集
 **备注**
 */
 #pragma comment(linker, "/STACK:102400000,102400000")
@@ -108,20 +107,11 @@ const int64 INFLL = 0x3f3f3f3f3f3f3f3fLL;
 const int INF = 0x3f3f3f3f;
 const int mod = 1e9 + 7;
 const int MOD = 1e9 + 7;  // 998244353
-const int MXN = 3e6 + 5;
+const int MXN = 5e6 + 5;
 const int MXE = 2e6 + 6;
 int n, m;
 int ans, LN;
-int ar[MXN], dp[MXN][21];
-void update(int x, int k) {
-    if(k > 20) return;
-    if(dp[x][k] > 1) return ;
-    ++ dp[x][k];
-    if(x & (1 << k)) {
-        update(x^(1<<k), k);
-    }
-    update(x, k + 1);
-}
+int ar[MXN], F[MXN], resp[MXN];
 int main() {
 #ifndef ONLINE_JUDGE
     freopen("D:in.in", "r", stdin);
@@ -130,24 +120,21 @@ int main() {
     n = read();
     for(int i = 1; i <= n; ++i) {
         ar[i] = read();
+        F[ar[i]] = 1;
+        resp[ar[i]] = ar[i];
     }
-    LN = 1 << 21;
-    for(int i = n; i >= 1; --i) {
-        int tmp = 0, have = 0;
-        for(int j = 20; j >= 0; --j) {
-            if(ar[i] & (1 << j)) {
-                tmp |= (1 << j);
-            }else {
-                if(dp[have | (1 << j)][20] >= 2) {
-                    tmp |= (1 << j);
-                    have |= (1 << j);
-                }
-            }
+    LN = 1 << 22;
+    for(int i = 0; i < 22; ++i) for(int x = 0; x < LN; ++x) {
+        if(x & (1 << i)) {
+            F[x] += F[x^(1 << i)];
+            if(resp[x^(1 << i)]) resp[x] = resp[x^(1 << i)];
         }
-        update(ar[i], 0);
-        if(i <= n - 2) ans = max(ans, tmp);
     }
-    printf("%d\n", ans);
+    for(int i = 1; i <= n; ++i) {
+        if(resp[(LN-1)^ar[i]] == 0) resp[(LN-1)^ar[i]] = -1;
+        printf("%d ", resp[(LN-1)^ar[i]]);
+    }
+    printf("\n");
     // n = read(), m = read();
     // while(m --) {
     //     for(int i = 1; i <= n; ++i) {
