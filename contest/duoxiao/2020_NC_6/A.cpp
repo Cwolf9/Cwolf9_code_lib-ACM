@@ -1,10 +1,10 @@
 /*
 **链接**
-传送门: [here](https://ac.nowcoder.com/acm/contest/5671/J)
+传送门: [here](https://ac.nowcoder.com/acm/contest/5671/A)
 **题意**
-$n(1e5),n*m(1e6)$，对长度为$n$的序列做$m$轮约瑟夫环，每轮做$x$次$k-out$的约瑟夫环，输出最后序列。
+
 **思路**
-树状数组模拟出约瑟夫环出环序列，然后维护一下每个位置的变换即可。
+
 **备注**
 */
 #pragma comment(linker, "/STACK:102400000,102400000")
@@ -105,106 +105,55 @@ const int64 INFLL = 0x3f3f3f3f3f3f3f3fLL;
 const int INF = 0x3f3f3f3f;
 const int mod = 1e9 + 7;
 const int MOD = 1e9 + 7;  // 998244353
-const int MXN = 1e5 + 5;
+const int MXN = 3e6 + 5;
 const int MXE = 2e6 + 6;
 int n, m;
-int k, x;
-int ori[MXN], cgk[MXN], bel[MXN], pos[MXN], vis[MXN];
-vector<int> mp[MXN];
-class FenwickTree {
-    public:
-    int BIT[MXN], N;
-    void clear(int _n, int f) {
-        N = _n + 1;
-        if(f == 0) memset(BIT, 0, sizeof(int)*(N+1));
-        else for(int i = 1; i <= N; ++i) BIT[i] = lowbit(i);
+int ans, LN;
+int ar[MXN], dp[MXN][21];
+void update(int x, int k) {
+    if(k > 20) return;
+    if(dp[x][k] > 1) return ;
+    ++ dp[x][k];
+    if(x & (1 << k)) {
+        update(x^(1<<k), k);
     }
-    // constexpr int lowbit(int x) {return x&(-x);}
-    void add_bit(int x, int val) {for(;x <= N; x += lowbit(x)) BIT[x] += val;}
-    int query_bit(int x) {int ans = 0; for(; x > 0; x -= lowbit(x)) ans += BIT[x]; return ans;}
-    //2^17 - 1 = 131072 - 1
-    int find_kth(int k) {
-        int s = 0, sum = 0;
-        for (int i = 16; i >= 0; -- i) {
-            s += (1 << i);
-            if (s > N || BIT[s] + sum >= k)
-                s -= (1 << i);
-            else
-                sum += BIT[s];
-        }
-        return s + 1;
-    }
-}bit;
-// int get_Q(int n, int k, int q) {
-//     long long N = (long long)q * k;
-//     while(N > n){
-//         N = (N - n - 1) / (k - 1) + N - n;
-//     }
-//     return (int)N;
-// }
-int kmodn(int k, int n) {
-    return k % n == 0? n: (k % n);
+    update(x, k + 1);
 }
 int main() {
 #ifndef ONLINE_JUDGE
     freopen("D:in.in", "r", stdin);
     freopen("D:out.out", "w", stdout);
 #endif
-    n = read(), m = read();
-    for(int i = 1; i <= n; ++i) ori[i] = pos[i] = i;
-    while(m --) {
-        k = read(), x = read();
-        bit.clear(n, 1);
-        int las = 0, tn = n, all, left;
-        for(int i = 1; i <= n; ++ i, -- tn) {
-            vis[i] = 0;
-            mp[i].clear();
-            all = bit.query_bit(n);
-            left = bit.query_bit(las);
-            // debug(all, left)
-            left = all - left >= k? k + left: kmodn(k - all + left, tn);
-            cgk[i] = bit.find_kth(left);
-            bit.add_bit(cgk[i], -1);
-            las = cgk[i];
-            // debug(i, cgk[i], left)
-        }
-        for(int t = 1; t <= n; ++t) {
-            for(int i = t; vis[i] == 0; i = cgk[i]) {
-                mp[t].eb(i);
-                vis[i] = 1;
-                bel[i] = t;
-            }
-        }
-        for(int i = 1, j; i <= n; ++i) {
-            // debug(i, bel[i])
-            j = 1;
-            for(int a: mp[i]) {
-                int b = mp[i][kmodn(j + x, SZ(mp[i])) - 1];
-                // debug(i, a, b)
-                ori[pos[b]] = a;
-                ++ j;
-            }
-        }
-        for(int i = 1; i <= n; ++i) pos[ori[i]] = i;
+    n = read();
+    for(int i = 1; i <= n; ++i) {
+        ar[i] = read();
     }
-    // for(int i = 1; i <= n; ++i) debug(i, pos[i], ori[i])
-    for(int i = 1; i <= n; ++i) printf("%d%c", pos[i], " \n"[i == n]);
+    LN = 1 << 21;
+    for(int i = n; i >= 1; --i) {
+        int tmp = 0, have = 0;
+        for(int j = 20; j >= 0; --j) {
+            if(ar[i] & (1 << j)) {
+                tmp |= (1 << j);
+            }else {
+                if(dp[have | (1 << j)][20] >= 2) {
+                    tmp |= (1 << j);
+                    have |= (1 << j);
+                }
+            }
+        }
+        update(ar[i], 0);
+        if(i <= n - 2) ans = max(ans, tmp);
+    }
+    printf("%d\n", ans);
+    // n = read(), m = read();
+    // while(m --) {
+    //     for(int i = 1; i <= n; ++i) {
+    //         ar[i] = read();
+    //     }
+    // }
 #ifndef ONLINE_JUDGE
     cout << "time cost:" << 1.0 * clock() / CLOCKS_PER_SEC << "s" << endl;
     system("pause");
 #endif
     return 0;
 }
-/*
-int find_kth(int k) {
-    int s = 0, sum = 0;
-    for (int i = 20; i >= 0; i--) {
-        s += (1 << i);
-        if (s > maxn || c[s] + sum >= k)
-            s -= (1 << i);
-        else
-            sum += c[s];
-    }
-    return s + 1;
-}
-*/
