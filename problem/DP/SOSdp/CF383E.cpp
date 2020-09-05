@@ -108,34 +108,45 @@ const int64 INFLL = 0x3f3f3f3f3f3f3f3fLL;
 const int INF = 0x3f3f3f3f;
 const int mod = 1e9 + 7;
 const int MOD = 1e9 + 7;  // 998244353
-const int MXN = 5e6 + 5;
+const int MXN = (1<<24) + 5;
 const int MXE = 2e6 + 6;
 int n, m;
 int ans, LN;
-int ar[MXN], F[MXN], resp[MXN];
+int ar[MXN], F[MXN];
 int main() {
 #ifndef ONLINE_JUDGE
     freopen("D:in.in", "r", stdin);
     freopen("D:out.out", "w", stdout);
 #endif
     n = read();
+    char s[4];
     for(int i = 1; i <= n; ++i) {
-        ar[i] = read();
-        F[ar[i]] = 1;
-        resp[ar[i]] = ar[i];
-    }
-    LN = 1 << 22;
-    for(int i = 0; i < 22; ++i) for(int x = 0; x < LN; ++x) {
-        if(x & (1 << i)) {
-            F[x] += F[x^(1 << i)];
-            if(resp[x^(1 << i)]) resp[x] = resp[x^(1 << i)];
+        scanf("%s", s);
+        int tmp = 0;
+        for(int j = 0; j < 3; ++j) {
+            tmp |= (1<<(s[j] - 'a'));
+        }
+        for(int t = tmp; t; t = (t - 1) & tmp) {
+            if(__builtin_popcount(t) % 2 == 1) {
+                ++ F[t];
+            }else {
+                -- F[t];
+            }
         }
     }
-    for(int i = 1; i <= n; ++i) {
-        if(resp[(LN-1)^ar[i]] == 0) resp[(LN-1)^ar[i]] = -1;
-        printf("%d ", resp[(LN-1)^ar[i]]);
+    LN = 1 << 24;
+    for(int i = 0; i < 24; ++i) {
+        for(int x = 0; x < LN; ++x) {
+            if(x & (1 << i)) {
+                F[x] += F[x^(1<<i)];
+            }
+        }
     }
-    printf("\n");
+    int ans = 0;
+    for(int i = 0; i < LN; ++i) {
+        ans ^= F[i] * F[i];
+    }
+    printf("%d\n", ans);
     // n = read(), m = read();
     // while(m --) {
     //     for(int i = 1; i <= n; ++i) {
