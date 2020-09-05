@@ -2,9 +2,11 @@
 **链接**
 传送门: [here](https://codeforces.com/contest/1208/problem/F)
 **题意**
-
+$1\le i\lt j\lt k\le n$, 求max(a_i|(a_j&a_k))
 **思路**
-
+SOSdp
+从右往左枚举$a_i$，然后从高位开始枚举答案每一位。
+递归向上更新$dp[mask][i]$, 当$dp[mask][i]>=2$时就不必更新了，每个状态最多被访问两次。
 **备注**
 */
 #pragma comment(linker, "/STACK:102400000,102400000")
