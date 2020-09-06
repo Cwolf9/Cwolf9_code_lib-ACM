@@ -105,52 +105,22 @@ const int64 INFLL = 0x3f3f3f3f3f3f3f3fLL;
 const int INF = 0x3f3f3f3f;
 const int mod = 1e9 + 7;
 const int MOD = 1e9 + 7;  // 998244353
-const int MXN = 3e6 + 5;
+const int MXN = 1e6 + 5;
 const int MXE = 2e6 + 6;
 int n, m;
-int ans, LN;
-int ar[MXN], dp[MXN][21];
-void update(int x, int k) {
-    if(k > 20) return;
-    if(dp[x][k] > 1) return ;
-    ++ dp[x][k];
-    if(x & (1 << k)) {
-        update(x^(1<<k), k);
-    }
-    update(x, k + 1);
-}
+int ar[MXN];
 int main() {
 #ifndef ONLINE_JUDGE
     freopen("D:in.in", "r", stdin);
     freopen("D:out.out", "w", stdout);
 #endif
-    n = read();
-    for(int i = 1; i <= n; ++i) {
-        ar[i] = read();
-    }
-    LN = 1 << 21;
-    for(int i = n; i >= 1; --i) {
-        int tmp = 0, have = 0;
-        for(int j = 20; j >= 0; --j) {
-            if(ar[i] & (1 << j)) {
-                tmp |= (1 << j);
-            }else {
-                if(dp[have | (1 << j)][20] >= 2) {
-                    tmp |= (1 << j);
-                    have |= (1 << j);
-                }
-            }
+    n = read(), m = read();
+    while(m --) {
+        for(int i = 1; i <= n; ++i) {
+            ar[i] = read();
         }
-        update(ar[i], 0);
-        if(i <= n - 2) ans = max(ans, tmp);
+        
     }
-    printf("%d\n", ans);
-    // n = read(), m = read();
-    // while(m --) {
-    //     for(int i = 1; i <= n; ++i) {
-    //         ar[i] = read();
-    //     }
-    // }
 #ifndef ONLINE_JUDGE
     cout << "time cost:" << 1.0 * clock() / CLOCKS_PER_SEC << "s" << endl;
     system("pause");
