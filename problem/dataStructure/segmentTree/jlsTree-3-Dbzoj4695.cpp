@@ -26,7 +26,7 @@ Tp=2或3时，|x|<=10^8
 using namespace std;
 typedef long long int64;
 const int INFLL = 0x3f3f3f3f;
-const int MXN = 1e6 + 7;
+const int MXN = 5e5 + 7;
 const int MXE = MXN << 2;
 int n, m;
 int ar[MXN];
@@ -71,11 +71,11 @@ class node {
 void build(int l, int r, int rt) {
     cw[rt].l = l, cw[rt].r = r;
     cw[rt].flagAdd = 0;
+    cw[rt].smxv = -INFLL;
+    cw[rt].smnv = INFLL;
     if(l == r) {
         cw[rt].mxv = cw[rt].mnv = ar[l];
         cw[rt].cntMxv = cw[rt].cntMnv = 1;
-        cw[rt].smxv = -INFLL;
-        cw[rt].smnv = INFLL;
         cw[rt].sum = ar[l];
         return ;
     }
@@ -93,6 +93,7 @@ void push_add(int rt, int v) {
     cw[rt].flagAdd += v;
 }
 void push_down(int rt) {
+    // if(cw[rt].l == cw[rt].r) cout << " --- \n";
     if(cw[rt].flagAdd) {
         push_add(lson, cw[rt].flagAdd);
         push_add(rson, cw[rt].flagAdd);
@@ -103,43 +104,28 @@ void push_down(int rt) {
     int oldMxvR = cw[rson].mxv;
     int oldMnvR = cw[rson].mnv;
     if(cw[lson].mxv > cw[rt].mxv) {
-        if(cw[lson].mxv == cw[lson].mnv) cw[lson].mnv = cw[rt].mxv;
+        if(cw[lson].mnv == cw[lson].mxv) cw[lson].mnv = cw[rt].mxv;
+        if(cw[lson].smnv == cw[lson].mxv) cw[lson].smnv = cw[rt].mxv;
+        cw[lson].sum -= (int64)cw[lson].cntMxv * (cw[lson].mxv - cw[rt].mxv);
         cw[lson].mxv = cw[rt].mxv;
     }
     if(cw[lson].mnv < cw[rt].mnv) {
-        if(cw[lson].mxv == cw[lson].mnv) cw[lson].mxv = cw[rt].mnv;
+        if(cw[lson].mnv == cw[lson].mxv) cw[lson].mxv = cw[rt].mnv;
+        if(cw[lson].mnv == cw[lson].smxv) cw[lson].smxv = cw[rt].mnv;
+        cw[lson].sum += (int64)cw[lson].cntMnv * (cw[rt].mnv - cw[lson].mnv);
         cw[lson].mnv = cw[rt].mnv;
     }
-    if(cw[lson].mxv == cw[lson].mnv) {            
-        cw[lson].cntMxv = cw[lson].cntMnv = cw[lson].r - cw[lson].l + 1;
-        cw[lson].smnv = INFLL;
-        cw[lson].smxv = -INFLL;
-        cw[lson].sum = (int64)cw[lson].cntMnv * cw[lson]. mnv;
-    }else {
-        if(cw[lson].smnv != INFLL && cw[lson].smnv > cw[lson].mxv) cw[lson].smnv = cw[lson].mxv;
-        if(cw[lson].smxv != -INFLL && cw[lson].smxv < cw[lson].mnv) cw[lson].smxv = cw[lson].mnv;
-        cw[lson].sum -= ((int64)oldMxvL - cw[lson].mxv) * cw[lson].cntMxv;
-        cw[lson].sum += ((int64)cw[lson].mnv - oldMnvL) * cw[lson].cntMnv;
-    }
-
     if(cw[rson].mxv > cw[rt].mxv) {
-        if(cw[rson].mxv == cw[rson].mnv) cw[rson].mnv = cw[rt].mxv;
+        if(cw[rson].mnv == cw[rson].mxv) cw[rson].mnv = cw[rt].mxv;
+        if(cw[rson].smnv == cw[rson].mxv) cw[rson].smnv = cw[rt].mxv;
+        cw[rson].sum -= (int64)cw[rson].cntMxv * (cw[rson].mxv - cw[rt].mxv);
         cw[rson].mxv = cw[rt].mxv;
     }
     if(cw[rson].mnv < cw[rt].mnv) {
-        if(cw[rson].mxv == cw[rson].mnv) cw[rson].mxv = cw[rt].mnv;
+        if(cw[rson].mnv == cw[rson].mxv) cw[rson].mxv = cw[rt].mnv;
+        if(cw[rson].mnv == cw[rson].smxv) cw[rson].smxv = cw[rt].mnv;
+        cw[rson].sum += (int64)cw[rson].cntMnv * (cw[rt].mnv - cw[rson].mnv);
         cw[rson].mnv = cw[rt].mnv;
-    }
-    if(cw[rson].mxv == cw[rson].mnv) {
-        cw[rson].cntMxv = cw[rson].cntMnv = cw[rson].r - cw[rson].l + 1;
-        cw[rson].smnv = INFLL;
-        cw[rson].smxv = -INFLL;
-        cw[rson].sum = (int64)cw[rson].cntMnv * cw[rson]. mnv;
-    }else {
-        if(cw[rson].smnv != INFLL && cw[rson].smnv > cw[rson].mxv) cw[rson].smnv = cw[rson].mxv;
-        if(cw[rson].smxv != -INFLL && cw[rson].smxv < cw[rson].mnv) cw[rson].smxv = cw[rson].mnv;
-        cw[rson].sum -= ((int64)oldMxvL - cw[rson].mxv) * cw[rson].cntMxv;
-        cw[rson].sum += ((int64)cw[rson].mnv - oldMnvL) * cw[rson].cntMnv;
     }
 }
 void updateAdd(int L, int R, int v, int rt) {
@@ -172,7 +158,7 @@ void updateMin(int L, int R, int v, int rt) {
     if(L <= cw[rt].l && cw[rt].r <= R && cw[rt].smxv < v) {
         cw[rt].sum -= ((int64)cw[rt].mxv - v) * cw[rt].cntMxv;
         if(cw[rt].mxv == cw[rt].mnv) cw[rt].mnv = v;
-        if(cw[rt].smnv != INFLL && cw[rt].smnv > v) cw[rt].smnv = v;
+        if(cw[rt].mxv == cw[rt].smnv) cw[rt].smnv = v;
         cw[rt].mxv = v;
         return ;
     }
@@ -192,10 +178,14 @@ void updateMax(int L, int R, int v, int rt) {
     if(L > cw[rt].r || R < cw[rt].l) return ;
     // cout << " -- " << cw[rt].mnv << " " << cw[rt].mxv << endl;
     if(cw[rt].mnv >= v) return ;
+    // if(cw[rt].l == cw[rt].r) {
+    //     cout << cw[rt].l << " " << cw[rt].r << " " << L << " " << R << endl;
+    //     cout << cw[rt].mnv << " " << cw[rt].smnv << " " << v << endl;
+    // }
     if(L <= cw[rt].l && cw[rt].r <= R && cw[rt].smnv > v) {
         cw[rt].sum += ((int64)v - cw[rt].mnv) * cw[rt].cntMnv;
         if(cw[rt].mxv == cw[rt].mnv) cw[rt].mxv = v;
-        if(cw[rt].smxv != - INFLL && cw[rt].smxv < v) cw[rt].smxv = v;
+        if(cw[rt].smxv == cw[rt].mnv) cw[rt].smxv = v;
         cw[rt].mnv = v;
         return ;
     }
@@ -266,7 +256,7 @@ int main() {
     while(tim --) {
         scanf("%d", &n);
         for(int i = 1; i <= n; ++i) {
-            scanf("%d", ar + i);
+            scanf("%lld", ar + i);
         }
         build(1, n, 1);
         int opt, x, y;
