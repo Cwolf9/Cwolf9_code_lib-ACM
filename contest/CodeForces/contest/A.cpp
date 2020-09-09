@@ -47,7 +47,7 @@ void print(const T &f, const R &... r) {printf(ptout, f);putchar(' ');print(r...
 const int INF = 0x3f3f3f3f;
 const int mod = 998244353;// 998244353
 const int MOD = 1e9 + 7;// 998244353
-const int MXN = 1e6 + 5;
+const int MXN = 1e5 + 5;
 int n, m;
 
 int main() {
@@ -55,11 +55,6 @@ int main() {
     freopen("D:in.in", "r", stdin);
     freopen("D:out.out", "w", stdout);
 #endif
-    int ans = 0;
-    for(int i = 1; i <= 50; ++i) {
-        ans ^= i;
-        if(i % 4 == 3) debug(i, ans)
-    }
     int tim = read();
     while(tim --) {
         n = read();
