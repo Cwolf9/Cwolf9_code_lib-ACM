@@ -58,16 +58,18 @@ template <typename T, typename... R>
 void print(const T &f, const R &... r) {printf(ptout, f);putchar(' ');print(r...);}
 
 const int INF = 0x3f3f3f3f;
-const int mod = 998244353;// 998244353
-const int MXN = 2e5 + 5;
+const int mod = 1e6 + 3;// 998244353
+const int MXN = 5e5 + 5;
+const int MXE = 1e6 + 5;
 int n, m;
+
 int main() {
 #ifdef LH_LOCAL
     freopen("D:in.in", "r", stdin);
     freopen("D:out.out", "w", stdout);
 #endif
     n = read();
-    print(n);
+    
 #ifdef LH_LOCAL
     // cout << "time cost:" << 1.0 * clock() / CLOCKS_PER_SEC << "s" << endl;
     // system("pause");

@@ -1,0 +1,294 @@
+#define LH_LOCAL
+// #define LLDO
+#include <bits/stdc++.h>
+#define fi first
+#define se second
+#define o2(x) (x) * (x)
+#define mk make_pair
+#define eb emplace_back
+#define SZ(x) ((int)(x).size())
+#define all(x) (x).begin(), (x).end()
+#define clr(a, b) memset((a), (b), sizeof((a)))
+#define rep(i,s,t) for(register int i=s;i<t;++i)
+#define per(i,s,t) for(register int i=s;i>=t;--i)
+#define iis std::ios::sync_with_stdio(false);cin.tie(0)
+#define my_unique(x) sort(all(x)), x.erase(unique(all(x)), x.end())
+using namespace std;
+typedef long long int64;
+typedef unsigned long long uint64;
+typedef pair<int, int> pii;
+// mt19937 rng(time(NULL));
+// mt19937_64 rng64(chrono::steady_clock::now().time_since_epoch().count());
+// mt19937_64 generator(std::clock());
+// shuffle(arr, arr + n, generator);
+inline int64 read() {
+    int64 x = 0;int f = 0;char ch = getchar();
+    while (ch < '0' || ch > '9') f |= (ch == '-'), ch = getchar();
+    while (ch >= '0' && ch <= '9') x = (x << 3) + (x << 1) + ch - '0', ch =
+    getchar(); return x = f ? -x : x;
+}
+int lowbit(int x) { return x & (-x); }
+template <class T>
+T big(const T &a1, const T &a2) {return a1 > a2 ? a1 : a2;}
+template <class T>
+T sml(const T &a1, const T &a2) {return a1 < a2 ? a1 : a2;}
+template <typename T, typename... R>
+T big(const T &f, const R &... r) {return big(f, big(r...));}
+template <typename T, typename... R>
+T sml(const T &f, const R &... r) {return sml(f, sml(r...));}
+void debug_out() { cout << '\n'; }
+template <typename T, typename... R>
+void debug_out(const T &f, const R &... r) {
+    cout << f << " ";
+    debug_out(r...);
+}
+#ifdef LH_LOCAL
+#define debug(...) cout << "[" << #__VA_ARGS__ << "]: ", debug_out(__VA_ARGS__);
+#else
+#define debug(...) ;
+#endif
+#ifdef LLDO
+    const char ptout[] = "%lld";
+#else
+    const char ptout[] = "%d";
+#endif
+template <typename T>
+void print(const T &f) {printf(ptout, f);putchar('\n');}
+template <typename T, typename... R>
+void print(const T &f, const R &... r) {printf(ptout, f);putchar(' ');print(r...);}
+
+const int INF = 0x3f3f3f3f;
+const int mod = 998244353;// 998244353
+const int MXN = 4e5 + 5;
+const int MXE = 1e6 + 5;
+const int BZ_SZ = 20;
+int n, m;
+int acnt[2];
+char val[MXN];
+int dep[MXN], fa[MXN], cnt[2][MXN];
+int64 ans;
+int head[MXN], tot;
+struct lp {
+    int v, nex;
+}cw[MXE];
+void dfs(int u,int ba, int d) {
+    fa[u] = ba;
+    dep[u] = d;
+    int aim = INF;
+    for(int t = 0; t < 2; ++ t) {
+        if(val[u] == t) cnt[t][++ cnt[t][0]] = d;
+        if(acnt[t] == 0) aim = min(aim, d);
+        else if(cnt[t][0] >= acnt[t]) aim = min(aim, cnt[t][cnt[t][0] - acnt[t] + 1]);
+        else aim = -1;
+    }
+    if(aim != -1) ans += aim;
+    // debug(u, cnt[0][0], cnt[1][0], aim)
+    for(int i = head[u]; ~i; i = cw[i].nex) {
+        int v = cw[i].v;
+        if(v == ba) continue;
+        dfs(v, u, d + 1);
+    }
+    for(int t = 0; t < 2; ++ t) if(val[u] == t) -- cnt[t][0];
+}
+void add_edge(int u,int v) {
+    cw[++tot].v = v; cw[tot].nex = head[u];
+    head[u] = tot;
+    cw[++tot].v = u; cw[tot].nex = head[v];
+    head[v] = tot;
+}
+
+void solve() {
+    for(int i = 1; i <= n; ++i) val[i] -= 'a';
+    dfs(1, 0, 1);
+}
+int main() {
+#ifdef LH_LOCAL
+    freopen("D:in.in", "r", stdin);
+    freopen("D:out.out", "w", stdout);
+#endif
+    n = read();
+    acnt[0] = read();
+    acnt[1] = read();
+    tot = -1;
+    memset(head, -1, sizeof(int)*(n+1));
+    for(int i = 0, u, v; i < n - 1; ++i) {
+        scanf("%d%d", &u, &v);
+        add_edge(u, v);
+    }
+    scanf("%s", val + 1);
+    solve();
+    print(ans);
+#ifdef LH_LOCAL
+    // cout << "time cost:" << 1.0 * clock() / CLOCKS_PER_SEC << "s" << endl;
+    // system("pause");
+#endif
+    return 0;
+}
+
+9
+1 2
+1 2
+1 3
+2 4
+2 5
+3 6
+3 7
+5 8
+5 9
+abaabbbca
+
+4
+
+#define LH_LOCAL
+// #define LLDO
+#include <bits/stdc++.h>
+#define fi first
+#define se second
+#define o2(x) (x) * (x)
+#define mk make_pair
+#define eb emplace_back
+#define SZ(x) ((int)(x).size())
+#define all(x) (x).begin(), (x).end()
+#define clr(a, b) memset((a), (b), sizeof((a)))
+#define rep(i,s,t) for(register int i=s;i<t;++i)
+#define per(i,s,t) for(register int i=s;i>=t;--i)
+#define iis std::ios::sync_with_stdio(false);cin.tie(0)
+#define my_unique(x) sort(all(x)), x.erase(unique(all(x)), x.end())
+using namespace std;
+typedef long long int64;
+typedef unsigned long long uint64;
+typedef pair<int, int> pii;
+// mt19937 rng(time(NULL));
+// mt19937_64 rng64(chrono::steady_clock::now().time_since_epoch().count());
+// mt19937_64 generator(std::clock());
+// shuffle(arr, arr + n, generator);
+inline int64 read() {
+    int64 x = 0;int f = 0;char ch = getchar();
+    while (ch < '0' || ch > '9') f |= (ch == '-'), ch = getchar();
+    while (ch >= '0' && ch <= '9') x = (x << 3) + (x << 1) + ch - '0', ch =
+    getchar(); return x = f ? -x : x;
+}
+int lowbit(int x) { return x & (-x); }
+template <class T>
+T big(const T &a1, const T &a2) {return a1 > a2 ? a1 : a2;}
+template <class T>
+T sml(const T &a1, const T &a2) {return a1 < a2 ? a1 : a2;}
+template <typename T, typename... R>
+T big(const T &f, const R &... r) {return big(f, big(r...));}
+template <typename T, typename... R>
+T sml(const T &f, const R &... r) {return sml(f, sml(r...));}
+void debug_out() { cout << '\n'; }
+template <typename T, typename... R>
+void debug_out(const T &f, const R &... r) {
+    cout << f << " ";
+    debug_out(r...);
+}
+#ifdef LH_LOCAL
+#define debug(...) cout << "[" << #__VA_ARGS__ << "]: ", debug_out(__VA_ARGS__);
+#else
+#define debug(...) ;
+#endif
+#ifdef LLDO
+    const char ptout[] = "%lld";
+#else
+    const char ptout[] = "%d";
+#endif
+template <typename T>
+void print(const T &f) {printf(ptout, f);putchar('\n');}
+template <typename T, typename... R>
+void print(const T &f, const R &... r) {printf(ptout, f);putchar(' ');print(r...);}
+
+const int INF = 0x3f3f3f3f;
+const int mod = 998244353;// 998244353
+const int MXN = 4e5 + 5;
+const int MXE = 1e6 + 5;
+const int BZ_SZ = 20;
+int n, m;
+int acnt[2];
+char val[MXN];
+int up[MXN][BZ_SZ], dep[MXN], fa[MXN];
+int cnt[2][MXN][BZ_SZ];
+int64 ans;
+int head[MXN], tot;
+struct lp{
+    int v, nex;
+}cw[MXE];
+void dfs(int u,int ba, int d, int aim) {
+    if(aim == 0) {
+        fa[u] = ba;
+        dep[u] = d;
+    }
+    for(int i = 1, cf; i < BZ_SZ; ++i) {
+        cf = up[u][i-1];
+        if(aim == 0) up[u][i] = up[fa[cf]][i-1];
+        cnt[aim][u][i] = cnt[aim][u][i-1] + cnt[aim][fa[cf]][i-1];
+    }
+    for(int i = head[u]; ~i; i = cw[i].nex) {
+        int v = cw[i].v;
+        if(v == ba) continue;
+        dfs(v, u, d + 1, aim);
+    }
+}
+void add_edge(int u,int v) {
+    cw[++tot].v = v; cw[tot].nex = head[u];
+    head[u] = tot;
+    cw[++tot].v = u; cw[tot].nex = head[v];
+    head[v] = tot;
+}
+
+void solve() {
+    for(int i = 1; i <= n; ++i) val[i] -= 'a';
+    for(int t = 0; t < 2; ++ t) {
+        for(int i = 0; i < BZ_SZ; ++i) up[0][i] = 0, cnt[t][0][i] = 0;
+        for(int i = 1; i <= n; ++i) {
+            cnt[t][i][0] = (val[i] == t);
+            up[i][0] = i;
+        }
+        dfs(1, 0, 1, t);
+    }
+    // for(int i = 1; i <= n; ++i) {
+    //     for(int j = 0; j < 4; ++j) {
+    //         if(i == 4) debug(i, j, cnt[0][i][j], cnt[1][i][j], up[i][j])
+    //     }
+    // }
+    for(int u = 1; u <= n; ++u) {
+        int as[2];
+        for(int t = 0; t < 2; ++ t) {
+            int num = 0, x = u;
+            for(int i = BZ_SZ - 1; i >= 0; --i) {
+                if(cnt[t][x][i] && num + cnt[t][x][i] <= acnt[t] && (i == 0 || cnt[t][x][i] != cnt[t][x][i-1])) {
+                    num += cnt[t][x][i];
+                    x = fa[up[x][i]];
+                }
+            }
+            if(acnt[t] == 0) as[t] = dep[x];
+            else if(num == acnt[t]) as[t] = dep[x] + 1;
+            else as[t] = 0;
+        }
+        debug(u, as[0], as[1])
+        ans += min(as[0], as[1]);
+    }
+}
+int main() {
+#ifdef LH_LOCAL
+    freopen("D:in.in", "r", stdin);
+    freopen("D:out.out", "w", stdout);
+#endif
+    n = read();
+    acnt[0] = read();
+    acnt[1] = read();
+    tot = -1;
+    memset(head, -1, sizeof(int)*(n+1));
+    for(int i = 0, u, v; i < n - 1; ++i) {
+        scanf("%d%d", &u, &v);
+        add_edge(u, v);
+    }
+    scanf("%s", val + 1);
+    solve();
+    print(ans);
+#ifdef LH_LOCAL
+    // cout << "time cost:" << 1.0 * clock() / CLOCKS_PER_SEC << "s" << endl;
+    // system("pause");
+#endif
+    return 0;
+}

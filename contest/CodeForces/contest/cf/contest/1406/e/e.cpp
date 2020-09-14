@@ -59,15 +59,63 @@ void print(const T &f, const R &... r) {printf(ptout, f);putchar(' ');print(r...
 
 const int INF = 0x3f3f3f3f;
 const int mod = 998244353;// 998244353
-const int MXN = 2e5 + 5;
+const int MXN = 1e5 + 5;
 int n, m;
+bool noprime[MXN];
+int pp[MXN/5], pcnt;
+int mu[MXN];
+void init_prime() {
+    noprime[0] = noprime[1] = 1;
+    for(int i = 2; i < MXN; ++i) {
+        if(!noprime[i]) pp[pcnt++] = i;
+        for(int j = 0; j < pcnt && i*pp[j] < MXN; ++j) {
+            noprime[i*pp[j]] = 1;
+            if(i % pp[j] == 0) {
+                break;
+            }
+        }
+    }
+}
+int cnt[MXN];
+bool check(int x) {
+    int tx = x, p = 0, all = 1;
+    for(int i = 0; i < pcnt && pp[i] <= tx; ++i) {
+        if(tx % pp[i]) {
+            int pn = 0;
+            while(tx % pp[i] == 0) tx /= pp[i], ++ pn;
+            cnt[p] = pn;
+            all *= (pn + 1);
+            ++ p;
+        }
+    }
+    if(p != m) return false;
+    for(int i = 0; i < m; ++i) {
+        if(all/cnt[i] != mu[i]) return false;
+    }
+    return true;
+}
 int main() {
 #ifdef LH_LOCAL
     freopen("D:in.in", "r", stdin);
     freopen("D:out.out", "w", stdout);
 #endif
+    init_prime();
     n = read();
-    print(n);
+    for(int i = 0; i < pcnt && pp[i] <= n; ++i) {
+        cout << "B " << pp[i] << endl;
+        mu[m] = read();
+        if(mu[m]) ++ m;
+    }
+    if(m == 0 && mu[m] == 0) {
+        cout << "C " << 1 << endl;
+        return 0;
+    }
+    for(int x = 1; x <= n; ++x) {
+        if(check(x)) {
+            print(x);
+            return 0;
+        }
+    }
 #ifdef LH_LOCAL
     // cout << "time cost:" << 1.0 * clock() / CLOCKS_PER_SEC << "s" << endl;
     // system("pause");
