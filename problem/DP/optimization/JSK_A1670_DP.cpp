@@ -1,19 +1,13 @@
 /*
 **链接**
-传送门: [here](https://ac.nowcoder.com/acm/contest/890/J)
+传送门: [here](https://nanti.jisuanke.com/t/A1670)
 **题意**
-$n(5000),m(2000)$
-有$n$个木块，可以任意打乱顺序，每个木块宽$w_i$高$h_i$，木块不能旋转。把$n$个木块分成$m$组，求最小材料损耗。
-每组木块的高度必须相同，也就是说所有高的木块要切掉一截。
+$N,K 1e5$
+无向图，n个节点，2n-3条边。n-1条边从1->i .(2<=i<=n)。n-2条边从i->i+1.(2<=i<=n-1)
+ k次询问，问将每条边长度增加d后，从1到n的最短路径。
 **思路**
-思路和BZOJ1010一模一样，[BZOJ1010](https://blog.csdn.net/qq_39599067/article/details/80668515)
-按高度从小到大排序然后斜率优化DP。
-$dp[i][h] = min_{j=h-1}^{i-1}(dp[j][h-1]+s[i]-s[j]-(sw[i]-sw[j])*h[j+1])$
-$k$优于$j(j\lt k)$时，斜率$(j,k)$满足：$\frac{dp[k][h-1]-s[k]+sw[k]*h[k+1]-(dp[j][h-1]-s[j]+sw[j]*h[j+1])}{h[k+1]-h[j+1]}\le sw[i]$
-枚举$h$然后DP即可。
-斜率优化需要满足$h[i]$是单调递增且$sw[i]$是单调的。
-在本题中$sw[i]$需要单调递增。
-类似题：[2018宁夏acm网络赛-G-Trouble of Tyrant](https://blog.csdn.net/qq_39599067/article/details/80671353)
+[2018宁夏acm网络赛-G-Trouble of Tyrant](https://blog.csdn.net/qq_39599067/article/details/80671353)
+类似题：[BZOJ1010](https://blog.csdn.net/qq_39599067/article/details/80668515)
 **备注**
 */
 // #define LH_LOCAL
@@ -108,60 +102,62 @@ const int64 INFLL = 0x3f3f3f3f3f3f3f3fLL;
 const int INF = 0x3f3f3f3f;
 const int mod = 998244353;// 998244353
 const int MOD = 1e9 + 7;
-constexpr int MXN = 5e3 + 5;
+const int MXN = 2e6 + 5;
 const int MXE = 2e6 + 6;
 
 int n, m;
-int64 dp[MXN][MXN/2], ar[MXN], s[MXN], sw[MXN];
-class node {
-    public:
-    int64 w, h;
-    bool operator<(const node&B) const {
-        return h < B.h;
-    }
-}cw[MXN];
+int64 dp[MXN], ar[MXN], sum[MXN], id[MXN], qry[MXN], ans[MXN];
 int Q[MXN], hd, tl;
 void read_data() {
     n = read(), m = read();
-    for(int i = 1; i <= n; ++i) cw[i].w = read(), cw[i].h = read();
+    for(int i = n - 1; i >= 1; --i) ar[i] = read();
+    for(int i = n - 1; i >= 2; --i) sum[i] = read();
+    for(int i = 2; i < n; ++i) sum[i] += sum[i - 1];
+    for(int i = 1; i < n; ++i) ar[i] += sum[i];
+    for(int i = 1; i <= m; ++i) {
+        id[i] = i;
+        qry[i] = read();
+    }
 }
-int64 KX(int j, int k, int id) {
-    return dp[k][id] - s[k] + sw[k] * cw[k+1].h - (dp[j][id] - s[j] + sw[j] * cw[j+1].h);
+int64 KX(int j, int k) {
+    return ar[k] - ar[j];
 }
-int64 KY(int j, int k, int id) {
-    return cw[k+1].h - cw[j+1].h;
+int64 KY(int j, int k) {
+    return k - j;
+}
+bool cmp1(const int &a, const int &b) {
+    return qry[a] < qry[b];
+}
+bool cmp2(const int &a, const int &b) {
+    return qry[a] > qry[b];
 }
 void gao_solve() {
-    sort(cw + 1, cw + n + 1);
-    for(int i = 1; i <= n; ++i) {
-        s[i] = s[i - 1] + cw[i].w * cw[i].h;
-        sw[i] = sw[i - 1] + cw[i].w;
-        dp[i][1] = s[i] - sw[i] * cw[1].h;
+    sort(id + 1, id + m + 1, cmp1);
+    hd = tl = 0;
+    for(int i = 1; i < n; ++i) {
+        if(tl > hd && ar[i] >= ar[Q[tl - 1]]) continue;
+        while(tl - hd >= 2 && KX(Q[tl-2], Q[tl-1]) * KY(Q[tl-1], i) >= KX(Q[tl-1], i) * KY(Q[tl-2], Q[tl-1])) -- tl;
+        Q[tl++] = i;
     }
-    for(int k = 2; k <= m; ++k) {
-        hd = tl = 0;
-        Q[tl++] = k - 1;
-        for(int i = k; i <= n; ++i) {
-            while(2 <= tl - hd && KX(Q[hd], Q[hd+1], k - 1) <= (__int128)KY(Q[hd], Q[hd+1], k - 1) * sw[i]) ++ hd;
-            assert(hd < tl);
-            dp[i][k] = dp[Q[hd]][k-1] + s[i] - s[Q[hd]] - (sw[i] - sw[Q[hd]]) * cw[Q[hd]+1].h;
-            while(2 <= tl - hd && (__int128)KX(Q[tl-2], Q[tl-1], k - 1) * KY(Q[tl-1], i, k - 1) >= 
-                (__int128)KY(Q[tl-2], Q[tl-1], k - 1) * KX(Q[tl-1], i, k - 1)) -- tl;
-            Q[tl++] = i;
-        }
+    for(int i = 1; i <= m; ++i) {
+        while(tl - hd >= 2 && KX(Q[tl - 2], Q[tl - 1]) >= KY(Q[tl - 2], Q[tl - 1]) * (-qry[id[i]])) -- tl;
+        ans[id[i]] = ar[Q[tl - 1]] + Q[tl - 1] * qry[id[i]];
     }
 }
 void print_ans() {
-    printf("%lld\n", dp[n][m]);
+    for(int i = 1; i <= m; ++i) printf("%lld%c", ans[i], " \n"[i==m]);
 }
 int main() {
 #ifdef LH_LOCAL
     freopen("D:in.in", "r", stdin);
     freopen("D:out.out", "w", stdout);
 #endif
-    read_data();
-    gao_solve();
-    print_ans();
+    int tim = read();
+    while(tim --) {
+        read_data();
+        gao_solve();
+        print_ans();
+    }
 #ifdef LH_LOCAL
     // cout << "time cost:" << 1.0 * clock() / CLOCKS_PER_SEC << "s" << endl;
     // system("pause");
