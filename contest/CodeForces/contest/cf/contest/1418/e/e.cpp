@@ -59,87 +59,49 @@ void print(const T &f, const R &... r) {printf(ptout, f);putchar(' ');print(r...
 
 const int INF = 0x3f3f3f3f;
 const int mod = 998244353;// 998244353
-const int MXN = 1e5 + 5;
+const int MXN = 2e5 + 5;
 int n, m;
-int ans;
-bool noprime[MXN];
-int pp[MXN/5], pcnt;
-void init_prime() {
-    noprime[0] = noprime[1] = 1;
-    for(int i = 2; i < MXN; ++i) {
-        if(!noprime[i]) pp[pcnt++] = i;
-        for(int j = 0; j < pcnt && i*pp[j] < MXN; ++j) {
-            noprime[i*pp[j]] = 1;
-            if(i % pp[j] == 0) {
-                break;
-            }
-        }
+int ar[MXN];
+int64 sum[MXN];
+const int MAXN = 1e6 + 6;
+int64 fac[MAXN], facInv[MAXN], inv[MAXN];
+void init(int mod) {
+    inv[1] = fac[0] = facInv[0] = 1;
+    for(int i = 1; i <  MAXN; ++i) {
+        if(i != 1) inv[i] = (mod - mod / i)*inv[mod % i] % mod;
+        fac[i] = fac[i-1] * i % mod;
+        facInv[i] = facInv[i-1] * inv[i] % mod;
     }
+}
+int64 COMB(int n, int m) {
+    if(m > n) return 0;
+    if(m == n) return 1;
+    return fac[n] * facInv[m] % mod * facInv[n - m] % mod;
 }
 int main() {
 #ifdef LH_LOCAL
     freopen("D:in.in", "r", stdin);
     freopen("D:out.out", "w", stdout);
 #endif
-    init_prime();
-    n = read();
-    m = sqrt(n);
-    ans = 1;
-    if(n == 1) {
-        cout << "C " << 1 << endl;
-        return 0;
-    }
-    for(int i = 0; i < pcnt; ++i) {
-        if(pp[i] > n) {
-            pcnt = i;
-            break;
+    init(mod);
+    n = read(), m = read();
+    for(int i = 1; i <= n; ++i) ar[i] = read();
+    sort(ar + 1, ar + n + 1);
+    for(int i = 1; i <= n; ++i) sum[i] = (sum[i - 1] + ar[i] ) % mod;
+    while(m --) {
+        int a = read(), b = read();
+        int cnt = lower_bound(ar + 1, ar + 1 + n, b) - ar;
+        int64 tmp = (sum[n] - sum[cnt - 1] + mod)%mod;
+        int64 tmp2 = sum[cnt - 1];
+        // debug(cnt)
+        cnt = n - cnt + 1;
+        if(cnt < a) {
+            print(0);
+        }else {
+            int64 ans = tmp * (cnt - a) % mod * inv[cnt] + tmp2 * (cnt - a + 1) % mod * inv[cnt + 1] % mod;
+            print(ans % mod);
         }
     }
-    int L = 0;
-    for(int i = 0; i < pcnt && pp[i] <= m; ++i) {
-        cout << "B " << pp[i] << endl;
-        read();
-        L = i + 1;
-    }
-    for(int i = 0; i < pcnt && pp[i] <= m; ++i) {
-        int tmp = 1, ret = pp[i];
-        while(tmp) {
-            cout << "A " << ret << endl;
-            tmp = read();
-            if(tmp) ans *= pp[i];
-            ret *= pp[i];
-            if(ret > n) break;
-        }
-    }
-    cout << "A " << 1 << endl;
-    int res = read();
-    // debug(n, m, L, pcnt, ans, pp[L])
-    for(int i = L; i < pcnt; ++i) {
-        if(ans * pp[i] > n) break;
-        cout << "B " << pp[i] << endl;
-        int tmp = read();
-        if(tmp > 1) {
-            ans *= pp[i];
-            break;
-        }
-        if(i % 150 == 0 || i == pcnt - 1) {
-            cout << "A " << 1 << endl;
-            int res2 = read();
-            if(res - res2 != i - L + 1) {
-                for(int j = L; j <= i; ++j) {
-                    cout << "A " << pp[j] << endl;
-                    tmp = read();
-                    if(tmp) {
-                        ans *= pp[j];
-                        break;
-                    }
-                }
-            }
-            L = i + 1;
-            res = res2;
-        }
-    }
-    cout << "C " << ans << endl;
 #ifdef LH_LOCAL
     // cout << "time cost:" << 1.0 * clock() / CLOCKS_PER_SEC << "s" << endl;
     // system("pause");

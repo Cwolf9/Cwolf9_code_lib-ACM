@@ -57,89 +57,79 @@ void print(const T &f) {printf(ptout, f);putchar('\n');}
 template <typename T, typename... R>
 void print(const T &f, const R &... r) {printf(ptout, f);putchar(' ');print(r...);}
 
-const int INF = 0x3f3f3f3f;
+const int INF = 1000000007 + 1000000007;
 const int mod = 998244353;// 998244353
-const int MXN = 1e5 + 5;
+const int MXN = 5e5 + 5;
 int n, m;
-int ans;
-bool noprime[MXN];
-int pp[MXN/5], pcnt;
-void init_prime() {
-    noprime[0] = noprime[1] = 1;
-    for(int i = 2; i < MXN; ++i) {
-        if(!noprime[i]) pp[pcnt++] = i;
-        for(int j = 0; j < pcnt && i*pp[j] < MXN; ++j) {
-            noprime[i*pp[j]] = 1;
-            if(i % pp[j] == 0) {
-                break;
-            }
-        }
+int ar[MXN];
+class node {
+    public:
+    int gap, ls, rs, lv, rv;
+}cw[MXN*20];
+int rk, inde, R = 1000000007, L = 0, no = R + 1;
+void update_gap(int id, int p, int v, int l, int r, int &rt) {
+    if(rt == 0) {
+        rt = ++ inde;
+        cw[rt] = node{0, 0, 0, no, no};
     }
+    if(l == r) {
+        if(id == 1) {
+            cw[rt] = node{0, 0, 0, v, v};
+        }else {
+            cw[rt] = node{0, 0, 0, no, no};
+        }
+        return ;
+    }
+    int mid = (l + r) >> 1;
+    if(p <= mid) update_gap(id, p, v, l, mid, cw[rt].ls);
+    else update_gap(id, p, v, mid + 1, r, cw[rt].rs);
+    
+    cw[rt].gap = big(cw[cw[rt].ls].gap, cw[cw[rt].rs].gap);
+    if(cw[cw[rt].rs].lv != no && cw[cw[rt].ls].rv != no) {
+        cw[rt].gap = big(cw[rt].gap, cw[cw[rt].rs].lv - cw[cw[rt].ls].rv);
+    }
+    cw[rt].lv = cw[cw[rt].rs].lv;
+    if(cw[cw[rt].ls].lv != no) cw[rt].lv = cw[cw[rt].ls].lv;
+    cw[rt].rv = cw[cw[rt].ls].rv;
+    if(cw[cw[rt].rs].rv != no) cw[rt].rv = cw[cw[rt].rs].rv;
+    // debug(rt, cw[rt].lv, cw[rt].rv)
+}
+set<int> st;
+int getans() {
+    if(SZ(st) <= 2) return 0;
+    int a = *(st.begin());
+    int b = *(--st.end());
+    debug(b, a, cw[1].gap)
+    return b - a - cw[1].gap;
 }
 int main() {
 #ifdef LH_LOCAL
     freopen("D:in.in", "r", stdin);
     freopen("D:out.out", "w", stdout);
 #endif
-    init_prime();
-    n = read();
-    m = sqrt(n);
-    ans = 1;
-    if(n == 1) {
-        cout << "C " << 1 << endl;
-        return 0;
+    cw[0] = node{0, 0, 0, no, no};
+    n = read(), m = read();
+    //pos[0] = -inf, pos[1e9 + 2] = inf, pos[i] = i
+    // update_gap(1, L, INF, L, R, rk);
+    // update_gap(1, R, -INF, L, R, rk);
+    debug(cw[1].gap)
+    for(int i = 1; i <= n; ++i) {
+        int x = read();
+        st.insert(x);
+        update_gap(1, x, x, L, R, rk);
+        debug(cw[1].gap)
     }
-    for(int i = 0; i < pcnt; ++i) {
-        if(pp[i] > n) {
-            pcnt = i;
-            break;
+    print(getans());
+    for(int i = 0; i < m; ++i) {
+        int id = read(), x = read();
+        if(id == 1) {
+            st.insert(x);
+        }else {
+            st.erase(x);
         }
+        update_gap(id, x, x, L, R, rk);
+        print(getans());
     }
-    int L = 0;
-    for(int i = 0; i < pcnt && pp[i] <= m; ++i) {
-        cout << "B " << pp[i] << endl;
-        read();
-        L = i + 1;
-    }
-    for(int i = 0; i < pcnt && pp[i] <= m; ++i) {
-        int tmp = 1, ret = pp[i];
-        while(tmp) {
-            cout << "A " << ret << endl;
-            tmp = read();
-            if(tmp) ans *= pp[i];
-            ret *= pp[i];
-            if(ret > n) break;
-        }
-    }
-    cout << "A " << 1 << endl;
-    int res = read();
-    // debug(n, m, L, pcnt, ans, pp[L])
-    for(int i = L; i < pcnt; ++i) {
-        if(ans * pp[i] > n) break;
-        cout << "B " << pp[i] << endl;
-        int tmp = read();
-        if(tmp > 1) {
-            ans *= pp[i];
-            break;
-        }
-        if(i % 150 == 0 || i == pcnt - 1) {
-            cout << "A " << 1 << endl;
-            int res2 = read();
-            if(res - res2 != i - L + 1) {
-                for(int j = L; j <= i; ++j) {
-                    cout << "A " << pp[j] << endl;
-                    tmp = read();
-                    if(tmp) {
-                        ans *= pp[j];
-                        break;
-                    }
-                }
-            }
-            L = i + 1;
-            res = res2;
-        }
-    }
-    cout << "C " << ans << endl;
 #ifdef LH_LOCAL
     // cout << "time cost:" << 1.0 * clock() / CLOCKS_PER_SEC << "s" << endl;
     // system("pause");

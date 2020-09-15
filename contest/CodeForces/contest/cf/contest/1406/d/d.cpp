@@ -1,102 +1,151 @@
-// #define LH_LOCAL
-// #define LLDO
 #include <bits/stdc++.h>
-#define fi first
-#define se second
-#define o2(x) (x) * (x)
-#define mk make_pair
-#define eb emplace_back
-#define SZ(x) ((int)(x).size())
-#define all(x) (x).begin(), (x).end()
-#define clr(a, b) memset((a), (b), sizeof((a)))
-#define rep(i,s,t) for(register int i=s;i<t;++i)
-#define per(i,s,t) for(register int i=s;i>=t;--i)
-#define iis std::ios::sync_with_stdio(false);cin.tie(nullptr)
-#define my_unique(x) sort(all(x)), x.erase(unique(all(x)), x.end())
 using namespace std;
-typedef long long int64;
-typedef unsigned long long uint64;
 typedef pair<int, int> pii;
-// mt19937 rng(time(NULL));
-// mt19937_64 rng64(chrono::steady_clock::now().time_since_epoch().count());
-// mt19937_64 generator(std::clock());
-// shuffle(arr, arr + n, generator);
-inline int64 read() {
-    int64 x = 0;int f = 0;char ch = getchar();
-    while (ch < '0' || ch > '9') f |= (ch == '-'), ch = getchar();
-    while (ch >= '0' && ch <= '9') x = (x << 3) + (x << 1) + ch - '0', ch =
-    getchar(); return x = f ? -x : x;
-}
-int lowbit(int x) { return x & (-x); }
-template <class T>
-T big(const T &a1, const T &a2) {return a1 > a2 ? a1 : a2;}
-template <class T>
-T sml(const T &a1, const T &a2) {return a1 < a2 ? a1 : a2;}
-template <typename T, typename... R>
-T big(const T &f, const R &... r) {return big(f, big(r...));}
-template <typename T, typename... R>
-T sml(const T &f, const R &... r) {return sml(f, sml(r...));}
-void debug_out() { cout << '\n'; }
-template <typename T, typename... R>
-void debug_out(const T &f, const R &... r) {
-    cout << f << " ";
-    debug_out(r...);
-}
-#ifdef LH_LOCAL
-#define debug(...) cout << "[" << #__VA_ARGS__ << "]: ", debug_out(__VA_ARGS__);
-#else
-#define debug(...) ;
-#endif
-#ifdef LLDO
-    const char ptout[] = "%lld";
-#else
-    const char ptout[] = "%d";
-#endif
-template <typename T>
-void print(const T &f) {printf(ptout, f);putchar('\n');}
-template <typename T, typename... R>
-void print(const T &f, const R &... r) {printf(ptout, f);putchar(' ');print(r...);}
-
-const int INF = 0x3f3f3f3f;
-const int mod = 1e6 + 3;// 998244353
-const int MXN = 5e5 + 5;
-const int MXE = 1e6 + 5;
+#define lc rt << 1
+#define rc (rt << 1) | 1
+ 
+typedef long long LL;
+const int maxn = 3e5 + 50;
+int INF = 1e8;
 int n, m;
-int64 ar[MXN], sum;
-int64 get_ans() {
-    return sum > 0?(sum + 1) / 2: sum / 2;
+LL sum = 0;
+LL tree[maxn << 2], lazy[maxn << 2];
+LL a[maxn], b[maxn];
+void PushDown(int rt){
+    tree[lc] += lazy[rt], tree[rc] += lazy[rt];
+    lazy[lc] += lazy[rt];
+    lazy[rc] += lazy[rt];
+    lazy[rt] = 0;
 }
-void query(int a, int b, int64 x) {
-    if(a == 1 || ar[a] > 0) sum -= ar[a];
-    ar[a] += x;
-    if(a == 1 || ar[a] > 0) sum += ar[a];
-    if(ar[b + 1] > 0 && b + 1 <= n) sum -= ar[b + 1];
-    ar[b + 1] -= x;
-    if(ar[b + 1] > 0 && b + 1 <= n) sum += ar[b + 1];
+void Build(int le, int ri, int rt){
+    if(le == ri){
+        tree[rt] = a[le];
+        return ;
+    }
+    int mid = (le + ri) >> 1;
+    Build(le, mid, lc);
+    Build(mid + 1, ri, rc);
 }
-int main() {
-#ifdef LH_LOCAL
-    freopen("D:in.in", "r", stdin);
-    freopen("D:out.out", "w", stdout);
-#endif
-    n = read();
-    int las = 0;
-    for(int i = 1; i <= n; ++i) {
-        int x = read();
-        ar[i] = x - las;
-        las = x;
-        if(i == 1 || ar[i] > 0) sum += ar[i];
+ 
+void Update(int le, int ri, int L, int R, LL val, int rt){
+    if(L <= le && ri <= R){
+        lazy[rt] += val;
+        tree[rt] += val;
+        return ;
     }
-    printf("%lld\n", get_ans());
-    m = read();
-    while(m --) {
-        int a = read(), b = read(), x = read();
-        query(a, b, x);
-        printf("%lld\n", get_ans());
+    PushDown(rt);
+    int mid = (le + ri) >> 1;
+    if(L <= mid) Update(le, mid, L, R, val, lc);
+    if(R > mid) Update(mid + 1, ri, L, R, val, rc);
+}
+ 
+LL Query(int le, int ri, int pos, int rt){
+    if(le == ri) {
+        return tree[rt];
     }
-#ifdef LH_LOCAL
-    // cout << "time cost:" << 1.0 * clock() / CLOCKS_PER_SEC << "s" << endl;
-    // system("pause");
-#endif
+    PushDown(rt);
+    int mid = (le + ri) >> 1;
+    if(pos <= mid) return Query(le, mid, pos, lc);
+    else return Query(mid + 1, ri, pos, rc);
+}
+ 
+LL c[maxn]; //对应原数组和树状数组
+int lowbit(int x){
+    return x&(-x);
+}
+void updata(int i,LL k){    //在i位置加上k
+    while(i <= n){
+        c[i] += k;
+        i += lowbit(i);
+    }
+}
+LL getsum(int i){        //求A[1 - i]的和
+    LL res = 0;
+    while(i > 0){
+        res += c[i];
+        i -= lowbit(i);
+    }
+    return res;
+}
+ 
+ 
+LL muQuery(int ip, int x){
+	LL res = Query(1, n, 1, 1);
+	LL sum2 = getsum(x);
+	LL y = -(sum - res) / 2LL;
+	LL ans = y + sum2;
+	LL val = Query(1, n, x, 1);
+	if(ip == 0){
+		return ans;
+	} else {
+		return val - ans;
+	}
+}
+void print() {
+    printf("my print:\n");
+    for(int i = 1; i <= n; ++i) printf("%lld ", muQuery(0, i)); printf("\n");
+    for(int i = 1; i <= n; ++i) printf("%lld ", muQuery(1, i)); printf("\n");
+}
+int main(int argc, char const *argv[])
+{
+    scanf("%d", &n);
+    for(int i = 1; i <= n; i++){
+        scanf("%I64d", &a[i]);
+        if(a[i] > a[i - 1] && i > 1){
+            sum += a[i] - a[i - 1];
+            updata(i, a[i] - a[i - 1]);
+        }
+    }
+    // printf("sum = %I64d\n", sum);
+    LL y = -(sum - a[1]) / 2LL;
+    printf("%I64d\n", max(sum + y, a[1] - y));
+    Build(1, n, 1);
+    int q;
+    scanf("%d", &q);
+    print();
+    while(q--){
+        int le, ri, x;
+        scanf("%d%d%d", &le, &ri, &x);
+        LL ple = Query(1, n, le, 1), pri = Query(1, n, ri, 1);
+        Update(1, n, le, ri, x, 1);
+        if(le != 1){
+            LL nle = Query(1, n, le, 1);
+            LL res = Query(1, n, le - 1, 1);
+            if(ple >= res){
+                if(nle >= res){
+                    sum += nle - ple;
+                    updata(le, nle - ple);
+                } else {
+                    sum -= ple - res;
+                    updata(le, res - ple);
+                }
+            } else {
+                if(nle >= res) {
+                	sum += nle - res;
+                	updata(le, nle - res);
+                }
+            }
+        }
+        if(ri != n){
+            LL nri = Query(1, n, ri, 1);
+            LL res = Query(1, n, ri + 1, 1);
+            if(pri <= res){
+                if(nri <= res){
+                    sum += pri - nri;
+                    updata(ri + 1, pri - nri);
+                } else {
+                    sum -= res - pri;
+                    updata(ri + 1, pri - res);
+                }
+            } else {
+                if(nri < res) {
+                	sum += res - nri;
+                	updata(ri + 1, res - nri);
+                }
+            }
+        }
+        printf("%I64d\n", max(muQuery(0, n), muQuery(1, 1)));
+        print();
+    }
     return 0;
 }

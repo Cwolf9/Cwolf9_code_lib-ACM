@@ -59,87 +59,39 @@ void print(const T &f, const R &... r) {printf(ptout, f);putchar(' ');print(r...
 
 const int INF = 0x3f3f3f3f;
 const int mod = 998244353;// 998244353
-const int MXN = 1e5 + 5;
+const int MXN = 2e5 + 5;
 int n, m;
-int ans;
-bool noprime[MXN];
-int pp[MXN/5], pcnt;
-void init_prime() {
-    noprime[0] = noprime[1] = 1;
-    for(int i = 2; i < MXN; ++i) {
-        if(!noprime[i]) pp[pcnt++] = i;
-        for(int j = 0; j < pcnt && i*pp[j] < MXN; ++j) {
-            noprime[i*pp[j]] = 1;
-            if(i % pp[j] == 0) {
-                break;
-            }
-        }
-    }
-}
+int ar[MXN];
+pii cw[MXN];
+int id[MXN];
 int main() {
 #ifdef LH_LOCAL
     freopen("D:in.in", "r", stdin);
     freopen("D:out.out", "w", stdout);
 #endif
-    init_prime();
-    n = read();
-    m = sqrt(n);
-    ans = 1;
-    if(n == 1) {
-        cout << "C " << 1 << endl;
-        return 0;
-    }
-    for(int i = 0; i < pcnt; ++i) {
-        if(pp[i] > n) {
-            pcnt = i;
-            break;
-        }
-    }
-    int L = 0;
-    for(int i = 0; i < pcnt && pp[i] <= m; ++i) {
-        cout << "B " << pp[i] << endl;
-        read();
-        L = i + 1;
-    }
-    for(int i = 0; i < pcnt && pp[i] <= m; ++i) {
-        int tmp = 1, ret = pp[i];
-        while(tmp) {
-            cout << "A " << ret << endl;
-            tmp = read();
-            if(tmp) ans *= pp[i];
-            ret *= pp[i];
-            if(ret > n) break;
-        }
-    }
-    cout << "A " << 1 << endl;
-    int res = read();
-    // debug(n, m, L, pcnt, ans, pp[L])
-    for(int i = L; i < pcnt; ++i) {
-        if(ans * pp[i] > n) break;
-        cout << "B " << pp[i] << endl;
-        int tmp = read();
-        if(tmp > 1) {
-            ans *= pp[i];
-            break;
-        }
-        if(i % 150 == 0 || i == pcnt - 1) {
-            cout << "A " << 1 << endl;
-            int res2 = read();
-            if(res - res2 != i - L + 1) {
-                for(int j = L; j <= i; ++j) {
-                    cout << "A " << pp[j] << endl;
-                    tmp = read();
-                    if(tmp) {
-                        ans *= pp[j];
-                        break;
-                    }
-                }
+    int tim = read();
+    while(tim --) {
+        n = read();
+        for(int i = 1; i <= n; ++i) ar[i] = read();
+        int t = 0;
+        for(int i = 1; i <= n; ++i) {
+            int x = read();
+            if(x == 0) {
+                id[t] = i;
+                cw[t++] = mk(ar[i], i);
+                debug(ar[i], i)
             }
-            L = i + 1;
-            res = res2;
         }
+        sort(cw, cw + t);
+        reverse(cw, cw + t);
+        sort(id, id + t);
+        for(int i = 0; i < t; ++i) {
+            // debug(cw[i].fi, cw[i].se)
+            ar[id[i]] = cw[i].fi;
+        }
+        for(int i = 1; i <= n; ++i) printf("%d ", ar[i]);
+        printf("\n");
     }
-    cout << "C " << ans << endl;
 #ifdef LH_LOCAL
     // cout << "time cost:" << 1.0 * clock() / CLOCKS_PER_SEC << "s" << endl;
     // system("pause");
