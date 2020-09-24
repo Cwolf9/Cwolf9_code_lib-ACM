@@ -5,7 +5,7 @@
 **思路**
 **备注**
 */
-#define LH_LOCAL
+// #define LH_LOCAL
 #define LLDO
 #pragma comment(linker, "/STACK:102400000,102400000")
 //#include<bits/stdc++.h>
@@ -95,86 +95,143 @@ const int HMOD[] = {1000000009, 1004535809};
 const int64 BASE[] = {1572872831, 1971536491};
 const int64 INFLL = 0x3f3f3f3f3f3f3f3fLL;
 const int INF = 0x3f3f3f3f;
-const int MXN = 50 + 5;
+const int MXN = 1e5 + 5;
 const int MXE = 2e6 + 6;
 int n, m;
 int ar[MXN];
 int flag;
-typedef long long ll;
-inline ll qp(ll x, ll p, ll mod)
-{
-    ll ans = 1;
-    while (p)
-    {
-        if (p & 1)
-            ans = (ll)ans * x % mod;
-        x = (ll)x * x % mod;
+namespace mr {
+long long mul(long long a, long long b, long long mod) {
+    long long r = 0;
+    while (b > 0) {
+        if (b & 1) r = (r + a) % mod;
+        a = (a + a) % mod;
+        b >>= 1;
+    }
+    return r;
+}
+long long power(long long v, long long p, long long m) {
+    long long r = 1;
+    while (p > 0) {
+        if (p & 1) r = mul(r, v, m);
+        v = mul(v, v, m);
         p >>= 1;
     }
-    return ans;
+    return r;
 }
-
-inline bool mr(ll x, ll b)
-{
-    ll k = x - 1;
-    while (k)
-    {
-        ll cur = qp(b, k, x);
-        if (cur != 1 && cur != x - 1)
-            return false;
-        if ((k & 1) == 1 || cur == x - 1)
-            return true;
-        k >>= 1;
+bool witness(long long a, long long p) {
+    int k = 0;
+    long long q = p - 1;
+    while ((q & 1) == 0) ++k, q >>= 1;
+    long long v = power(a, q, p);
+    if (v == 1 || v == p - 1) return false;  // probably prime number
+    while (k-- != 0) {
+        v = v * v % p;
+        if (v == p - 1) return false;
+    }
+    return true;  // composite number
+}
+bool miller_rabin(long long p) {
+    if (p == 2) return true;
+    if (p % 2 == 0) return false;
+    for (int i = 0; i != 50; ++i) {
+        long long a = std::rand() % (p - 1) + 1;
+        if (witness(a, p)) return false;
     }
     return true;
 }
+long long factor[100];  //质因数分解结果（刚返回时是无序的）
+int tol;  //质因数的个数。数组小标从0开始,记得初始化
 
-inline bool is_prime(ll x)
-{
-    if (x == 46856248255981ll || x < 2)
-        return false;
-    if (x == 2 || x == 3 || x == 7 || x == 61 || x == 24251)
-        return true;
-    return mr(x, 2) && mr(x, 61);
-}
-
-bool pir(int x) {
-    int tx = sqrt(x);
-    for(int i = 2; i <= tx; ++i) {
-        if(x % i == 0) return false;
+long long gcd(long long a, long long b) {
+    long long t;
+    while (b) {
+        t = a;
+        a = b;
+        b = t % b;
     }
-    return true;
+    return a >= 0 ? a : -a;
 }
-int pnum = 0, cnt = 0;
+//找出一个因子
+long long Pollard_rho(long long x, long long c) {
+    long long i = 1, k = 2;
+    long long x0 = rand() % (x - 1) + 1;
+    long long y = x0;
+    while (1) {
+        i++;
+        x0 = (mul(x0, x0, x) + c) % x;
+        long long d = gcd(y - x0, x);
+        if (d != 1 && d != x) return d;
+        if (y == x0) return x;
+        if (i == k) {
+            y = x0;
+            k += k;
+        }
+    }
+}
+//对n进行素因子分解
+void findfac(long long n, int k) {
+    if (n == 1) return;
+    if (miller_rabin(n)) {
+        factor[tol++] = n;
+        return;
+    }
+    long long p = n;
+    int c = k;
+    while (p >= n) p = Pollard_rho(p, c--);
+    findfac(p, k);
+    findfac(n / p, k);
+}
+}
+bool noprime[MXN];
+int pp[MXN/5], pcnt;
+int mu[MXN];
+void init_prime(int MXn) {
+    noprime[0] = noprime[1] = 1;
+    mu[1] = 1;
+    for(int i = 2; i < MXn; ++i) {
+        if(!noprime[i]) pp[pcnt++] = i, mu[i]=-1;
+        for(int j = 0; j < pcnt && i*pp[j] < MXn; ++j) {
+            noprime[i*pp[j]] = 1;
+            mu[i*pp[j]] = -mu[i];
+            if(i % pp[j] == 0) {
+                mu[i*pp[j]] = 0;
+                break;
+            }
+        }
+    }
+}
+int pir(int x) {
+    // mr::tol = 0;tle
+    // mr::findfac(x, 107);
+    // return mr::tol;
+    int tx = sqrt(x), cnt = 0;
+    for(int i = 0; i < pcnt && pp[i] <= tx; ++i) {
+        if(x % pp[i] == 0) {
+            while(x % pp[i] == 0) x /= pp[i], ++ cnt;
+        }
+        if(x == 1) break;
+    }
+    if(x > 1) ++ cnt;
+    return cnt;
+}
+
 void read_data() {
-    n = read();
     flag = 0;
-    pnum = 0, cnt = 0;
+    n = read();
     for(int i = 1; i <= n; ++i) {
         ar[i] = read();
-        if(ar[i] == 1) continue;
-        if((ar[i] & (ar[i] - 1)) == 0) {
-            ++ pnum;
-        }else if(is_prime(ar[i])) {
-            ++ pnum;
-        }else {
-            ++ cnt;
-        }
     }
 }
 void gao_solve() {
-    // debug(cnt, pnum)
-    if(cnt + pnum == 0) {
-        flag = 0;
-    }else if(cnt == 0) {
-        if(pnum % 2 == 1) flag = 1;
-        else flag = 0;
-    }else {
-        if(cnt % 2 == 1) flag = 1;
-        else {
-            if(pnum % 2 == 1) flag = 1;
-            else flag = 0;
+    for(int i = 1; i <= n; ++i) {
+        int pnum = 0, cnt = 0;
+        if(ar[i] % 2 == 0) {
+            pnum = 1;
+            while(ar[i] % 2 == 0) ar[i] /= 2;
         }
+        cnt = pir(ar[i]);
+        flag ^= (cnt + pnum);
     }
 }
 void print_ans() {
@@ -185,9 +242,7 @@ int main() {
     freopen("D:in.in", "r", stdin);
     freopen("D:out.out", "w", stdout);
 #endif
-    // for(int i = 2; i < 100; ++i) {
-    //     if(is_prime(i)) debug(i)
-    // }
+    init_prime((int)sqrt(1000000000) + 1);
     int tim = read();
     while(tim --) {
         read_data();
@@ -200,3 +255,15 @@ int main() {
 #endif
     return 0;
 }
+/*
+Good afternoon, professors and teachers.I am LiHang, majoring in computer science 
+and Technology.
+In the past three years,I have studied very hard and was awarded a National 
+Scholarship for Encouragement.And I spent a lot of time learning program 
+algorithms such as dynamic programming, data structure, string and graph theory.
+I also participated in several competitions and won some prizes.For instance,
+I was awarded bronze medal in the 2019 ICPC Asia Nanjing Regional Contest and 
+Silver medal in the 2019 CCPC Qinhuangdao Regional Contest.
+My hometown is WuHan,which is a very beautiful city facing the Yangtze River.
+
+*/
