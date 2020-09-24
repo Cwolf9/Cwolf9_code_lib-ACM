@@ -4,6 +4,8 @@
 **题意**
 **思路**
 **备注**
+我博客
+https://blog.csdn.net/qq_39599067/article/details/90574496
 */
 #define LH_LOCAL
 #define LLDO
@@ -97,24 +99,110 @@ const int64 INFLL = 0x3f3f3f3f3f3f3f3fLL;
 const int INF = 0x3f3f3f3f;
 const int mod = 998244353;// 998244353
 const int MOD = 1e9 + 7;
-const int MXN = 2e5 + 5;
-const int MXE = 2e6 + 6;
+const int MXN = 1e6 + 5;
+const int MXE = MXN + MXN;
 
-void read_data() {
-
+int n, m, Q;
+int ar[MXN], br[MXN];
+class node {
+    public:
+    int l, r;
+    unsigned int x;
+}cw[2005];
+unsigned int ans[2005], tf[64];
+class edge {
+    public:
+    int f[64];
+    int l, r;
+}tr[MXE], tmpans;
+int inde, root;
+void push_up(edge &c, edge a, edge &b) {
+    for(int i = 0; i < m; ++i) {
+        if(a.f[i] == -1) continue;
+        for(int j = 0; j < m; ++ j) {
+            if(a.f[i] != -1 && b.f[j] != -1) c.f[i^j] = max(a.f[i] + b.f[j], c.f[i^j]);
+        }
+    }
 }
-void gao_solve() {
+void push_up2(edge &c, const edge &a, const edge &b) {
+    for(int i = 0; i < m; ++i) {
+        if(a.f[i] == -1) continue;
+        for(int j = 0; j < m; ++ j) {
+            if(a.f[i] != -1 && b.f[j] != -1) c.f[i^j] = max(a.f[i] + b.f[j], c.f[i^j]);
+        }
+    }
+}
+void build(int l, int r, int &rt) {
+    if(rt == 0) rt = ++ inde;
+    clr(tr[rt].f, -1);
+    tr[rt].f[0] = 0;
+    if(l == r) {
+        tr[rt].f[ar[l]] = br[l];
+        return ;
+    }
+    int mid = (l + r) >> 1;
+    build(l, mid, tr[rt].l); build(mid + 1, r, tr[rt].r);
+    push_up2(tr[rt], tr[tr[rt].l], tr[tr[rt].r]);
+    // debug(l, r)
+    // for(int i = 0; i < m; ++i) debug(i, tr[rt].f[i])
+}
+void query(int L, int R, int l, int r, int rt) {
+    if(L <= l && r <= R) {
+        push_up(tmpans, tmpans, tr[rt]);
+        return;
+    }
+    int mid = (l + r) >> 1;
+    if(L > mid) query(L, R, mid + 1, r, tr[rt].r);
+    else if(R <= mid) query(L, R, l, mid, tr[rt].l);
+    else {
+        query(L, mid, l, mid, tr[rt].l);
+        query(mid + 1, R, mid + 1, r, tr[rt].r);
+    }
+}
+void read_data() {
+    n = read();
+    m = read();
+    Q = read();
+    for(int i = 1; i <= n; ++i) {
+        ar[i] = read();
+        br[i] = read();
+    }
+    for(int i = 1; i <= Q; ++i) {
+        cw[i].l = read() + 1;
+        cw[i].r = read() + 1;
+        cw[i].x = read();
+    }
+}
 
+void gao_solve() {
+    clr(tr[0].f, -1);
+    tr[0].f[0] = 0;
+    build(1, n, root);
+    for(int i = 1; i <= Q; ++i) {
+        ans[i] = 0;
+        clr(tmpans.f, -1);
+        tmpans.f[0] = 0;
+        query(cw[i].l, cw[i].r, 1, n, 1);
+        tf[0] = tmpans.f[0];
+        // debug(tf[0])
+        for(int i = 1; i < m; ++i) {
+            if(tmpans.f[i] == 0) tmpans.f[i] = -1;
+            tf[i] = tmpans.f[i];
+            // if(tf[i] != -1) debug(i, tf[i])
+        }
+        for(unsigned int j = 0; j < m; ++j) ans[i] += tf[j] * (cw[i].x ^ j);
+    }
 }
 void print_ans() {
-    
+    unsigned int res = 0;
+    for(unsigned int i = 1; i <= Q; ++i) res += (i^ans[i]);
+    printf("%u\n", res);
 }
 int main() {
 #ifdef LH_LOCAL
     freopen("D:in.in", "r", stdin);
     freopen("D:out.out", "w", stdout);
 #endif
-    debug(1)
     read_data();
     gao_solve();
     print_ans();

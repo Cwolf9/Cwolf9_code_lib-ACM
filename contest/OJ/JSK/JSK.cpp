@@ -1,34 +1,9 @@
-/*
-**链接**
-传送门: [here]()
-**题意**
-**思路**
-**备注**
-*/
 #define LH_LOCAL
-#define LLDO
-#pragma comment(linker, "/STACK:102400000,102400000")
-//#include<bits/stdc++.h>
-#include <cstdio>
-#include <cstring>
-#include <iostream>
-#include <algorithm>
-#include <vector>
-#include <array>
-#include <map>
-#include <queue>
-#include <set>
-#include <deque>
-#include <list>
-#include <bitset>
-#include <complex>
-#include <cassert>
-#include <ctime>
+// #define LLDO
+#include <bits/stdc++.h>
 #define fi first
 #define se second
-#define endl '\n'
 #define o2(x) (x) * (x)
-#define BASE_MAX 31
 #define mk make_pair
 #define eb emplace_back
 #define SZ(x) ((int)(x).size())
@@ -39,7 +14,6 @@
 #define iis std::ios::sync_with_stdio(false);cin.tie(0)
 #define my_unique(x) sort(all(x)), x.erase(unique(all(x)), x.end())
 using namespace std;
-#pragma optimize("-O3")
 typedef long long int64;
 typedef unsigned long long uint64;
 typedef pair<int, int> pii;
@@ -52,14 +26,6 @@ inline int64 read() {
     while (ch < '0' || ch > '9') f |= (ch == '-'), ch = getchar();
     while (ch >= '0' && ch <= '9') x = (x << 3) + (x << 1) + ch - '0', ch =
     getchar(); return x = f ? -x : x;
-}
-inline void write(int64 x, bool f) {
-    if (x == 0) {putchar('0');if (f) putchar('\n');return;}
-    if (x < 0) { putchar('-');x = -x;}
-    static char s[23];int l = 0;
-    while (x != 0) s[l++] = x % 10 + 48, x /= 10;
-    while (l) putchar(s[--l]);
-    if (f) putchar('\n');
 }
 int lowbit(int x) { return x & (-x); }
 template <class T>
@@ -91,33 +57,55 @@ void print(const T &f) {printf(ptout, f);putchar('\n');}
 template <typename T, typename... R>
 void print(const T &f, const R &... r) {printf(ptout, f);putchar(' ');print(r...);}
 
-const int HMOD[] = {1000000009, 1004535809};
-const int64 BASE[] = {1572872831, 1971536491};
-const int64 INFLL = 0x3f3f3f3f3f3f3f3fLL;
 const int INF = 0x3f3f3f3f;
 const int mod = 998244353;// 998244353
-const int MOD = 1e9 + 7;
 const int MXN = 2e5 + 5;
-const int MXE = 2e6 + 6;
-
-void read_data() {
-
+int n, m;
+bool allone(vector<int> vs) {
+    if(vs.empty()) return 1;
+    for(int x: vs) {
+        if(x != 1) return 0;
+    }
+    return 1;
 }
-void gao_solve() {
-
-}
-void print_ans() {
-    
+bool dfs(vector<int> vs, int c) {
+    // for(int x: vs) debug(x)
+    if(allone(vs)) {
+        if(c == 1) return 1;
+        return 0;
+    }
+    for(int i = 0; i < SZ(vs); ++i) {
+        if(vs[i] == 1) continue;
+        for(int j = 2; j <= vs[i]; ++j) {
+            if(vs[i] % j == 0) {
+                vector<int> vt;
+                for(int j = 0; j < SZ(vs); ++j) {
+                    if(i != j && vs[j] != 1) vt.eb(vs[j]);
+                }
+                for(int k = 0; k < j; ++k) {
+                    vt.eb(vs[i]/j);
+                }
+                bool ans = dfs(vt, !c);
+                if(ans) return ans;
+            }
+        }
+    }
+    return 0;
 }
 int main() {
 #ifdef LH_LOCAL
     freopen("D:in.in", "r", stdin);
     freopen("D:out.out", "w", stdout);
 #endif
-    debug(1)
-    read_data();
-    gao_solve();
-    print_ans();
+    for(int i = 12; i <= 12; ++i) {
+        for(int j = 9; j <= 9; ++j) {
+            vector<int> vs;
+            vs.eb(i);
+            vs.eb(j);
+            bool ans = dfs(vs, 0);
+            debug(i, j, ans)
+        }
+    }
 #ifdef LH_LOCAL
     // cout << "time cost:" << 1.0 * clock() / CLOCKS_PER_SEC << "s" << endl;
     // system("pause");
