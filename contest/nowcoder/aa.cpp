@@ -73,37 +73,17 @@ const int mod = 998244353;// 998244353
 const int MOD = 1e9 + 7;
 const int MXN = 5e2 + 5;
 const int MXE = 2e6 + 6;
-int n, T;
-int64 dp[MXN][MXN];
-int ar[MXN];
-vector<pii> mp[MXN];
-void dfs(int u, int ba) {
-    for(int i = 0; i <= T; ++i) dp[u][i] = ar[u];
-    for(pii V: mp[u]) {
-        if(V.fi == ba) continue;
-        dfs(V.fi, u);
-        for(int i = T; i >= V.se; --i) {
-            for(int j = 0; j <= i - V.se; ++j) {
-                dp[u][i] = max(dp[u][i], dp[u][i - V.se - j] + dp[V.fi][j]);
-                // debug(u, i, j, dp[u][i])
-            }
-        }
-    }
-}
+int n, T = 1000;
+
 int main() {
 #ifndef ONLINE_JUDGE
     freopen("D:in.in", "r", stdin);
     freopen("D:out.out", "w", stdout);
 #endif
-    n = read(), T = read() / 2;
-    for(int i = 1; i <= n; ++i) ar[i] = max(0LL, read());
-    for(int i = 1, a, b, c; i < n; ++i) {
-        a = read(), b = read(), c = read();
-        mp[a].eb(mk(b, c));
-        mp[b].eb(mk(a, c));
+    n = read();
+    while(n) {
+        
     }
-    dfs(1, 0);
-    printf("%lld\n", dp[1][T]);
 #ifndef ONLINE_JUDGE
     // cout << "time cost:" << 1.0 * clock() / CLOCKS_PER_SEC << "ms" << endl;
 #endif

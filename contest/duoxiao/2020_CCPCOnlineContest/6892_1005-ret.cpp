@@ -255,15 +255,3 @@ int main() {
 #endif
     return 0;
 }
-/*
-Good afternoon, professors and teachers.I am LiHang, majoring in computer science 
-and Technology.
-In the past three years,I have studied very hard and was awarded a National 
-Scholarship for Encouragement.And I spent a lot of time learning program 
-algorithms such as dynamic programming, data structure, string and graph theory.
-I also participated in several competitions and won some prizes.For instance,
-I was awarded bronze medal in the 2019 ICPC Asia Nanjing Regional Contest and 
-Silver medal in the 2019 CCPC Qinhuangdao Regional Contest.
-My hometown is WuHan,which is a very beautiful city facing the Yangtze River.
-
-*/

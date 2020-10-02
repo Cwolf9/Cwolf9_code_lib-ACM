@@ -58,40 +58,24 @@ template <typename T, typename... R>
 void print(const T &f, const R &... r) {printf(ptout, f);putchar(' ');print(r...);}
 
 const int INF = 0x3f3f3f3f;
-const int mod = 1e6 + 3;// 998244353
-const int MXN = 5e5 + 5;
-const int MXE = 1e6 + 5;
+const int mod = 998244353;// 998244353
+const int MXN = 10000 + 5;
 int n, m;
-int ar[4][MXN];
-int vis[MXN];
+int ar[MXN], br[MXN];
+int gao(int k) {
+
+}
 int main() {
 #ifdef LH_LOCAL
     freopen("D:in.in", "r", stdin);
     freopen("D:out.out", "w", stdout);
 #endif
-    int tim = read();
-    while(tim --) {
-        n = read();
-        rep(i, 1, n + 1) ar[1][i] = read();
-        rep(i, 1, n + 1) ar[2][i] = read();
-        rep(i, 1, n + 1) ar[3][i] = read();
-        vis[1] = 1;
-        rep(j, 1, 4) {
-            if(ar[j][2] != ar[1][1]) vis[2] = j;
-        }
-        rep(i, 3, n + 1) {
-            rep(j, 1, 4) {
-                if(ar[j][i] != ar[vis[i-1]][i-1]) {
-                    if(i != n) {
-                        vis[i] = j;
-                    }else if(i == n && ar[j][i] != ar[vis[1]][1]) {
-                        vis[i] = j;
-                    }
-                }
-            }
-        }
-        rep(i, 1, n + 1) printf("%d%c", ar[vis[i]][i], " \n"[i == n]);
-        rep(i, 1, n + 1) vis[i] = 0;
+    n = read();
+    int up = n * (n - 1) / 2;
+    for(int i = 1; i <= n; ++i) ar[i] = br[i] = read();
+    for(int i = 0; i <= up; ++i) {
+        for(int j = 1; j <= n; ++j) ar[j] = br[j];
+        printf("%d ", gao(i));
     }
 #ifdef LH_LOCAL
     // cout << "time cost:" << 1.0 * clock() / CLOCKS_PER_SEC << "s" << endl;

@@ -1,10 +1,3 @@
-/*
-**链接**
-传送门: [here]()
-**题意**
-**思路**
-**备注**
-*/
 #include<bits/stdc++.h>
 #include <cstdio>
 #include <cstring>
@@ -71,49 +64,19 @@ const int64 INFLL = 0x3f3f3f3f3f3f3f3fLL;
 const int INF = 0x3f3f3f3f;
 const int mod = 998244353;// 998244353
 const int MOD = 1e9 + 7;
-const int MXN = 5e2 + 5;
+const int MXN = 31;
 const int MXE = 2e6 + 6;
-int n, T = 1000;
-double dp[10005][505][2];
-int d[20] = {1,18,4,13,6,10,15,2,17,3,19,7,16,8,11,14,9,12,5,20};
+int T = 3;
+int n, m;
+
 int main() {
 #ifndef ONLINE_JUDGE
     freopen("D:in.in", "r", stdin);
     freopen("D:out.out", "w", stdout);
 #endif
-    debug(19*2.0/20/20/3)
-    // dp[0][0][0] = dp[0][0][1] = 1;
-    // rep(i, 1, T + 1) dp[i][0][0] = dp[i][0][1] = 1;
-    rep(t, 1, T + 1) {
-        for(int i = 1; i <= 501; ++i) {
-            for(int j = 0; j < 20; ++j) {
-                if(d[j] < i) {
-                    dp[t][i][0] += dp[t-1][i - d[j]][0] * (1 - dp[t-1][i - d[j]][1]) / 20;
-                }else if(d[j] == i) {
-                    dp[t][i][0] += (1 - dp[t-1][i - d[j]][1]) / 20;
-                }
-            }
-            for(int j = 0; j < 20; ++j) {
-                double win = 0;
-                for(int k = 0; k < 3; ++k) {
-                    if(d[(j + k) % 20] < i) {
-                        win += (1 - dp[t-1][i - d[(j+k)%20]][0]) / 3;
-                    }else if(d[(j + k) % 20] == i){
-                        win += 1.0 / 3;
-                    }
-                }
-                dp[t][i][1] = max(dp[t][i][1], win);
-            }
-            rep(j, 0, 2) dp[t][i][j] *= (1 - dp[t-1][i][j]);
-        }
-        if(t < 5) debug(t, dp[t][1][0], dp[t][1][1])
-    }
-    n = read();
-    while(n) {
-        double ans[2] = {0, 0};
-        rep(i, 1, T + 1) rep(j, 0, 2) ans[j] += dp[i][n][j];
-        printf("%.10f %.10f\n", ans[0], ans[1]);
-        n = read();
+    // debug(30 * 30 * 1000)
+    n = read(), m = read();
+    while(n + m) {
     }
 #ifndef ONLINE_JUDGE
     // cout << "time cost:" << 1.0 * clock() / CLOCKS_PER_SEC << "ms" << endl;
