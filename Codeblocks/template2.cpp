@@ -27,7 +27,7 @@ void debug_out(const T &f, const R &... r) {
     cout << f << " ";
     debug_out(r...);
 }
-#ifndef ONLINE_JUDGE
+#ifdef LH_LOCAL
 #define debug(...) cout << "[" << #__VA_ARGS__ << "]: ", debug_out(__VA_ARGS__);
 #else
 #define debug(...) ;
@@ -38,17 +38,17 @@ constexpr int maxe = 2e6 + 5;
 int n, m;
 
 int main() {
-#ifndef ONLINE_JUDGE
-    freopen("D:in.in", "r", stdin);
-    freopen("D:out.out", "w", stdout);
+#ifdef LH_LOCAL
+    freopen("D:in.txt", "r", stdin);
+    freopen("D:out.txt", "w", stdout);
 #endif
     int tim;
     read(tim);
     while(tim --) {
         read(n);
-        
+
     }
-#ifndef ONLINE_JUDGE
+#ifdef LH_LOCAL
     cout << "time cost:" << 1.0 * clock() / CLOCKS_PER_SEC << "s" << endl;
 #endif
     return 0;

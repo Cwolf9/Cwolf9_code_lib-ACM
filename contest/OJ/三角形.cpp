@@ -10,7 +10,7 @@ struct Triangle {
     }
 }ar[MXN];
 int dp[MXN][3], ans;
-set<int> ndp[MXN];
+int ndp[MXN];
 vector<int> vs;
 int get_id(int x) {
     return lower_bound(vs.begin(), vs.end(), x) - vs.begin() + 1;
@@ -36,8 +36,7 @@ int main() {
         for(int j = 1; j <= 3; ++j) {
             ar[i].val[j] = get_id(ar[i].val[j]);
             //保存暂时更新的dp值
-            if(ndp[ar[i].val[j]].empty()) dp[i][j] = 1;
-            else dp[i][j] = *(--ndp[ar[i].val[j]].end()) + 1;
+            dp[i][j] = ndp[ar[i].val[j]] + 1;
             ans = max(ans, dp[i][j]);
         }
         //将灰度值相同的三角形一并更新
@@ -47,14 +46,13 @@ int main() {
             for(int j = 1; j <= 3; ++j) {
                 ar[i].val[j] = get_id(ar[i].val[j]);
                 //保存暂时更新的dp值
-                if(ndp[ar[i].val[j]].empty()) dp[i][j] = 1;
-                else dp[i][j] = *(--ndp[ar[i].val[j]].end()) + 1;
+                dp[i][j] = ndp[ar[i].val[j]] + 1;
             }
         }
         for(int j = ti; j <= i; ++j) {
-            ndp[ar[j].val[1]].insert(max(dp[j][2], dp[j][3]));
-            ndp[ar[j].val[2]].insert(max(dp[j][1], dp[j][3]));
-            ndp[ar[j].val[3]].insert(max(dp[j][1], dp[j][2]));
+            ndp[ar[j].val[1]] = max(ndp[ar[j].val[1]], max(dp[j][2], dp[j][3]));
+            ndp[ar[j].val[2]] = max(ndp[ar[j].val[2]], max(dp[j][1], dp[j][3]));
+            ndp[ar[j].val[3]] = max(ndp[ar[j].val[3]], max(dp[j][1], dp[j][2]));
         }
     }
     printf("%d\n", ans);

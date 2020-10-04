@@ -11,7 +11,7 @@
 #define clr(a, b) memset((a), (b), sizeof((a)))
 #define rep(i,s,t) for(register int i=s;i<t;++i)
 #define per(i,s,t) for(register int i=s;i>=t;--i)
-#define iis std::ios::sync_with_stdio(false);cin.tie(0)
+#define GKD std::ios::sync_with_stdio(false);cin.tie(0)
 #define my_unique(x) sort(all(x)), x.erase(unique(all(x)), x.end())
 using namespace std;
 typedef long long int64;

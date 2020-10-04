@@ -1,7 +1,3 @@
-#pragma comment(linker, "/stack:200000000")
-#pragma GCC optimize("Ofast,no-stack-protector")
-#pragma GCC target("sse,sse2,sse3,ssse3,sse4,popcnt,abm,mmx,avx,tune=native")
-#pragma GCC optimize("unroll-loops")
 #pragma GCC optimize(3,"Ofast","inline")
 #include<bits/stdc++.h>
 using namespace std;
@@ -33,7 +29,7 @@ void debug_out(const T &f, const R &... r) {
 #define debug(...) ;
 #endif
 /*================Header Template==============*/
-constexpr int maxn = 4e5 + 5;
+constexpr int maxn = 5e5 + 5;
 constexpr int maxe = 2e6 + 5;
 int n, m;
 
@@ -42,13 +38,14 @@ int main() {
     freopen("D:in.in", "r", stdin);
     freopen("D:out.out", "w", stdout);
 #endif
-    int tim;
+    int tim = 1;
     read(tim);
     while(tim --) {
         read(n);
-        
+        cout << n << endl;
     }
-#ifndef ONLINE_JUDGE
+#ifdef LH_LOCAL
+    cout << n << endl;
     cout << "time cost:" << 1.0 * clock() / CLOCKS_PER_SEC << "s" << endl;
 #endif
     return 0;

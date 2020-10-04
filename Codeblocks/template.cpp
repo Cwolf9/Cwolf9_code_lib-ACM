@@ -1,30 +1,8 @@
-/*
-**链接**
-传送门: [here]()
-**题意**
-**思路**
-**备注**
-*/
-#include<bits/stdc++.h>
-#include <cstdio>
-#include <cstring>
-#include <iostream>
-#include <algorithm>
-#include <vector>
-#include <array>
-#include <map>
-#include <queue>
-#include <set>
-#include <deque>
-#include <list>
-#include <bitset>
-#include <complex>
-#include <cassert>
-#include <ctime>
+// #define LLDO
+#include <bits/stdc++.h>
 #define fi first
 #define se second
 #define o2(x) (x) * (x)
-#define BASE_MAX 31
 #define mk make_pair
 #define eb emplace_back
 #define SZ(x) ((int)(x).size())
@@ -32,7 +10,7 @@
 #define clr(a, b) memset((a), (b), sizeof((a)))
 #define rep(i,s,t) for(register int i=s;i<t;++i)
 #define per(i,s,t) for(register int i=s;i>=t;--i)
-#define iis std::ios::sync_with_stdio(false);cin.tie(0)
+#define GKD std::ios::sync_with_stdio(false);cin.tie(0)
 #define my_unique(x) sort(all(x)), x.erase(unique(all(x)), x.end())
 using namespace std;
 typedef long long int64;
@@ -63,44 +41,35 @@ void debug_out(const T &f, const R &... r) {
     cout << f << " ";
     debug_out(r...);
 }
+#ifdef LH_LOCAL
 #define debug(...) cout << "[" << #__VA_ARGS__ << "]: ", debug_out(__VA_ARGS__);
+#else
+#define debug(...) ;
+#endif
+#ifdef LLDO
+    const char ptout[] = "%lld";
+#else
+    const char ptout[] = "%d";
+#endif
+template <typename T>
+void print(const T &f) {printf(ptout, f);putchar('\n');}
+template <typename T, typename... R>
+void print(const T &f, const R &... r) {printf(ptout, f);putchar(' ');print(r...);}
 
-const int HMOD[] = {1000000009, 1004535809};
-const int64 BASE[] = {1572872831, 1971536491};
-const int64 INFLL = 0x3f3f3f3f3f3f3f3fLL;
 const int INF = 0x3f3f3f3f;
 const int mod = 998244353;// 998244353
-const int MOD = 1e9 + 7;
-const int MXN = 5e2 + 5;
-const int MXE = 2e6 + 6;
-int n;
-int sx, sy;
-class node {
-    public:
-    double y, x1, x2;
-}cw[MXN];
-class P {
-    public:
-    double x, y;
-    bool operator<(const P&v)const ;
-};
-bool P::operator<(const P&v)const {
-	return x*v.y-v.x*y>1e-9;
-}
+const int MXN = 2e5 + 5;
+int n, m;
 int main() {
-#ifndef ONLINE_JUDGE
-    freopen("D:in.in", "r", stdin);
-    freopen("D:out.out", "w", stdout);
+#ifdef LH_LOCAL
+    freopen("D:in.txt", "r", stdin);
+    freopen("D:out.txt", "w", stdout);
 #endif
     n = read();
-    scanf("%lf%lf", &cw[0].y, &cw[0].x1);
-    cw[0].x2 = cw[0].x1;
-    for(int i = 1; i <= n; ++i) {
-        scanf("%lf%lf%lf", &cw[i].y, &cw[i].x1, &cw[i].x2);
-    }
-
-#ifndef ONLINE_JUDGE
-    // cout << "time cost:" << 1.0 * clock() / CLOCKS_PER_SEC << "ms" << endl;
+    print(n);
+#ifdef LH_LOCAL
+    cout << "time cost:" << 1.0 * clock() / CLOCKS_PER_SEC << "s" << endl;
+    // system("pause");
 #endif
     return 0;
 }
