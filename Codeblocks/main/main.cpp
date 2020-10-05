@@ -1,75 +1,59 @@
-// #define LLDO
-#include <bits/stdc++.h>
-#define fi first
-#define se second
-#define o2(x) (x) * (x)
-#define mk make_pair
-#define eb emplace_back
-#define SZ(x) ((int)(x).size())
-#define all(x) (x).begin(), (x).end()
-#define clr(a, b) memset((a), (b), sizeof((a)))
-#define rep(i,s,t) for(register int i=s;i<t;++i)
-#define per(i,s,t) for(register int i=s;i>=t;--i)
-#define GKD std::ios::sync_with_stdio(false);cin.tie(0)
-#define my_unique(x) sort(all(x)), x.erase(unique(all(x)), x.end())
-using namespace std;
-typedef long long int64;
-typedef unsigned long long uint64;
-typedef pair<int, int> pii;
-// mt19937 rng(time(NULL));
-// mt19937_64 rng64(chrono::steady_clock::now().time_since_epoch().count());
-// mt19937_64 generator(std::clock());
-// shuffle(arr, arr + n, generator);
-inline int64 read() {
-    int64 x = 0;int f = 0;char ch = getchar();
-    while (ch < '0' || ch > '9') f |= (ch == '-'), ch = getchar();
-    while (ch >= '0' && ch <= '9') x = (x << 3) + (x << 1) + ch - '0', ch =
-    getchar(); return x = f ? -x : x;
-}
-int lowbit(int x) { return x & (-x); }
-template <class T>
-T big(const T &a1, const T &a2) {return a1 > a2 ? a1 : a2;}
-template <class T>
-T sml(const T &a1, const T &a2) {return a1 < a2 ? a1 : a2;}
-template <typename T, typename... R>
-T big(const T &f, const R &... r) {return big(f, big(r...));}
-template <typename T, typename... R>
-T sml(const T &f, const R &... r) {return sml(f, sml(r...));}
-void debug_out() { cout << '\n'; }
-template <typename T, typename... R>
-void debug_out(const T &f, const R &... r) {
-    cout << f << " ";
-    debug_out(r...);
-}
-#ifdef LH_LOCAL
-#define debug(...) cout << "[" << #__VA_ARGS__ << "]: ", debug_out(__VA_ARGS__);
-#else
-#define debug(...) ;
-#endif
-#ifdef LLDO
-    const char ptout[] = "%lld";
-#else
-    const char ptout[] = "%d";
-#endif
-template <typename T>
-void print(const T &f) {printf(ptout, f);putchar('\n');}
-template <typename T, typename... R>
-void print(const T &f, const R &... r) {printf(ptout, f);putchar(' ');print(r...);}
-
-const int INF = 0x3f3f3f3f;
-const int mod = 998244353;// 998244353
-const int MXN = 2e5 + 5;
-int n, m;
+#include <cstdio>
+#include <iostream>
+#include <vector>
+#include <algorithm>
+#include <numeric>
+#include <functional>
+#include <cmath>
+#include <iomanip>
 int main() {
 #ifdef LH_LOCAL
     freopen("D:in.txt", "r", stdin);
     freopen("D:out.txt", "w", stdout);
 #endif
-    n = read();
-    print(n);
-#ifdef LH_LOCAL
-    cout << "time cost:" << 1.0 * clock() / CLOCKS_PER_SEC << "s" << endl;
-    // system("pause");
-#endif
+    std::ios::sync_with_stdio(false);
+    std::cin.tie(nullptr);
+    std::cout << std::fixed << std::setprecision(12);
+    int t;
+    std::cin >> t;
+    while (t--) {
+        int n;
+        std::cin >> n;
+        std::vector<int> x(n), y(n);
+        for (int i = 0; i < n; ++i)
+            std::cin >> x[i] >> y[i];
+        std::vector<std::vector<double>> dist(n, std::vector<double>(n));
+        for (int i = 0; i < n; ++i)
+            for (int j = 0; j < i; ++j)
+                dist[i][j] = dist[j][i] = std::sqrt(1ll * (x[i] - x[j]) * (x[i] - x[j]) + 1ll * (y[i] - y[j]) * (y[i] - y[j]));
+        std::vector<std::vector<std::vector<double>>> dp(n);
+        for (auto &v : dp)
+            v.assign(n, std::vector<double>(2, -1));
+        std::vector<std::vector<bool>> g(n, std::vector<bool>(n));
+        std::function<double(int, int, int)> get = [&](int u, int v, int x) {
+            if (dp[u][v][x] >= 0)
+                return dp[u][v][x];
+            double res = 0;
+            for (int w = (u + 1) % n; w != v; w = (w + 1) % n)
+                if (g[x ? v : u][w])
+                    res = std::max(res, dist[x ? v : u][w] + std::max(get(u, w, 1), get(w, v, 0)));
+            return dp[u][v][x] = res;
+        };
+        int m;
+        std::cin >> m;
+        for (int i = 0; i < m; ++i) {
+            int u, v;
+            std::cin >> u >> v;
+            --u;
+            --v;
+            g[u][v] = g[v][u] = true;
+        }
+        double ans = 0;
+        for (int i = 0; i < n; ++i)
+            for (int j = 0; j < n; ++j)
+                if (g[i][j])
+                    ans = std::max(ans, dist[i][j] + std::max(get(i, j, 0), get(i, j, 1)));
+        std::cout << ans << "\n";
+    }
     return 0;
 }

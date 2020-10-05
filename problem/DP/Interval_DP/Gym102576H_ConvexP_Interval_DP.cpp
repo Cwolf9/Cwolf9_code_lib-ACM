@@ -67,16 +67,16 @@ const int MXN = 3e2 + 5;
 const int MXE = MXN * MXN + 5;
 int n, m;
 /*
-链接：
-[点我点我](https://codeforces.com/gym/102576/problem/H)
-题意：
-输入按逆时针方向给出n个点的凸多边形，以及m条可行路径。
-输出一条不自交的最长路径的长度。
-思路：
-区间dp
-dp[i][j][0]表示只考虑凸包逆时针[i,j]内的点，下一步从i出发的最远距离
-dp[i][j][1]表示只考虑凸包逆时针[i,j]内的点，下一步从j出发的最远距离
-转移的时候枚举区间外的点，由小区间更新大区间，我为人人
+���ӣ�
+[���ҵ���](https://codeforces.com/gym/102576/problem/H)
+���⣺
+���밴��ʱ�뷽�����n�����͹����Σ��Լ�m������·����
+���һ�����Խ����·���ĳ��ȡ�
+˼·��
+����dp
+dp[i][j][0]��ʾֻ����͹����ʱ��[i,j]�ڵĵ㣬��һ����i��������Զ����
+dp[i][j][1]��ʾֻ����͹����ʱ��[i,j]�ڵĵ㣬��һ����j��������Զ����
+ת�Ƶ�ʱ��ö��������ĵ㣬��С������´����䣬��Ϊ����
 */
 typedef pair<int64, int64> pLL;
 int main() {

@@ -1,4 +1,8 @@
-// #define LLDO
+#pragma comment(linker, "/stack:200000000")
+#pragma GCC optimize("Ofast,no-stack-protector")
+#pragma GCC target("sse,sse2,sse3,ssse3,sse4,popcnt,abm,mmx,avx,tune=native")
+#pragma GCC optimize("unroll-loops")
+#pragma GCC optimize(3,"Ofast","inline")
 #include <bits/stdc++.h>
 #define fi first
 #define se second
@@ -13,6 +17,7 @@
 #define GKD std::ios::sync_with_stdio(false);cin.tie(0)
 #define my_unique(x) sort(all(x)), x.erase(unique(all(x)), x.end())
 using namespace std;
+typedef long long LL;
 typedef long long int64;
 typedef unsigned long long uint64;
 typedef pair<int, int> pii;
@@ -25,6 +30,15 @@ inline int64 read() {
     while (ch < '0' || ch > '9') f |= (ch == '-'), ch = getchar();
     while (ch >= '0' && ch <= '9') x = (x << 3) + (x << 1) + ch - '0', ch =
     getchar(); return x = f ? -x : x;
+}
+inline void write(int64 x, bool f = true) {
+    if (x == 0) {putchar('0'); if(f)putchar('\n');else putchar(' ');return;}
+    if (x < 0) {putchar('-');x = -x;}
+    static char s[23];
+    int l = 0;
+    while (x != 0)s[l++] = x % 10 + 48, x /= 10;
+    while (l)putchar(s[--l]);
+    if(f)putchar('\n');else putchar(' ');
 }
 int lowbit(int x) { return x & (-x); }
 template <class T>
@@ -46,16 +60,7 @@ void debug_out(const T &f, const R &... r) {
 #else
 #define debug(...) ;
 #endif
-#ifdef LLDO
-    const char ptout[] = "%lld";
-#else
-    const char ptout[] = "%d";
-#endif
-template <typename T>
-void print(const T &f) {printf(ptout, f);putchar('\n');}
-template <typename T, typename... R>
-void print(const T &f, const R &... r) {printf(ptout, f);putchar(' ');print(r...);}
-
+/*================Header Template==============*/
 const int INF = 0x3f3f3f3f;
 const int mod = 998244353;// 998244353
 const int MXN = 2e5 + 5;

@@ -1,22 +1,11 @@
-#pragma GCC optimize(3,"Ofast","inline")
-#include<bits/stdc++.h>
+#include <algorithm>
+#include <cmath>
+#include <cstdio>
+#include <cstring>
+#include <iostream>
+
 using namespace std;
-typedef long long LL;
-bool Finish_read;
-template<class T>inline void read(T &x){Finish_read=0;x=0;int f=1;char ch=getchar();while(!isdigit(ch)){if(ch=='-')f=-1;if(ch==EOF)return;ch=getchar();}while(isdigit(ch))x=x*10+ch-'0',ch=getchar();x*=f;Finish_read=1;}
-template<class T>inline void print(T x){if(x/10!=0)print(x/10);putchar(x%10+'0');}
-template<class T>inline void writeln(T x){if(x<0)putchar('-');x=abs(x);print(x);putchar('\n');}
-template<class T>inline void write(T x){if(x<0)putchar('-');x=abs(x);print(x);}
-#define all(x) (x).begin(), (x).end()
-#define clr(a, b) memset((a), (b), sizeof((a)))
-#define rep(i,s,t) for(register int i=s;i<t;++i)
-#define per(i,s,t) for(register int i=s;i>=t;--i)
-#define GKD std::ios::sync_with_stdio(false);cin.tie(0)
-#define my_unique(x) sort(all(x)), x.erase(unique(all(x)), x.end())
-// mt19937 rng(time(NULL));
-// mt19937_64 rng64(chrono::steady_clock::now().time_since_epoch().count());
-// mt19937_64 generator(std::clock());
-// shuffle(arr, arr + n, generator);
+
 void debug_out() { cout << '\n'; }
 template <typename T, typename... R>
 void debug_out(const T &f, const R &... r) {
@@ -28,25 +17,73 @@ void debug_out(const T &f, const R &... r) {
 #else
 #define debug(...) ;
 #endif
-/*================Header Template==============*/
-constexpr int maxn = 5e5 + 5;
-constexpr int maxe = 2e6 + 5;
-int n, m;
+
+const double eps = 1e-8;
+const double pi = acos(-1);
+
+const int maxn = 4096 + 7;
+int n;
+int r[20000];
+int rr[20000];
+double ff[2][20000];
 
 int main() {
 #ifndef ONLINE_JUDGE
     freopen("D:in.in", "r", stdin);
     freopen("D:out.out", "w", stdout);
 #endif
-    int tim = 1;
-    read(tim);
-    while(tim --) {
-        read(n);
-        cout << n << endl;
+    scanf("%d", &n);
+    for (int i = 0; i < n; i++) {
+        scanf("%d", &r[i]);
     }
-#ifdef LH_LOCAL
-    cout << n << endl;
-    cout << "time cost:" << 1.0 * clock() / CLOCKS_PER_SEC << "s" << endl;
-#endif
+    sort(r + 1, r + n);
+    int k = 0, buf = 1;
+    while (buf < n) {
+        buf <<= 1;
+        k++;
+    }
+    int bol = 1;
+    if (buf != n) {
+        bol <<= 1;
+        int ju = buf - n;
+        for (int i = 0; i < ju; i++) {
+            rr[i * 2] = r[i];
+            rr[i * 2 + 1] = r[i];
+        }
+        for (int i = ju; i < n; i++) {
+            rr[i + ju] = r[i];
+        }
+    } else {
+        for (int i = 0; i < n; i++) {
+            rr[i] = r[i];
+        }
+    }
+    for (int i = 0; i <= buf; i++) {
+        ff[0][i] = 1;
+    }
+    int ttt = 0;
+    for (int kk = 2; kk <= buf; kk <<= 1) {
+        int len =(kk>>1);
+        ttt = 1 - ttt;
+        for (int i = 0; i < buf; i++) {
+            ff[ttt][i] = 0;
+        }
+        for (int st = 0; st < buf; st += kk) {
+            for (int i = 0; i < len; i++) {
+                for (int j = 0; j < len; j++) {
+                    double u=ff[1 - ttt][st + i] * ff[1 - ttt][st + len + j];
+                    ff[ttt][st + i] += u * rr[st + i] /(rr[st + i] + rr[st + len + j]);
+                    ff[ttt][st + len + j] += u * rr[st + len + j] /(rr[st + i] + rr[st + len + j]);
+                    // debug(len,kk,st,u,rr[st + i],rr[st + len + j])
+                }
+            }
+            // for (int i = 0; i < buf; i++) {
+            //     printf("%lf ", ff[ttt][i]);
+            // }
+            // printf("\n");
+        }
+    }
+    printf("%lf", ff[ttt][0] * bol);
+
     return 0;
 }
