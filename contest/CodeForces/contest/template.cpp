@@ -1,9 +1,9 @@
 // #define LH_LOCAL
-#pragma comment(linker, "/stack:200000000")
-#pragma GCC optimize("Ofast,no-stack-protector")
-#pragma GCC target("sse,sse2,sse3,ssse3,sse4,popcnt,abm,mmx,avx,tune=native")
+#pragma comment(linker, "/STACK:102400000,102400000")
 #pragma GCC optimize("unroll-loops")
 #pragma GCC optimize(3,"Ofast","inline")
+#pragma GCC optimize("Ofast,no-stack-protector")
+#pragma GCC target("sse,sse2,sse3,ssse3,sse4,popcnt,abm,mmx,avx,tune=native")
 #include <bits/stdc++.h>
 #define fi first
 #define se second
@@ -13,8 +13,8 @@
 #define SZ(x) ((int)(x).size())
 #define all(x) (x).begin(), (x).end()
 #define clr(a, b) memset((a), (b), sizeof((a)))
-#define rep(i,s,t) for(register int i=s;i<t;++i)
-#define per(i,s,t) for(register int i=s;i>=t;--i)
+#define rep(i, s, t) for(register int i = (s), LIM=(t); i < LIM; ++i)
+#define per(i, s, t) for(register int i = (s), LIM=(t); i >= LIM; --i)
 #define GKD std::ios::sync_with_stdio(false);cin.tie(0)
 #define my_unique(x) sort(all(x)), x.erase(unique(all(x)), x.end())
 using namespace std;
@@ -65,6 +65,7 @@ void debug_out(const T &f, const R &... r) {
 const int INF = 0x3f3f3f3f;
 const int mod = 998244353;// 998244353
 const int MXN = 2e5 + 5;
+const int MXE = 2e6 + 5;
 int n, m;
 int main() {
 #ifdef LH_LOCAL
@@ -72,7 +73,7 @@ int main() {
     freopen("D:out.out", "w", stdout);
 #endif
     n = read();
-    print(n);
+    
 #ifdef LH_LOCAL
     // cout << "time cost:" << 1.0 * clock() / CLOCKS_PER_SEC << "s" << endl;
     // system("pause");

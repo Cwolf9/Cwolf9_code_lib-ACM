@@ -1,8 +1,8 @@
-#pragma comment(linker, "/stack:200000000")
-#pragma GCC optimize("Ofast,no-stack-protector")
-#pragma GCC target("sse,sse2,sse3,ssse3,sse4,popcnt,abm,mmx,avx,tune=native")
+#pragma comment(linker, "/STACK:102400000,102400000")
 #pragma GCC optimize("unroll-loops")
 #pragma GCC optimize(3,"Ofast","inline")
+#pragma GCC optimize("Ofast,no-stack-protector")
+#pragma GCC target("sse,sse2,sse3,ssse3,sse4,popcnt,abm,mmx,avx,tune=native")
 #include<bits/stdc++.h>
 using namespace std;
 typedef long long LL;
@@ -18,8 +18,8 @@ template<class T>inline void write(T x){if(x<0)putchar('-');x=abs(x);print(x);}
 #define eb emplace_back
 #define all(x) (x).begin(), (x).end()
 #define clr(a, b) memset((a), (b), sizeof((a)))
-#define rep(i,s,t) for(register int i=s;i<t;++i)
-#define per(i,s,t) for(register int i=s;i>=t;--i)
+#define rep(i, s, t) for(register int i = (s), LIM=(t); i < LIM; ++i)
+#define per(i, s, t) for(register int i = (s), LIM=(t); i >= LIM; --i)
 #define GKD std::ios::sync_with_stdio(false);cin.tie(0)
 #define my_unique(x) sort(all(x)), x.erase(unique(all(x)), x.end())
 // mt19937 rng(time(NULL));

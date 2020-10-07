@@ -1,3 +1,15 @@
+/*
+链接：
+[点我点我](https://codeforces.com/gym/102576/problem/H)
+题意：
+输入按逆时针方向给出n个点的凸多边形，以及m条可行路径。
+输出一条不自交的最长路径的长度。
+思路：
+区间dp
+dp[i][j][0]表示只考虑凸包逆时针[i,j]内的点，下一步从i出发的最远距离
+dp[i][j][1]表示只考虑凸包逆时针[i,j]内的点，下一步从j出发的最远距离
+转移的时候枚举区间外的点，由小区间更新大区间，我为人人
+*/
 #pragma comment(linker, "/stack:200000000")
 #pragma GCC optimize("Ofast,no-stack-protector")
 #pragma GCC target("sse,sse2,sse3,ssse3,sse4,popcnt,abm,mmx,avx,tune=native")
@@ -66,18 +78,7 @@ const int mod = 998244353;// 998244353
 const int MXN = 3e2 + 5;
 const int MXE = MXN * MXN + 5;
 int n, m;
-/*
-链接：
-[点我点我](https://codeforces.com/gym/102576/problem/H)
-题意：
-输入按逆时针方向给出n个点的凸多边形，以及m条可行路径。
-输出一条不自交的最长路径的长度。
-思路：
-区间dp
-dp[i][j][0]表示只考虑凸包逆时针[i,j]内的点，下一步从i出发的最远距离
-dp[i][j][1]表示只考虑凸包逆时针[i,j]内的点，下一步从j出发的最远距离
-转移的时候枚举区间外的点，由小区间更新大区间，我为人人
-*/
+
 typedef pair<int64, int64> pLL;
 int main() {
 #ifdef LH_LOCAL

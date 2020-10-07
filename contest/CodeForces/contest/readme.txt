@@ -2,7 +2,7 @@ https://oi-wiki.org/tools/oj-tool/
 https://github.com/xalanq/cf-tool
 首先若要打一场比赛，在此目录命令行下键入：cf race xxxx
 然后cd ./cf/contest/xxxx 进入比赛目录
-然后进入你想写的题目例如：cf a
+然后进入你想写的题目例如：cd a
 生成一份代码：
 cf gen
 抓取样例：

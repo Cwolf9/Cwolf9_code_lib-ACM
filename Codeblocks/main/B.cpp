@@ -1,11 +1,13 @@
 /*
-é“¾æ¥ï¼š
-[ç‚¹æˆ‘ç‚¹æˆ‘](https://codeforces.com/gym/102576/problem/C)
-é¢˜æ„ï¼š
-n(2e5),d([1,1e6]),c_i([0,3e11])ï¼Œæ¯æ¬¡æ“ä½œå¯ä»¥æŠŠä¸€ä¸ªæ•°åŠ ä¸€æˆ–è€…å‡ä¸€ï¼Œé—®æœ€å°‘æ“ä½œæ¬¡æ•°ä½¿å¾—å¯¹
-ä»»æ„(i < j)æ»¡è¶³abs(c_j - c_i)å¤§äºç­‰äºdã€‚
-æ€è·¯ï¼š
-ä¿åºå›å½’è®ºæ–‡é¢˜
+Á´½Ó£º
+[µãÎÒµãÎÒ](https://www.luogu.com.cn/problem/P4331)
+ÌâÒâ£º
+n(1e6),a_i([0,2e9])£¬¸ø¶¨Ò»¸öÕûÊıĞòÁĞa1,...,an£¬Çó³öÒ»¸öµİÔöĞòÁĞb1<b2<...<bn£¬Ê¹µÃa_iºÍb_i¸÷
+ÏîÖ®²î¾ø¶ÔÖµºÍ×îĞ¡¡£\sum_{i=1}^{n}|a_i-b_i|.
+Ë¼Â·£º
+±£Ğò»Ø¹éÂÛÎÄÌâ
+
+
 */
 #pragma comment(linker, "/STACK:102400000,102400000")
 #pragma GCC optimize("unroll-loops")
@@ -75,18 +77,16 @@ const int mod = 998244353;// 998244353
 const int MXN = 1e6 + 5;
 const int MXE = 2e6 + 5;
 int n, m;
-int64 d, br[MXN];
+int br[MXN];
 class Stack {
 public:
-    int l, r, rt, sz;
-    int64 val;
+    int l, r, rt, sz, val;
 };
 int top;
 Stack stk[MXN];
 class Node {
 public:
-    int l, r, d;
-    int64 val;
+    int l, r, d, val;
     int fa;
 }tr[MXE];
 void push_up(int x) {
@@ -109,7 +109,7 @@ int merge(int x, int y) {
     if(tr[x].val < tr[y].val) swap(x, y);
     tr[x].r = merge(tr[x].r, y);
     tr[tr[x].r].fa = x;
-    if(tr[tr[x].r].d > tr[tr[x].l].d) swap(tr[x].l, tr[x].r);
+    if(tr[tr[x].l].d < tr[tr[x].r].d) swap(tr[x].l, tr[x].r);
     tr[x].d = tr[tr[x].r].d + 1;
     push_up(x);
     return x;
@@ -120,41 +120,37 @@ int main() {
     freopen("D:in.txt", "r", stdin);
     //freopen("D:out.txt", "w", stdout);
 #endif
-    int tim = read();
-    while(tim --) {
-        n = read();
-        d = read();
-        rep(i, 1, n + 1) {
-            tr[i].val = read() - d * (i - 1);
-            if(i == 1) {
-                stk[++ top] = {i, i, i, 1, tr[i].val};
-                continue;
-            }
-            stk[++ top] = {i, i, i, 1, tr[i].val};
-            while(top ^ 1 && stk[top].val < stk[top - 1].val) {
-                -- top;
-                stk[top].r = stk[top + 1].r;
-                stk[top].rt = merge(stk[top].rt, stk[top + 1].rt);
-                stk[top].sz += stk[top + 1].sz;
-                while(stk[top].sz > (stk[top].r - stk[top].l + 1 + 1) / 2) {
-                    -- stk[top].sz;
-                    merge(tr[stk[top].rt].l, tr[stk[top].rt].r);
-                }
-                stk[top].val = tr[stk[top].rt].val;
-            }
+    n = read();
+    rep(i, 1, n + 1) {
+        tr[i].val = read() - i;
+        if(i == 1) {
+            stk[++top] = Stack{i, i, i, 1, tr[i].val};
+            continue;
         }
-        int p = 1;
-        int64 ans = 0;
-        rep(i, 1, n + 1) {
-            while(p < top && i > stk[p].r) ++ p;
-            ans += abs(tr[i].val - stk[p].val);
-            br[i] = stk[p].val + (i - 1) * d;
-            //printf("%lld%c", br[i], " \n"[i == n]);
+        stk[++top] = Stack{i, i, i, 1, tr[i].val};
+        while(top ^ 1 && stk[top - 1].val > stk[top].val) {
+            -- top;
+            stk[top].r = stk[top + 1].r;
+            stk[top].rt = merge(stk[top].rt, stk[top + 1].rt);
+            stk[top].sz += stk[top + 1].sz;
+            while(stk[top].sz > (stk[top].r - stk[top].l + 1 + 1) / 2) {
+                -- stk[top].sz;
+                stk[top].rt = merge(tr[stk[top].rt].l, tr[stk[top].rt].r);
+            }
+            stk[top].val = tr[stk[top].rt].val;
         }
-        printf("%lld\n", ans);
-        if(tim) rep(i, 1, n + 1) tr[i] = {0, 0, 0, 0, 0};
-        top = 0;
     }
+    int64 ans = 0;
+    int p = 1;
+    rep(i, 1, n + 1) {
+        while(p < top && i > stk[p].r) {
+            ++ p;
+        }
+        ans += abs(tr[i].val - stk[p].val);
+        br[i] = stk[p].val + i;
+    }
+    printf("%lld\n", ans);
+    rep(i, 1, n + 1) printf("%d%c", br[i], " \n"[i == n]);
 #ifdef LH_LOCAL
     cout << "time cost:" << 1.0 * clock() / CLOCKS_PER_SEC << "s" << endl;
     // system("pause");

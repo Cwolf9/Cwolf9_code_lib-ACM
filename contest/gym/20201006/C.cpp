@@ -1,25 +1,16 @@
-#pragma comment(linker, "/STACK:102400000,102400000")
-#pragma GCC optimize("unroll-loops")
 #pragma GCC optimize(3,"Ofast","inline")
-#pragma GCC optimize("Ofast,no-stack-protector")
-#pragma GCC target("sse,sse2,sse3,ssse3,sse4,popcnt,abm,mmx,avx,tune=native")
 #include<bits/stdc++.h>
 using namespace std;
 typedef long long LL;
-typedef long long int64;
 bool Finish_read;
-template<class T>inline void read(T &x){Finish_read=0;x=0;int f=1;char ch=getchar();while(!isdigit(ch)){if(ch=='-')f=-1;if(ch==EOF)return;ch=getchar();}while(isdigit(ch))x=x*10+ch-'0',ch=getchar();x*=f;Finish_read=1;}
+inline long long read(){long long x = 0;Finish_read=0;int f=1;char ch=getchar();while(!isdigit(ch)){if(ch=='-')f=-1;if(ch==EOF)return x;ch=getchar();}while(isdigit(ch))x=x*10+ch-'0',ch=getchar();x*=f;Finish_read=1;return x;}
 template<class T>inline void print(T x){if(x/10!=0)print(x/10);putchar(x%10+'0');}
 template<class T>inline void writeln(T x){if(x<0)putchar('-');x=abs(x);print(x);putchar('\n');}
 template<class T>inline void write(T x){if(x<0)putchar('-');x=abs(x);print(x);}
-#define fi first
-#define se second
-#define mk make_pair
-#define eb emplace_back
 #define all(x) (x).begin(), (x).end()
 #define clr(a, b) memset((a), (b), sizeof((a)))
-#define rep(i, s, t) for(register int i = (s), LIM=(t); i < LIM; ++i)
-#define per(i, s, t) for(register int i = (s), LIM=(t); i >= LIM; --i)
+#define rep(i,s,t) for(register int i=s;i<t;++i)
+#define per(i,s,t) for(register int i=s;i>=t;--i)
 #define GKD std::ios::sync_with_stdio(false);cin.tie(0)
 #define my_unique(x) sort(all(x)), x.erase(unique(all(x)), x.end())
 // mt19937 rng(time(NULL));
@@ -39,11 +30,8 @@ void debug_out(const T &f, const R &... r) {
 #endif
 /*================Header Template==============*/
 constexpr int INF = 0x3f3f3f3f;
-constexpr int mod = 998244353;
-const int MXN = 2e5 + 5;
-const int MXE = 2e6 + 5;
-constexpr int maxn = 4e5 + 5;
-constexpr int maxe = 2e6 + 5;
+constexpr int MXN = 1e6 + 5;
+constexpr int MXE = 2e6 + 5;
 int n, m;
 
 int main() {
@@ -51,10 +39,9 @@ int main() {
     freopen("D:in.in", "r", stdin);
     freopen("D:out.out", "w", stdout);
 #endif
-    int tim;
-    read(tim);
+    int tim = read();
     while(tim --) {
-        read(n);
+        n = read();
 
     }
 #ifndef ONLINE_JUDGE
