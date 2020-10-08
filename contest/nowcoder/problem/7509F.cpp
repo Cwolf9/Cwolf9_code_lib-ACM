@@ -12,8 +12,8 @@ template<class T>inline void writeln(T x){if(x<0)putchar('-');x=abs(x);print(x);
 template<class T>inline void write(T x){if(x<0)putchar('-');x=abs(x);print(x);}
 #define all(x) (x).begin(), (x).end()
 #define clr(a, b) memset((a), (b), sizeof((a)))
-#define rep(i,s,t) for(register int i=s;i<t;++i)
-#define per(i,s,t) for(register int i=s;i>=t;--i)
+#define rep(i, s, t) for(register int i = (s), LIM=(t); i < LIM; ++i)
+#define per(i, s, t) for(register int i = (s), LIM=(t); i >= LIM; --i)
 #define iis std::ios::sync_with_stdio(false);cin.tie(0)
 #define my_unique(x) sort(all(x)), x.erase(unique(all(x)), x.end())
 // mt19937 rng(time(NULL));
@@ -34,7 +34,7 @@ void debug_out(const T &f, const R &... r) {
 /*================Header Template==============*/
 constexpr int maxn = 3e5 + 5;
 constexpr int maxe = 2e6 + 5;
-constexpr int INF = 0x3f3f3f3f;
+constexpr long long INF = 1e18;
 int n, m;
 class Query {
     public:
@@ -138,13 +138,13 @@ void gao(int fg) {
     tr[0] = Node(0);
     sgt.build(1, n, 1);
     int qi = 1;
-    if(fg) insert(get_id(0), 0, vsL, vsR, 0, root[0]);
     rep(i, 1, n + 1) {
         int up = get_id(preSum[i]);
         LL las = -1e18, tt = i;
         while(1) {
             LL down = (las + preSum[i] + 1) / 2;
             int ans = query(get_id(down), up, vsL, vsR, root[tt - 1]);
+            if(i == 1) debug(ans, preSum[0])
             if(ans == -1) break;
             // debug(i, down, ans, preSum[i] - preSum[ans])
             sgt.modify(1, ans + fg, preSum[i] - preSum[ans], 1, n, 1);
@@ -163,8 +163,8 @@ void gao(int fg) {
 }
 int main() {
 #ifndef ONLINE_JUDGE
-    freopen("D:in.in", "r", stdin);
-    freopen("D:out.out", "w", stdout);
+    //freopen("D:in.in", "r", stdin);
+    //freopen("D:out.out", "w", stdout);
 #endif
     read(n), read(m);
     ++ n;
@@ -175,10 +175,10 @@ int main() {
         preSum[i] = preSum[i - 1] + arr[i], vs.emplace_back(preSum[i]);
     }
     my_unique(vs);
-    sufSum[n + 1] = 0;
-    per(i, n, 1) sufSum[i] = sufSum[i + 1] + arr[i];
-    sufSum[n] = abs(sufSum[n]);
-    per(i, n - 1, 1) sufSum[i] = min(sufSum[i + 1], abs(sufSum[i]));
+    sufSum[n] = 0;
+    per(i, n - 1, 1) sufSum[i] = sufSum[i + 1] + arr[i];
+    sufSum[n - 1] = abs(sufSum[n - 1]);
+    per(i, n - 2, 1) sufSum[i] = min(sufSum[i + 1], abs(sufSum[i]));
     // rep(i, 1, n + 1) debug(i, preSum[i])
     vsL = 1;
     vsR = vs.size() + 1;
@@ -186,7 +186,12 @@ int main() {
         read(qry[i].l), read(qry[i].r);
         qry[i].id = i;
         qry[i].ans = abs(arr[qry[i].l]);
-        if(qry[i].r == n) qry[i].ans = min(qry[i].ans, sufSum[qry[i].l]);
+        if(qry[i].r == n - 1) qry[i].ans = min(qry[i].ans, sufSum[qry[i].l]);
+    }
+    sufSum[0] = INF;
+    rep(i, 1, n + 1) sufSum[i] = min(sufSum[i - 1], abs(preSum[i]));
+    rep(i, 1, m + 1) {
+        if(qry[i].l == 1) qry[i].ans = min(qry[i].ans, sufSum[qry[i].r]);
     }
     sort(qry + 1, qry + m + 1);
     gao(1);
