@@ -167,18 +167,16 @@ int main() {
     //freopen("D:out.out", "w", stdout);
 #endif
     read(n), read(m);
-    ++ n;
     vs.emplace_back(0);
     rep(i, 1, n + 1) {
-        if(i != n) read(arr[i]);
-        else arr[n] = 0;
+        read(arr[i]);
         preSum[i] = preSum[i - 1] + arr[i], vs.emplace_back(preSum[i]);
     }
     my_unique(vs);
-    sufSum[n] = 0;
-    per(i, n - 1, 1) sufSum[i] = sufSum[i + 1] + arr[i];
-    sufSum[n - 1] = abs(sufSum[n - 1]);
-    per(i, n - 2, 1) sufSum[i] = min(sufSum[i + 1], abs(sufSum[i]));
+    sufSum[n + 1] = 0;
+    per(i, n, 1) sufSum[i] = sufSum[i + 1] + arr[i];
+    sufSum[n] = abs(sufSum[n]);
+    per(i, n - 1, 1) sufSum[i] = min(sufSum[i + 1], abs(sufSum[i]));
     // rep(i, 1, n + 1) debug(i, preSum[i])
     vsL = 1;
     vsR = vs.size() + 1;
@@ -186,10 +184,10 @@ int main() {
         read(qry[i].l), read(qry[i].r);
         qry[i].id = i;
         qry[i].ans = abs(arr[qry[i].l]);
-        if(qry[i].r == n - 1) qry[i].ans = min(qry[i].ans, sufSum[qry[i].l]);
+        if(qry[i].r == n) qry[i].ans = min(qry[i].ans, sufSum[qry[i].l]);
     }
-    sufSum[0] = INF;
-    rep(i, 1, n + 1) sufSum[i] = min(sufSum[i - 1], abs(preSum[i]));
+    sufSum[1] = abs(preSum[1]);
+    rep(i, 2, n + 1) sufSum[i] = min(sufSum[i - 1], abs(preSum[i]));
     rep(i, 1, m + 1) {
         if(qry[i].l == 1) qry[i].ans = min(qry[i].ans, sufSum[qry[i].r]);
     }
