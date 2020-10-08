@@ -1,12 +1,11 @@
 /*
-Á´½Ó£º
-[µãÎÒµãÎÒ](https://www.luogu.com.cn/problem/P4331)
-ÌâÒâ£º
-n(1e6),a_i([0,2e9])£¬¸ø¶¨Ò»¸öÕûÊýÐòÁÐa1,...,an£¬Çó³öÒ»¸öµÝÔöÐòÁÐb1<b2<...<bn£¬Ê¹µÃa_iºÍb_i¸÷
-ÏîÖ®²î¾ø¶ÔÖµºÍ×îÐ¡¡£\sum_{i=1}^{n}|a_i-b_i|.
-Ë¼Â·£º
-±£Ðò»Ø¹éÂÛÎÄÌâ
-
+é“¾æŽ¥ï¼š
+[ç‚¹æˆ‘ç‚¹æˆ‘](https://www.luogu.com.cn/problem/P4331)
+é¢˜æ„ï¼š
+n(1e6),a_i([0,2e9])ï¼Œç»™å®šä¸€ä¸ªæ•´æ•°åºåˆ—a1,...,anï¼Œæ±‚å‡ºä¸€ä¸ªé€’å¢žåºåˆ—b1<b2<...<bnï¼Œä½¿å¾—a_iå’Œb_iå„
+é¡¹ä¹‹å·®ç»å¯¹å€¼å’Œæœ€å°ã€‚\sum_{i=1}^{n}|a_i-b_i|.
+æ€è·¯ï¼š
+ä¿åºå›žå½’è®ºæ–‡é¢˜
 
 */
 #pragma comment(linker, "/STACK:102400000,102400000")

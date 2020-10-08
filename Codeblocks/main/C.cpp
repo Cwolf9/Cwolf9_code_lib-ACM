@@ -123,14 +123,13 @@ int main() {
     freopen("D:in.txt", "r", stdin);
     //freopen("D:out.txt", "w", stdout);
 #endif
-    int tim = read();
+    int tim = 1;
     while(tim --) {
         n = read();
-        d = read();
+        d = 1;
         rep(i, 1, n + 1) tr[i].val = read();
-        sort(tr + 1, tr + n + 1, cmp);
         rep(i, 1, n + 1) {
-            tr[i].val = tr[i].val - d * (i - 1);
+            tr[i].val = tr[i].val - d * i;
             if(i == 1) {
                 stk[++ top] = {i, i, i, 1, tr[i].val};
                 continue;
@@ -149,24 +148,14 @@ int main() {
             }
         }
         int p = 1;
-        int64 ans = 0, add = 0;
+        int64 ans = 0;
         rep(i, 1, n + 1) {
-            tr[i].val += d * (i - 1);
             while(p < top && i > stk[p].r) ++ p;
-            br[i] = stk[p].val + d * (i - 1);
-            if(br[i] < 0) add = 0 - br[i];
-            br[i] += add;
-            add = 0;
-            if(i > 1 && br[i] - br[i - 1] < d) {
-                add += br[i - 1] + d - br[i];
-            }
-            br[i] += add;
-            add = 0;
-            ans += abs(tr[i].val - br[i]);
-            //printf("%lld%c", br[i], " \n"[i == n]);
+            ans += abs(tr[i].val - stk[p].val);
+            br[i] = stk[p].val + i * d;
         }
         printf("%lld\n", ans);
-        //rep(i, 1, n + 1) printf("%lld%c", br[i], " \n"[i == n]);
+        rep(i, 1, n + 1) printf("%lld%c", br[i], " \n"[i == n]);
         if(tim) rep(i, 1, n + 1) tr[i] = {0, 0, 0, 0, 0};
         top = 0;
     }

@@ -1,3 +1,6 @@
+/*
+https://blog.nowcoder.net/n/8da642eb6e87433a8e2db118448224d9
+*/ 
 #pragma GCC optimize(3,"Ofast","inline")
 #include<bits/stdc++.h>
 using namespace std;
@@ -79,7 +82,6 @@ int query(int L, int R, int l, int r, int rt) {
 
 class ST {
     public:
-    // int tid;
     LL sum[maxn<<2], fg[maxn<<2];
     void build(int l, int r, int rt) {
         fg[rt] = INF;

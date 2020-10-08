@@ -37,6 +37,9 @@ void debug_out(const T &f, const R &... r) {
 #else
 #define debug(...) ;
 #endif
+typedef pair<int, int> pii;
+#define fi first
+#define se second
 /*================Header Template==============*/
 constexpr int INF = 0x3f3f3f3f;
 constexpr int mod = 998244353;

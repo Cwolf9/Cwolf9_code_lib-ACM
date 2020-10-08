@@ -37,6 +37,9 @@ void debug_out(const T &f, const R &... r) {
 #else
 #define debug(...) ;
 #endif
+typedef pair<int, int> pii;
+#define fi first
+#define se second
 /*================Header Template==============*/
 constexpr int maxn = 4e5 + 5;
 constexpr int maxe = 2e6 + 5;
