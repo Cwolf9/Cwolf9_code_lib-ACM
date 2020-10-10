@@ -1,3 +1,7 @@
+/*
+三边三角任意给两个条件判断不全等三角形有多少个。
+分类讨论。
+*/
 #pragma GCC optimize(3, "Ofast", "inline")
 #include <bits/stdc++.h>
 using namespace std;

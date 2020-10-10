@@ -38,40 +38,6 @@ T sml(const T &f, const R &... r) {return sml(f, sml(r...));}
 const int INF = 0x3f3f3f3f;
 const int mod = 998244353;// 998244353
 const int MXN = 2e5 + 5;
-struct FenwickTree {
-//sum[i] = sigma(ar[x])+(i+1)*sigma(delta[x])-sigma(x*delta[x])
-//delta[]是差分数组
-    int n;
-    int pre[MXN], delta[MXN], deltai[MXN];
-    void add(int *a, int x, int v){
-        while(x <= n){
-            a[x] += v;
-            x += lowbit(x);
-        }
-    }
-    int query(int *a, int x){
-        int sum = 0;
-        while(x > 0){
-            sum += a[x];
-            x -= lowbit(x);
-        }
-        return sum;
-    }
-    void init(int *ar, int _n) {
-        n = _n;
-        pre[0] = 0;
-        for(int i = 1; i <= n; ++i) pre[i] = pre[i-1] + ar[i];
-    }
-    void update(int l, int r, int x){
-        add(delta, l, x);add(delta, r+1, -x);
-        add(deltai, l, l*x);add(deltai, r+1, -x*(r+1));
-    }
-    int range(int l, int r){
-        int sum1 = pre[l-1]+l*query(delta, l-1)-query(deltai, l-1);
-        int sum2 = pre[r]+(r+1)*query(delta, r)-query(deltai, r);
-        return sum2-sum1;
-    }
-}bit;
 
 int main() {
 #ifndef ONLINE_JUDGE
