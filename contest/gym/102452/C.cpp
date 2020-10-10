@@ -37,11 +37,11 @@ const int MXN = 2e4 + 7;
 const int MXE = 4e4 + 7;
 int n, m;
 int tn;
-struct lp{
+struct lp {
     int v, nex;
     int w;
 }cw[MXE];
-int tot, head[MXN], dep[MXN], siz[MXN], hvy, hvysiz, vis[MXN];
+int tot, head[MXN], dep[MXN], siz[MXN], hvy, hvysiz, vis[MXN], ar[MXN];
 int stak[MXN];
 LL ans;
 void add_edge(int a, int b, int c) {
@@ -58,9 +58,9 @@ void dfs_pre(int u, int ba) {
         if(v == ba || vis[v]) continue;
         dfs_pre(v, u);
         siz[u] += siz[v];
-        mm = big(mm, siz[v]);
+        mm = max(mm, siz[v]);
     }
-    mm = big(mm, tn - siz[u]);
+    mm = max(mm, tn - siz[u]);
     if(hvy == -1 || (mm < hvysiz)) {
         hvy = u;
         hvysiz = mm;
@@ -82,7 +82,7 @@ void get_ans(int u, int w, int flag) {
     sort(stak + 1, stak + 1 + stak[0]);
     for(int i = 1, j = stak[0]; i <= stak[0]; ++i) {
         while(j > i && stak[i] + stak[j] > m) -- j;
-        ans += flag * big(0, j - i);
+        ans += flag * max(0, j - i);
     }
 //    printf("%d :\n", u);
 //    for(int i = 1; i <= stak[0]; ++i) printf("%d ", stak[i]);
@@ -108,12 +108,17 @@ int main() {
     freopen("D:in.in", "r", stdin);
     freopen("D:out.out", "w", stdout);
 #endif
-    while(~scanf("%d%d", &n, &m) && (n + m)) {
-        for(int i = 1; i <= n; ++i) head[i] = -1, vis[i] = 0;
+    int tim = read();
+    while(tim --) {
+        scanf("%d", &n);
+        for(int i = 1; i <= n; ++i) {
+            head[i] = -1, vis[i] = 0;
+            ar[i] = read();
+        }
         tot = -1;
-        for(int i = 1, a, b, c; i < n; ++i) {
-            scanf("%d%d%d", &a, &b, &c);
-            add_edge(a, b, c);
+        for(int i = 1, a, b; i < n; ++i) {
+            scanf("%d%d", &a, &b);
+            add_edge(a, b, 1);
         }
         ans = 0;
         tn = n;
