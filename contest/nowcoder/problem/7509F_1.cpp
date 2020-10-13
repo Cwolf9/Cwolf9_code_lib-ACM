@@ -1,5 +1,24 @@
 /*
 https://blog.nowcoder.net/n/8da642eb6e87433a8e2db118448224d9
+https://ac.nowcoder.com/acm/contest/7509/F
+https://ac.nowcoder.com/acm/problem/211736
+题意：
+多次询问区间内，子区间权值和的绝对值的最小值
+题解：
+首先前缀和，然后变成求区间内求绝对值最小的两个数的差。设前缀和数组为A.
+考虑离线，将询问按右端点排序。我们从小到大枚举询问区间的右端点r, 同时用数据结构维护每个左端点的答案。
+考虑新增一个数A_r与它前面的点构成数对产生的贡献。
+{
+1.只考虑x<r且A_x<=A_r的x与r组成数对的贡献，首先找到最大的x满足A_x<=A_r记为x_1，对于所有l<=x_1+1的询问的答案都要和A_r-A_{x_1}取最小值。
+然后依次下去找最大的x满足x<x_1且A_x1<A_x<=A_r记为x_2，对于所有l<=x_2+1的询问的答案都要和A_r-A_{x_2}取最小值。
+2.只考虑x<r且A_x>A_r的x与r组成数对的贡献，处理方法同上类似。（可以正着找较大的x_i，也可以全部逆序之后按上述同样的方法处理一遍，不过这样要注意细节。）
+}
+问题是，最坏情况下每个点寻找x的次数可能达到O(n)级别。
+观察到这样一个性质：当我们寻找x_2时，如果A_{x_2}-A_{x_1}<=A_r-A_{x_2}时，数对{x_2,r}对答案没有任何贡献。
+所以我们每次只寻找那些⌈(A_x_1+A_r)/2⌉<=A_x<=A_r的最大x作为x_2计算贡献。
+这样每次的查询值域区间都不超过上次的一半长度，这样最多只会有O(logW)次。
+寻找x_i可以使用主席树，维护答案可以用线段树。
+时间复杂度：O(n*lognlogW).
 */ 
 #pragma GCC optimize(3,"Ofast","inline")
 #include<bits/stdc++.h>
@@ -56,6 +75,9 @@ vector<LL> vs;
 int vsL, vsR;
 int get_id(LL x) {
     return lower_bound(all(vs), x) - vs.begin() + 1;
+}
+int get_id2(LL x) {
+    return upper_bound(all(vs), x) - vs.begin() + 1;
 }
 void insert(int p, int v, int l, int r, int las, int &rt) {
     if(rt == 0) rt = ++ inde;
@@ -132,7 +154,7 @@ class ST {
     }
 }sgt;
 
-void gao(int fg) {
+void gao() {
     rep(i, 0, n + 2) root[i] = 0;
     inde = 0;
     tr[0] = Node(0);
@@ -140,22 +162,37 @@ void gao(int fg) {
     int qi = 1;
     rep(i, 1, n + 1) {
         int up = get_id(preSum[i]);
-        LL las = -1e18, tt = i;
-        while(1) {
-            LL down = (las + preSum[i] + 1) / 2;
-            int ans = query(get_id(down), up, vsL, vsR, root[tt - 1]);
-            if(i == 1) debug(ans, preSum[0])
-            if(ans == -1) break;
-            // debug(i, down, ans, preSum[i] - preSum[ans])
-            sgt.modify(1, ans + fg, preSum[i] - preSum[ans], 1, n, 1);
-            // debug(ans, preSum[i], preSum[ans])
-            assert(preSum[ans] <= preSum[i]);
-            if(preSum[ans] == preSum[i] || ans <= 0) break;
-            las = preSum[ans];
-            tt = ans;
+        {
+            LL las = -1e18, tt = i;
+            while(1) {
+                LL down = (las + preSum[i] + 1) / 2;
+                int ans = query(get_id(down), up, vsL, vsR, root[tt - 1]);
+                if(ans == -1) break;
+                assert(ans <= tt);
+                // debug(i, down, ans, preSum[i] - preSum[ans])
+                sgt.modify(1, ans + 1, preSum[i] - preSum[ans], 1, n, 1);
+                // debug(ans, preSum[i], preSum[ans])
+                assert(preSum[ans] <= preSum[i]);
+                if(preSum[ans] == preSum[i] || ans <= 0) break;
+                las = preSum[ans];
+                tt = ans;
+            }
+        }
+        {
+            LL las = 1e18, tt = i, tmm = 33;
+            while(tmm --) {
+                LL down = (las + preSum[i] - 1) / 2;
+                int ans = query(up, get_id2(down) - 1, vsL, vsR, root[tt - 1]);
+                if(ans == -1) break;
+                sgt.modify(1, ans + 1, preSum[ans] - preSum[i], 1, n, 1);
+                assert(preSum[ans] >= preSum[i]);
+                if(preSum[ans] == preSum[i] || ans <= 0) break;
+                las = preSum[ans];
+                tt = ans;
+            }
         }
         insert(up, i, vsL, vsR, root[i - 1], root[i]);
-        while(qi <= m && qry[qi].r <= i - (fg?0:1)) {
+        while(qi <= m && qry[qi].r <= i) {
             qry[qi].ans = min(qry[qi].ans, sgt.query(qry[qi].l, qry[qi].r, 1, n, 1));
             ++ qi;
         }
@@ -163,7 +200,7 @@ void gao(int fg) {
 }
 int main() {
 #ifndef ONLINE_JUDGE
-    //freopen("D:in.in", "r", stdin);
+    freopen("D:in.in", "r", stdin);
     //freopen("D:out.out", "w", stdout);
 #endif
     read(n), read(m);
@@ -173,13 +210,13 @@ int main() {
         preSum[i] = preSum[i - 1] + arr[i], vs.emplace_back(preSum[i]);
     }
     my_unique(vs);
+    vsL = 1;
+    vsR = vs.size() + 1;
     sufSum[n + 1] = 0;
     per(i, n, 1) sufSum[i] = sufSum[i + 1] + arr[i];
     sufSum[n] = abs(sufSum[n]);
     per(i, n - 1, 1) sufSum[i] = min(sufSum[i + 1], abs(sufSum[i]));
     // rep(i, 1, n + 1) debug(i, preSum[i])
-    vsL = 1;
-    vsR = vs.size() + 1;
     rep(i, 1, m + 1) {
         read(qry[i].l), read(qry[i].r);
         qry[i].id = i;
@@ -192,26 +229,7 @@ int main() {
         if(qry[i].l == 1) qry[i].ans = min(qry[i].ans, sufSum[qry[i].r]);
     }
     sort(qry + 1, qry + m + 1);
-    gao(1);
-    per(i, n / 2, 1) {
-        swap(arr[i], arr[n - i + 1]);
-        swap(preSum[i], preSum[n - i + 1]);
-    }
-    // rep(i, 1, n + 1) debug(i, preSum[i])
-    // vs.clear();
-    // vs.emplace_back(0);
-    // rep(i, 1, n + 1) preSum[i] = preSum[i - 1] + arr[i], vs.emplace_back(preSum[i]);
-    // my_unique(vs);
-    // vsL = 1;
-    // vsR = vs.size() + 1;
-    rep(i, 1, m + 1) {
-        qry[i].l = n - qry[i].l + 1;
-        qry[i].r = n - qry[i].r + 1;
-        swap(qry[i].l, qry[i].r);
-        // debug(qry[i].id, qry[i].l, qry[i].r, qry[i].ans)
-    }
-    sort(qry + 1, qry + m + 1);
-    gao(0);
+    gao();
     rep(i, 1, m + 1) arr[qry[i].id] = qry[i].ans;
     rep(i, 1, m + 1) printf("%lld\n", arr[i]);
 #ifndef ONLINE_JUDGE

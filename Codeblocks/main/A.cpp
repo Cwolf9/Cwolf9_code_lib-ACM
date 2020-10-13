@@ -1,17 +1,11 @@
 /*
-链接：
-[点我点我](https://codeforces.com/gym/102576/problem/C)
-题意：
-n(2e5),d([1,1e6]),c_i([0,3e11])，每次操作可以把一个数加一或者减一，问最少操作次数使得对
-任意(i < j)满足abs(c_j - c_i)大于等于d。
-思路：
-保序回归论文题
-*/
+
 #pragma comment(linker, "/STACK:102400000,102400000")
 #pragma GCC optimize("unroll-loops")
 #pragma GCC optimize(3,"Ofast","inline")
 #pragma GCC optimize("Ofast,no-stack-protector")
 #pragma GCC target("sse,sse2,sse3,ssse3,sse4,popcnt,abm,mmx,avx,tune=native")
+*/
 #include <bits/stdc++.h>
 #define fi first
 #define se second
@@ -72,104 +66,17 @@ void debug_out(const T &f, const R &... r) {
 /*================Header Template==============*/
 const int INF = 0x3f3f3f3f;
 const int mod = 998244353;// 998244353
-const int MXN = 1e6 + 5;
+const int MXN = 2e5 + 6;
 const int MXE = 2e6 + 5;
 int n, m;
-int64 d, br[MXN];
-class Stack {
-public:
-    int l, r, rt, sz;
-    int64 val;
-};
-int top;
-Stack stk[MXN];
-class Node {
-public:
-    int l, r, d;
-    int64 val;
-    int fa;
-}tr[MXE];
-bool cmp(const Node&a, const Node&b) {
-    return a.val < b.val;
-}
-void push_up(int x) {
-    if(!x) return ;
-    if(tr[x].d != tr[tr[x].r].d + 1) {
-        tr[x].d = tr[tr[x].r].d + 1;
-        push_up(tr[x].fa);
-    }
-}
-int delx(int x, int y) {
-    if(!x || !y) return x | y;
-    if(tr[x].val < tr[y].val) swap(x, y);
-    tr[x].r = delx(tr[x].r, y);
-    tr[tr[x].r].fa = x;
-    push_up(x);
-    return x;
-}
-int merge(int x, int y) {
-    if(!x || !y) return x | y;
-    if(tr[x].val < tr[y].val) swap(x, y);
-    tr[x].r = merge(tr[x].r, y);
-    tr[tr[x].r].fa = x;
-    if(tr[tr[x].r].d > tr[tr[x].l].d) swap(tr[x].l, tr[x].r);
-    tr[x].d = tr[tr[x].r].d + 1;
-    push_up(x);
-    return x;
-}
 
 int main() {
 #ifdef LH_LOCAL
     freopen("D:in.txt", "r", stdin);
     //freopen("D:out.txt", "w", stdout);
 #endif
-    int tim = read();
-    while(tim --) {
-        n = read();
-        d = read();
-        rep(i, 1, n + 1) tr[i].val = read();
-        sort(tr + 1, tr + n + 1, cmp);
-        rep(i, 1, n + 1) {
-            tr[i].val = tr[i].val - d * (i - 1);
-            if(i == 1) {
-                stk[++ top] = {i, i, i, 1, tr[i].val};
-                continue;
-            }
-            stk[++ top] = {i, i, i, 1, tr[i].val};
-            while(top ^ 1 && stk[top].val < stk[top - 1].val) {
-                -- top;
-                stk[top].r = stk[top + 1].r;
-                stk[top].rt = merge(stk[top].rt, stk[top + 1].rt);
-                stk[top].sz += stk[top + 1].sz;
-                while(stk[top].sz > (stk[top].r - stk[top].l + 1 + 1) / 2) {
-                    -- stk[top].sz;
-                    stk[top].rt = merge(tr[stk[top].rt].l, tr[stk[top].rt].r);
-                }
-                stk[top].val = tr[stk[top].rt].val;
-            }
-        }
-        int p = 1;
-        int64 ans = 0, add = 0;
-        rep(i, 1, n + 1) {
-            tr[i].val += d * (i - 1);
-            while(p < top && i > stk[p].r) ++ p;
-            br[i] = stk[p].val + d * (i - 1);
-            if(br[i] < 0) add = 0 - br[i];
-            br[i] += add;
-            add = 0;
-            if(i > 1 && br[i] - br[i - 1] < d) {
-                add += br[i - 1] + d - br[i];
-            }
-            br[i] += add;
-            add = 0;
-            ans += abs(tr[i].val - br[i]);
-            //printf("%lld%c", br[i], " \n"[i == n]);
-        }
-        printf("%lld\n", ans);
-        //rep(i, 1, n + 1) printf("%lld%c", br[i], " \n"[i == n]);
-        if(tim) rep(i, 1, n + 1) tr[i] = {0, 0, 0, 0, 0};
-        top = 0;
-    }
+    n = read();
+
 #ifdef LH_LOCAL
     cout << "time cost:" << 1.0 * clock() / CLOCKS_PER_SEC << "s" << endl;
     // system("pause");

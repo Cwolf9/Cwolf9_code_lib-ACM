@@ -1,11 +1,6 @@
 /*
 
 */
-#pragma comment(linker, "/STACK:102400000,102400000")
-#pragma GCC optimize("unroll-loops")
-#pragma GCC optimize(3,"Ofast","inline")
-#pragma GCC optimize("Ofast,no-stack-protector")
-#pragma GCC target("sse,sse2,sse3,ssse3,sse4,popcnt,abm,mmx,avx,tune=native")
 #include <bits/stdc++.h>
 #define fi first
 #define se second
@@ -65,18 +60,39 @@ void debug_out(const T &f, const R &... r) {
 #endif
 /*================Header Template==============*/
 const int INF = 0x3f3f3f3f;
-const int mod = 998244353;// 998244353
-const int MXN = 1e6 + 5;
+const int mod = 1e9 + 7;// 998244353
+const int MXN = 2e5 + 15;
 const int MXE = 2e6 + 5;
 int n, m;
-
+int64 a, b, c;
 int main() {
 #ifdef LH_LOCAL
     freopen("D:in.txt", "r", stdin);
     //freopen("D:out.txt", "w", stdout);
 #endif
-    int tim = 1;
+    GKD;
+    int tim;
+    cin >> tim;
+    while(tim --) {
+        cin >> a >> b >> c;
+        if(b < c) swap(b, c);
+        int64 all = (a - b + 1) % mod * (a - b + 1) % mod * (a - c + 1) % mod * (a - c + 1) % mod;
+        if(a - c <= b) {
+            if(a - b <= c - 1) {
+                int64 sub = (a - c) * (a - c) % mod * (a - b + 1) % mod * (a - b + 1) % mod;
+                all = ((all - sub + mod) % mod + mod)%mod;
+            }else {
+                int64 tmp = a - b - (c - 1);
+                int64 ret = a - b - tmp;
+                int64 sub = ret * ret % mod * (a - c) % mod * (a - c) % mod;
 
+            }
+        }else {
+            int64 L = a - c - b;
+            int64 sub = b * b % mod
+        }
+        cout << ans << "\n";
+    }
 #ifdef LH_LOCAL
     cout << "time cost:" << 1.0 * clock() / CLOCKS_PER_SEC << "s" << endl;
     // system("pause");

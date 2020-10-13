@@ -1,11 +1,6 @@
 /*
 
 */
-#pragma comment(linker, "/STACK:102400000,102400000")
-#pragma GCC optimize("unroll-loops")
-#pragma GCC optimize(3,"Ofast","inline")
-#pragma GCC optimize("Ofast,no-stack-protector")
-#pragma GCC target("sse,sse2,sse3,ssse3,sse4,popcnt,abm,mmx,avx,tune=native")
 #include <bits/stdc++.h>
 #define fi first
 #define se second
@@ -69,14 +64,26 @@ const int mod = 998244353;// 998244353
 const int MXN = 1e6 + 5;
 const int MXE = 2e6 + 5;
 int n, m;
-
+int64 a, b, c;
 int main() {
 #ifdef LH_LOCAL
     freopen("D:in.txt", "r", stdin);
     //freopen("D:out.txt", "w", stdout);
 #endif
-    int tim = 1;
-
+    GKD;
+    int tim;
+    cin >> tim;
+    while(tim --) {
+        cin >> a >> b >> c;
+        if(b < c) swap(b, c);
+        int64 ans = 0;
+        int64 all = (a - b + 1) % mod * (a - b + 1) % mod * (a - c + 1) % mod * (a - c + 1) % mod;
+        rep(L, 0, a - b) {
+            ans += max(0LL, min(a - c, b + L - 1) - max(0LL, L + c - 1) + 1);
+            ans %= mod;
+        }
+        cout << all - ans * ans % mod * (a - b + 1) % mod * (a - b + 1) % mod << endl;
+    }
 #ifdef LH_LOCAL
     cout << "time cost:" << 1.0 * clock() / CLOCKS_PER_SEC << "s" << endl;
     // system("pause");
