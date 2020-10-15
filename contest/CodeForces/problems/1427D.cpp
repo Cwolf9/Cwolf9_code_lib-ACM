@@ -1,3 +1,6 @@
+/**
+ * 贪心每次把前面连续的的(i+1,i+2,i+3,...)放到i后面即可。
+ */
 #define LH_LOCAL
 #include <bits/stdc++.h>
 #define fi first

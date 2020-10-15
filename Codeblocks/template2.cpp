@@ -8,10 +8,9 @@ using namespace std;
 typedef long long LL;
 typedef long long int64;
 bool Finish_read;
-template<class T>inline void read(T &x){Finish_read=0;x=0;int f=1;char ch=getchar();while(!isdigit(ch)){if(ch=='-')f=-1;if(ch==EOF)return;ch=getchar();}while(isdigit(ch))x=x*10+ch-'0',ch=getchar();x*=f;Finish_read=1;}
-template<class T>inline void print(T x){if(x/10!=0)print(x/10);putchar(x%10+'0');}
-template<class T>inline void writeln(T x){if(x<0)putchar('-');x=abs(x);print(x);putchar('\n');}
-template<class T>inline void write(T x){if(x<0)putchar('-');x=abs(x);print(x);}
+inline long long read() {long long x = 0;Finish_read = 0;int f = 1;char ch = getchar();while (!isdigit(ch)) {if (ch == '-') f = -1;if (ch == EOF) return x;ch = getchar();}while (isdigit(ch)) x = x * 10 + ch - '0', ch = getchar();x *= f;Finish_read = 1;return x;}
+template <class T>inline void print(T x) {if(x > 9) print(x / 10);else if(x < 0) putchar('-'), print(-x);else putchar(x % 10 ^ 48);}
+template <class T>inline void write(T x, char c = '\n') {print(x);putchar(c);}
 #define fi first
 #define se second
 #define mk make_pair
@@ -50,10 +49,9 @@ int main() {
     freopen("D:in.txt", "r", stdin);
     freopen("D:out.txt", "w", stdout);
 #endif
-    int tim;
-    read(tim);
+    int tim = read();
     while(tim --) {
-        read(n);
+        n = read();
 
     }
 #ifdef LH_LOCAL
