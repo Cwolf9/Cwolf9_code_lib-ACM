@@ -1,6 +1,6 @@
 /**
- * $T:1e5$, $abcd:1e18$
- * 问有多少对$(x, y)$满足$x\bigoplus y = c$且$|x-y|\le d, 0\le x\le a, 0\le y\le b$。
+ * $T:2e3$, $abcd:1e9$
+ * 问有多少对$(x, y)$满足$|x-y|\le c$且$x\bigoplus y \le d, 0\le x\le a, 0\le y\le b$。
  */
 #pragma comment(linker, "/STACK:102400000,102400000")
 #pragma GCC optimize("unroll-loops")
@@ -70,7 +70,7 @@ const int mod = 998244353;// 998244353
 const int MXN = 2e5 + 5;
 const int MXE = 2e6 + 5;
 LL a, b, c, d;
-LL dp[64][2][3][3][2][2];
+LL dp[32][2][3][3][2][2];
 /*
 xor, ip1 = 1 means equal to c, ip1 = 0 means less than c
 abs:
@@ -103,8 +103,8 @@ LL dfs(int pos, int ip1, int v1, int v2, int lima, int limb, int A, int B) {
     rep(i, 0, upa + 1) {
         rep(j, 0, upb + 1) {
             int ta = A | (i << pos), tb = B | (j << pos);
-            if((i ^ j) != tc) continue;
-            int tip1 = 1;
+            if(ip1 == 1 && (i ^ j) > tc) continue;
+            int tip1 = ip1 && (i ^ j) == tc;
             int tv1 = v1, tv2 = v2;
             int x = td + i - j, y = td - i + j;
             tv1 = (tv1 - 1) * 2 + x + 1;
@@ -117,7 +117,10 @@ LL dfs(int pos, int ip1, int v1, int v2, int lima, int limb, int A, int B) {
     return dp[pos][ip1][v1][v2][lima][limb] = ans;
 }
 /*
-给出4个非负整数a，b，n和m，求出有多少数对(x,y)(0 \le x \le a, 0 \le y \le b)满足x \oplus y=n并且|x-y| \le m，其中\oplus是异或位运算。
+1. x,y are integers
+2. x∈[0,A],y∈[0,B]
+3. |x"y|≤K
+4. x xor y≤W
 */
 int main() {
 #ifndef ONLINE_JUDGE
@@ -127,8 +130,8 @@ int main() {
     int tim = read();
     while(tim --) {
         clr(dp, -1);
-        a = read(), b = read(), c = read(), d = read();
-        LL ans = dfs(63, 1, 1, 1, 1, 1, 0, 0);
+        a = read(), b = read(), d = read(), c = read();
+        LL ans = dfs(31, 1, 1, 1, 1, 1, 0, 0);
         printf("%lld\n", ans);
         // sort(all(vs));
         // printf("%d\n", vs.size());
