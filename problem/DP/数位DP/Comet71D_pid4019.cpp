@@ -66,6 +66,7 @@ const int mod = 998244353;// 998244353
 const int MXN = 2e5 + 5;
 const int MXE = 2e6 + 5;
 int n, m;
+
 int main() {
 #ifndef ONLINE_JUDGE
     freopen("D:in.in", "r", stdin);
