@@ -14,11 +14,13 @@ int ksm(int a, int b, int modd) {
 const int inv2 = ksm(2, mod - 2, mod), inv6 = ksm(6, mod - 2, mod);
 int a, b, c;
 //abcn>=0,c!=0
-struct data {
-    int f, g, h;
+struct Data {
+    int f;//$Sigma_{i=0}^{n} floor((a*i+b)/c)$
+    int g;//$Sigma_{i=0}^{n} i*floor((a*i+b)/c)$
+    int h;//$Sigma_{i=0}^{n} (floor((a*i+b)/c))^2$
 };
-data solve(LL a, LL b, LL c, LL n) {
-    data ans, tmp;
+Data solve(LL a, LL b, LL c, LL n) {
+    Data ans, tmp;
     if (a == 0) {
         ans.f = (n + 1) * (b / c) % mod;
         ans.g = (b / c) * n % mod * (n + 1) % mod * inv2 % mod;
@@ -53,7 +55,7 @@ int main() {
     scanf("%d", &tim);
     while (tim--) {
         scanf("%d%d%d%d", &n, &a, &b, &c);
-        data ans = solve(a, b, c, n);
+        Data ans = solve(a, b, c, n);
         ans.f = (ans.f % mod + mod) % mod;
         ans.g = (ans.g % mod + mod) % mod;
         ans.h = (ans.h % mod + mod) % mod;

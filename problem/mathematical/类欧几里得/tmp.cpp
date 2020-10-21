@@ -30,8 +30,8 @@ LL g(LL a, LL b, LL c, LL n) {
     if(n == 1) return ((a + b) / c)%mod;
     m %= mod;
     if(a >= c || b >= c) return ((n*(n+1)%mod*(2*n+1)%mod*six)%mod*(a/c)%mod
-    + ((n+1)*n/2)%mod*(b/c)%mod + g(a % c, b % c, c, n))%mod; return ((m *
-    n%mod * (n + 1)%mod - f(c, c - b - 1, a, m - 1)- h(c, c - b - 1, a, m -
+    + ((n+1)*n/2)%mod*(b/c)%mod + g(a % c, b % c, c, n))%mod;
+    return ((m * n%mod * (n + 1)%mod - f(c, c - b - 1, a, m - 1)- h(c, c - b - 1, a, m -
     1))*two%mod+mod)%mod;
 }
 
@@ -57,8 +57,7 @@ int main() {
     scanf("%d", &tim);
     while(tim --) {
         scanf("%d%d%d%d", &n, &a, &b, &c);
-        printf("%lld %lld %lld\n", f(a, b, c, n), h(a, b, c, n), g(a, b, c,
-        n));
+        printf("%lld %lld %lld\n", f(a, b, c, n), h(a, b, c, n), g(a, b, c,n));
     }
 #ifndef ONLINE_JUDGE
     cout << "time cost:" << 1.0 * clock() / CLOCKS_PER_SEC << "ms" << endl;
