@@ -34,23 +34,20 @@ void dfs2(int u, int ba, int h, int d) {
     //cout << u << " " << d << endl;
     if(adj[u].size() == 0) {
         ans += d;
-        id = u;//有军队停留的最浅的叶子
+        id = u;//上一次军队停留的叶子
         return;
     }
-    int tid = 0;
     for(int v: adj[u]) {
-        if(id == 0) {//这条路径下军队还没有停留，径直往下走
+        if(id == 0) {//这条路径前没有可产生贡献的军队停留，径直往下走
             dfs2(v, u, h + 1, d + 1);
         }else {
             int w = dep[id] - dep[u];
-            if(w < h) {//如果从军队停留的最短叶子出发比从根节点出发更优
+            if(w < h) {//如果从上次军队停留的叶子出发比从根节点出发更优
                 id = 0;//军队就继续出发，所以就没有军队停留了
                 dfs2(v, u, h + 1, w + 1);
             }else {
-                tid = id;//暂存上一个停留叶子
-                id = 0;//上个叶子对这条路径产生不了贡献就先清空
+                id = 0;//上个叶子对这条路径产生不了贡献，以后也必不可能产生贡献
                 dfs2(v, u, h + 1, h + 1);
-                id = (dep[id] <= dep[tid]? id: tid);//现在有两个叶子保留最短的叶子
             }
         }
     }
@@ -68,7 +65,7 @@ int main() {
             adj[f].push_back(i);
         }
         dfs(1, 0);
-        //按最深子叶深度从小到大排序
+        //按最深子叶深度从小到大排序，排序是精髓
         for(int i = 1; i <= n; ++i) sort(adj[i].begin(), adj[i].end(), cmp);
         dfs2(1, 0, 0, 0);
         printf("Case #%d: %lld\n", ++kase, ans);
