@@ -1,114 +1,109 @@
-#define LH_LOCAL
-#include <bits/stdc++.h>
-#define fi first
-#define se second
-#define o2(x) (x) * (x)
-#define mk make_pair
-#define eb emplace_back
-#define SZ(x) ((int)(x).size())
-#define all(x) (x).begin(), (x).end()
-#define clr(a, b) memset((a), (b), sizeof((a)))
-#define rep(i,s,t) for(register int i=s;i<t;++i)
-#define per(i,s,t) for(register int i=s;i>=t;--i)
-#define iis std::ios::sync_with_stdio(false);cin.tie(0)
-#define my_unique(x) sort(all(x)), x.erase(unique(all(x)), x.end())
+#include <cstdio>
+#include <cstring>
+#include <algorithm>
+#include <cmath>
+#include <vector>
+#include <iostream>
+#include <assert.h>
 using namespace std;
-typedef long long int64;
-typedef unsigned long long uint64;
-typedef pair<int, int> pii;
-// mt19937 rng(time(NULL));
-// mt19937_64 rng64(chrono::steady_clock::now().time_since_epoch().count());
-// mt19937_64 generator(std::clock());
-// shuffle(arr, arr + n, generator);
-inline int64 read() {
-    int64 x = 0;int f = 0;char ch = getchar();
-    while (ch < '0' || ch > '9') f |= (ch == '-'), ch = getchar();
-    while (ch >= '0' && ch <= '9') x = (x << 3) + (x << 1) + ch - '0', ch =
-    getchar(); return x = f ? -x : x;
-}
-int lowbit(int x) { return x & (-x); }
-template <class T>
-T big(const T &a1, const T &a2) {return a1 > a2 ? a1 : a2;}
-template <class T>
-T sml(const T &a1, const T &a2) {return a1 < a2 ? a1 : a2;}
-template <typename T, typename... R>
-T big(const T &f, const R &... r) {return big(f, big(r...));}
-template <typename T, typename... R>
-T sml(const T &f, const R &... r) {return sml(f, sml(r...));}
-void debug_out() { cout << '\n'; }
-template <typename T, typename... R>
-void debug_out(const T &f, const R &... r) {
-    cout << f << " ";
-    debug_out(r...);
-}
-#ifdef LH_LOCAL
-#define debug(...) cout << "[" << #__VA_ARGS__ << "]: ", debug_out(__VA_ARGS__);
-#else
-#define debug(...) ;
-#endif
+#define debug(x) cout << #x << ": " << x << "\n";
+#define debug2(x, y) cout << #x << ": " << x << ", " << #y << ": " << y << "\n";
 
-const int INF = 0x3f3f3f3f;
-const int mod = 1e6 + 3;// 998244353
-const int MXN = 5e5 + 5;
-const int MXE = 1e6 + 5;
-int n, m;
+const int maxn = 1e6 + 7;
+const double eps = 1e-8;
 
+typedef long long ll;
+int n;
+int dep[maxn], ye[maxn];
+vector<int> adj[maxn];
+void dfs(int u, int d) {
+    dep[u] = d;
+    ye[u] = 0;
+    if(adj[u].size()) ye[u] = 1e9;
+    for(int v: adj[u]) {
+        dfs(v, d + 1);
+        ye[u] = min(ye[u], ye[v] + 1);
+    }
+}
+ll ans;
+int id;
+bool cmp(const int &a, const int &b) {
+    if(ye[a] != ye[b]) return ye[a] < ye[b];
+    return a < b;
+}
+void dfs2(int u, int ba, int h, int d) {
+    //cout << u << " " << d << endl;
+    if(adj[u].size() == 0) {
+        debug(u)
+        ans += d;
+        id = u;
+        return;
+    }
+    int tid;
+    for(int v: adj[u]) {
+        if(id == 0) {
+            dfs2(v, u, h + 1, d + 1);
+        }else {
+            int w = dep[id] - dep[u];
+            if(w < h) {
+                id = 0;
+                dfs2(v, u, h + 1, w + 1);
+            }else {
+                tid = id;
+                id = 0;
+                dfs2(v, u, h + 1, h + 1);
+                id = (dep[id] < dep[tid]?id:tid);
+            }
+        }
+        if(u == 4) debug(id)
+    }
+}
 int main() {
-#ifdef LH_LOCAL
-    freopen("D:in.in", "r", stdin);
-    freopen("D:out.out", "w", stdout);
-#endif
-    n = read();
-    vector<int> ar(n), pos(n + 1);
-    rep(i, 0, n) ar[i] = read();
-    vector<vector<int>> ans;
-    while(!is_sorted(all(ar)) && (int)ans.size() < n) {
-        vector<int> vs;
-        int one = -1, two = -1;
-        rep(i, 0, n) {
-            pos[ar[i]] = i;
+    //freopen("in.txt", "r", stdin);
+    int T;scanf("%d",&T);
+    int kase = 0;
+    while(T--) {
+        id = 0;
+        ans = 0;
+        scanf("%d", &n);
+        for(int i = 2; i <= n; ++i) {
+            int f; scanf("%d", &f);
+            adj[f].push_back(i);
         }
-        rep(i, 1, n) {
-            if(pos[i] > pos[i + 1]) {
-                one = pos[i + 1], two = pos[i];
-                break;
-            }
-        }
-        int x = one, len = 1;
-        while(ar[x] == ar[x + 1] - 1) ++ x, ++ len;
-        if(one) vs.eb(one);
-        vs.eb(len);
-        vs.eb(two - one - len + 1);
-        if(n - 1 - two) vs.eb(n - 1 - two);
-        while(vs.back() == 0) vs.pop_back();
-        ans.eb(vs);
-        // for(int x: vs) printf("%d ", x); puts("");
-        reverse(all(vs));
-        vector<int> tmp, ret;
-        int ti = 0, tj = n;
-        for(int x: vs) {
-            while(x --) {
-                tmp.eb(ar[--tj]);
-            }
-            reverse(all(tmp));
-            for(int y: tmp) ret.eb(y);
-            tmp.clear();
-        }
-        ar = ret;
-        // for(int x: ar) printf("%d ", x); printf("\n");
+        dfs(1, 0);
+        for(int i = 1; i <= n; ++i) sort(adj[i].begin(), adj[i].end(), cmp);
+        dfs2(1, 0, 0, 0);
+        printf("Case #%d: %lld\n", ++kase, ans);
+        for(int i = 1; i <= n; ++i) adj[i].clear();
     }
-    // for(int x: ar) printf("%d ", x); printf("\n");
-    printf("%d\n", ans.size());
-    for(auto x: ans) {
-        printf("%d ", x.size());
-        for(int y: x) {
-            printf("%d ", y);
-        }
-        printf("\n");
-    }
-#ifdef LH_LOCAL
-    // cout << "time cost:" << 1.0 * clock() / CLOCKS_PER_SEC << "s" << endl;
-    // system("pause");
-#endif
     return 0;
 }
+/*
+7
+14
+1 2 3 3 5 3 7 8 2 10 11 12 13
+3
+1 1
+6
+1 2 3 4 4
+9
+1 2 2 4 5 1 7 8
+12
+1 2 3 1 5 6 4 4 12 9 11
+7
+1 2 3 3 2 5
+6
+1 2 3 3 2
+
+17
+2
+6
+9
+12
+8
+7
+
+1
+21
+1 2 3 4 5 4 7 7 9 2 8 11 11 11 10 9 16 16 12 20
+*/

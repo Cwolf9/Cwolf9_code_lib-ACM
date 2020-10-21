@@ -1,78 +1,100 @@
-#define LH_LOCAL
-// #define LLDO
-#include <bits/stdc++.h>
-#define fi first
-#define se second
-#define o2(x) (x) * (x)
-#define mk make_pair
-#define eb emplace_back
-#define SZ(x) ((int)(x).size())
-#define all(x) (x).begin(), (x).end()
-#define clr(a, b) memset((a), (b), sizeof((a)))
-#define rep(i,s,t) for(register int i=s;i<t;++i)
-#define per(i,s,t) for(register int i=s;i>=t;--i)
-#define iis std::ios::sync_with_stdio(false);cin.tie(0)
-#define my_unique(x) sort(all(x)), x.erase(unique(all(x)), x.end())
+#include <cstdio>
+#include <cstring>
+#include <algorithm>
+#include <cmath>
+#include <vector>
+#include <iostream>
+#include <assert.h>
 using namespace std;
-typedef long long int64;
-typedef unsigned long long uint64;
-typedef pair<int, int> pii;
-// mt19937 rng(time(NULL));
-// mt19937_64 rng64(chrono::steady_clock::now().time_since_epoch().count());
-// mt19937_64 generator(std::clock());
-// shuffle(arr, arr + n, generator);
-inline int64 read() {
-    int64 x = 0;int f = 0;char ch = getchar();
-    while (ch < '0' || ch > '9') f |= (ch == '-'), ch = getchar();
-    while (ch >= '0' && ch <= '9') x = (x << 3) + (x << 1) + ch - '0', ch =
-    getchar(); return x = f ? -x : x;
-}
-int lowbit(int x) { return x & (-x); }
-template <class T>
-T big(const T &a1, const T &a2) {return a1 > a2 ? a1 : a2;}
-template <class T>
-T sml(const T &a1, const T &a2) {return a1 < a2 ? a1 : a2;}
-template <typename T, typename... R>
-T big(const T &f, const R &... r) {return big(f, big(r...));}
-template <typename T, typename... R>
-T sml(const T &f, const R &... r) {return sml(f, sml(r...));}
-void debug_out() { cout << '\n'; }
-template <typename T, typename... R>
-void debug_out(const T &f, const R &... r) {
-    cout << f << " ";
-    debug_out(r...);
-}
-#ifdef LH_LOCAL
-#define debug(...) cout << "[" << #__VA_ARGS__ << "]: ", debug_out(__VA_ARGS__);
-#else
-#define debug(...) ;
-#endif
-#ifdef LLDO
-    const char ptout[] = "%lld";
-#else
-    const char ptout[] = "%d";
-#endif
-template <typename T>
-void print(const T &f) {printf(ptout, f);putchar('\n');}
-template <typename T, typename... R>
-void print(const T &f, const R &... r) {printf(ptout, f);putchar(' ');print(r...);}
+#define debug(x) cout << #x << ": " << x << "\n";
+#define debug2(x, y) cout << #x << ": " << x << ", " << #y << ": " << y << "\n";
 
-const int INF = 0x3f3f3f3f;
-const int mod = 1e6 + 3;// 998244353
-const int MXN = 5e5 + 5;
-const int MXE = 1e6 + 5;
-int n, m;
+const int maxn = 1e6 + 7;
+const double eps = 1e-8;
 
+typedef long long ll;
+int n;
+int dep[maxn], ye[maxn];
+vector<int> adj[maxn];
+void dfs(int u, int d) {
+    dep[u] = d;
+    ye[u] = 0;
+    for(int v: adj[u]) {
+        dfs(v, d + 1);
+        ye[u] = max(ye[u], ye[v] + 1);//子树最深叶子深度
+    }
+}
+ll ans;
+int id;
+bool cmp(const int &a, const int &b) {
+    if(ye[a] != ye[b]) return ye[a] < ye[b];
+    return a < b;
+}
+void dfs2(int u, int ba, int h, int d) {
+    if(adj[u].size() == 0) {
+        debug(u)
+        ans += d;
+        id = u;//上一次军队停留的叶子
+        return;
+    }
+    for(int v: adj[u]) {
+        if(id == 0) {//这条路径前没有可产生贡献的军队停留，径直往下走
+            dfs2(v, u, h + 1, d + 1);
+        }else {
+            int w = dep[id] - dep[u];
+            if(w < h) {//如果从上次军队停留的叶子出发比从根节点出发更优
+                id = 0;//军队就继续出发，所以就没有军队停留了
+                dfs2(v, u, h + 1, w + 1);
+            }else {
+                id = 0;//上个叶子对这条路径产生不了贡献，以后也必不可能产生贡献
+                dfs2(v, u, h + 1, h + 1);
+            }
+        }
+    }
+}
 int main() {
-#ifdef LH_LOCAL
-    freopen("D:in.in", "r", stdin);
-    freopen("D:out.out", "w", stdout);
-#endif
-    n = read();
-    
-#ifdef LH_LOCAL
-    // cout << "time cost:" << 1.0 * clock() / CLOCKS_PER_SEC << "s" << endl;
-    // system("pause");
-#endif
+    //freopen("in.txt", "r", stdin);
+    int T;scanf("%d",&T);
+    int kase = 0;
+    while(T--) {
+        id = 0;
+        ans = 0;
+        scanf("%d", &n);
+        for(int i = 2; i <= n; ++i) {
+            int f; scanf("%d", &f);
+            adj[f].push_back(i);
+        }
+        dfs(1, 0);
+        //按最深子叶深度从小到大排序，排序是精髓
+        for(int i = 1; i <= n; ++i) sort(adj[i].begin(), adj[i].end(), cmp);
+        dfs2(1, 0, 0, 0);
+        printf("Case #%d: %lld\n", ++kase, ans);
+        for(int i = 1; i <= n; ++i) adj[i].clear();
+    }
     return 0;
 }
+/*
+7
+14
+1 2 3 3 5 3 7 8 2 10 11 12 13
+3
+1 1
+6
+1 2 3 4 4
+9
+1 2 2 4 5 1 7 8
+12
+1 2 3 1 5 6 4 4 12 9 11
+7
+1 2 3 3 2 5
+6
+1 2 3 3 2
+
+17
+2
+6
+9
+12
+8
+7
+*/
