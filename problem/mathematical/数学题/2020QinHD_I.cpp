@@ -1,5 +1,4 @@
 /*
-
 **题意**
 [点我点我](https://codeforces.com/gym/102769/problem/I)
 执行$n(1e5)$次操作，共有两类操作：
