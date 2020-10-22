@@ -12,7 +12,7 @@ $n,m,q\le 1000$，$n*m$的地图有$q$次操作。
 然后枚举上边的高度，线段树查询是否有两个柱子即可。柱子就是左右两条边。
 复杂度：$O(4*q*n*log(m)*\alpha)$
 **AC_CODE**
-[点我点我]()
+[点我点我](https://github.com/Cwolf9/Cwolf9_code_lib-ACM/blob/master/contest/gym/102769-2020CCPCQHD/102769B.cpp)
 */
 // #pragma comment(linker, "/STACK:102400000,102400000")
 // #pragma GCC optimize("unroll-loops")
