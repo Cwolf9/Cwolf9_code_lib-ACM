@@ -1,3 +1,22 @@
+/*
+
+**题意**
+[点我点我](https://codeforces.com/gym/102769/problem/I)
+执行$n(1e5)$次操作，共有两类操作：
+操作1：获得skill(x,y)，可以随时任意次操作(a+x,b+y)或(a-x,b-y)。
+操作2：在(x,y)出现价值为w的宝藏，经过这个地方即可获得。
+问获得宝藏的总价值。
+**解析**
+把每个技能当作一个向量，由两个向量$a,b$构成的张成$span{ra+sb|r,s\in\mathbb{Z}}$等价于
+$span{u(a-b)+vb|u,v\in\mathbb{Z}}$，同理可以通过辗转相除法将其中一个向量变成$x$轴方向偏移为$0$。
+这样可以轻易判断某个点是否属于张成内。
+做法如下：
+- 令向量$b$的$x$轴方向偏移为$0$，向量$a$不做约束，新准备加入的向量为$c$。
+- 首先让向量$a,c$做辗转相除操作使得向量$c$的$x$轴方向偏移为$0$。
+- 然后将向量$c$合并到向量$b$中，新的向量在$y$轴方向偏移为$b_y,c_y$绝对值的最小公因数。
+- 为了避免辗转相除过程中$a_y$过大，可以做$a_y%=b_y$处理。
+**AC_CODE**
+*/
 // #pragma comment(linker, "/STACK:102400000,102400000")
 // #pragma GCC optimize("unroll-loops")
 // #pragma GCC optimize(3,"Ofast","inline")
@@ -66,46 +85,29 @@ const int mod = 998244353;// 998244353
 const int MXN = 2e5 + 5;
 const int MXE = 2e6 + 5;
 int n, m;
-class Node {
-    public:
-    int64 p, q;
-    Node():p(0),q(0) {}
-    Node(int64 _p, int64 _q) {
-        m = __gcd(abs(_p), abs(_q));
-        if(m == 0) p = q = 0;
-        else p = _p / m, q = _q / m;
-        if(q < 0) p = -p, q = -q;
-    }
-    Node operator+(const Node &b) const {
-        if(p == 0) return Node(b.p, b.q);
-        return Node(p * b.q + q * b.p, q * b.q);
-    }
-    Node operator-(const Node &b) const {
-        if(p == 0) return Node(-b.p, -b.q);
-        return Node(p * b.q - q * b.p, q * b.q);
-    }
-    Node operator*(const Node &b) const {
-        return Node(p * b.p, q * b.q);
-    }
-    Node operator/(const Node &b) const {
-        return Node(p * b.q, q * b.p);
-    }
-};
 class Vec {
     public:
-    Node x, y;
+    int64 x, y;
     void init() {
-        x.p = x.q = y.p = y.q = 0;
+        x = y = 0;
     }
     void Rd() {
-        x.p = read(), x.q = 1;
-        y.p = read(), y.q = 1;
+        x = read();
+        y = read();
     }
     void dg() {
-        debug(x.p, x.q)
-        debug(y.p, y.q)
+        debug(x, y)
     }
 }A, B, C;
+void Gcd(Vec &A, Vec &C) {
+    if(A.x < C.x) swap(A, C);
+    if(C.x == 0) return;
+    int64 tmp = A.x / C.x;
+    A.x = A.x - (tmp * C.x);
+    A.y = A.y - (tmp * C.y);
+    swap(A, C);
+    Gcd(A, C);
+}
 int main() {
 #ifndef ONLINE_JUDGE
     freopen("D:in.in", "r", stdin);
@@ -121,32 +123,30 @@ int main() {
             int opt = read();
             C.Rd();
             if(opt == 1) {
-                if(A.x.p == A.y.p && A.x.p == 0) {
+                if(A.x == 0 && A.y == 0) {
                     A = C;
                 }else {
-                    Node tmp = C.x / A.x;
-                    C.x = C.x - (A.x * tmp);
-                    C.y = C.y - (A.y * tmp);
-                    B.y = B.y + C.y;
+                    Gcd(A, C);
+                    B.y = __gcd(B.y, abs(C.y));
+                    if(B.y) A.y %= B.y;
                 }
-                if(A.x.p == 0) B.y = B.y + A.y, A.init();
+                if(B.y < 0) B.y = -B.y;
+                // debug(i)
+                // debug(A.x, A.y)
+                // debug(B.x, B.y)
             }else {
                 int w = read();
-                debug(i)
+                // debug(i)
                 // A.dg();
                 // B.dg();
-                if(A.x.p == A.y.p && A.x.p == 0) {
-                    if(B.y.p == 0) continue;
-                    Node tmp = C.y / B.y;
-                    if(tmp.q == 1 && C.x.p == 0) ans += w;
-                }else {
-                    Node tmp = C.x / A.x;
-                    if(tmp.q != 1) continue;
+                if(A.x != 0 && C.x != 0) {
+                    int64 tmp = C.x / A.x;
+                    C.x = C.x - (A.x * tmp);
                     C.y = C.y - (A.y * tmp);
-                    if(B.y.p == 0) continue;
-                    tmp = C.y / B.y;
-                    if(tmp.q == 1) ans += w;
                 }
+                if(C.x != 0) continue;
+                if(C.y == 0) ans += w;
+                else if(B.y != 0 && abs(C.y) % abs(B.y) == 0) ans += w;
             }
         }
         printf("Case #%d: ", ++ cas);
@@ -158,3 +158,29 @@ int main() {
 #endif
     return 0;
 }
+/*
+3
+10
+1 296196 169349
+1 408210 238879
+2 489401 201531 141171248
+1 447006 359733
+1 192393 108966
+2 542901 395727 373649074
+1 265047 276728
+2 309670 417659 533480054
+2 360731 340107 280407174
+1 382944 320314
+3
+1 1 1
+1 2 1
+2 3 2 3
+4
+1 1 1
+2 3 1 1
+1 1 3
+2 3 1 2
+Case #1: 373649074
+Case #2: 3
+Case #3: 2
+*/
