@@ -14,7 +14,9 @@ $span{u(a-b)+vb|u,v\in\mathbb{Z}}$，同理可以通过辗转相除法将其中�
 - 首先让向量$a,c$做辗转相除操作使得向量$c$的$x$轴方向偏移为$0$。
 - 然后将向量$c$合并到向量$b$中，新的向量在$y$轴方向偏移为$b_y,c_y$绝对值的最小公因数。
 - 为了避免辗转相除过程中$a_y$过大，可以做$a_y%=b_y$处理。
+
 **AC_CODE**
+[点我点我](https://github.com/Cwolf9/Cwolf9_code_lib-ACM/blob/master/problem/mathematical/%E6%95%B0%E5%AD%A6%E9%A2%98/2020QinHD_I.cpp)
 */
 // #pragma comment(linker, "/STACK:102400000,102400000")
 // #pragma GCC optimize("unroll-loops")
