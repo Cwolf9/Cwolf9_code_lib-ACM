@@ -45,6 +45,7 @@ E[i]=ei*E[1] + (1-ki-ei)/m*E[father[i]] + (1-ki-ei)/m*(∑Aj*E[1]+∑Bj*E[i]+∑
 从叶子到根推出ABC系数即可，当A[1]趋近于1则无解。
 卡精度。
 **AC_CODE**
+[点我点我](https://github.com/Cwolf9/Cwolf9_code_lib-ACM/blob/master/problem/DP/%E6%A6%82%E7%8E%87/hdu4035_%E6%A0%91%E4%B8%8A%E6%A6%82%E7%8E%87DP%E8%BF%AD%E4%BB%A3%E6%B3%95.cpp)
 
 */
 const double eps = 1e-9;
