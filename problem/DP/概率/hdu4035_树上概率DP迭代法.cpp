@@ -29,19 +29,19 @@ https://www.cnblogs.com/kuangbin/archive/2012/10/02/2710606.html
 因为每个节点还可能从父节点转移过来，所以需要记录从父节点转移过来的系数，从上递推
 的时候刚好可以化简掉。
 1号节点：
-E[1] = A1*E[1] + B1*0 + C1;
-ans = E[1] = C1/(1 - A1);
+$E[1] = A1*E[1] + B1*0 + C1;$
+$ans = E[1] = C1/(1 - A1);$
 叶子结点：
-E[i] = ki*E[1] + ei*0 + (1-ki-ei)*(E[father[i]] + 1);
-= ki*E[1] + (1-ki-ei)*E[father[i]] + (1-ki-ei);
+$E[i] = ki*E[1] + ei*0 + (1-ki-ei)*(E[father[i]] + 1);$
+$= ki*E[1] + (1-ki-ei)*E[father[i]] + (1-ki-ei);$
 非叶子结点：（m为与结点相连的边数）
-E[i] = ki*E[1] + ei*0 + (1-ki-ei)/m*( E[father[i]]+1 + ∑( E[child[i]]+1 ) );
-= ki*E[1] + (1-ki-ei)/m*E[father[i]] + (1-ki-ei)/m*∑(E[child[i]]) + (1-ki-ei);
-令：E[i] = Ai*E[1] + Bi*E[father[i]] + Ci;
-∑(E[child[i]])=∑Aj*E[1]+∑Bj*E[i]+∑Cj
+$E[i] = ki*E[1] + ei*0 + (1-ki-ei)/m*( E[father[i]]+1 + ∑( E[child[i]]+1 ) );$
+$= ki*E[1] + (1-ki-ei)/m*E[father[i]] + (1-ki-ei)/m*∑(E[child[i]]) + (1-ki-ei);$
+令：$E[i] = Ai*E[1] + Bi*E[father[i]] + Ci;$
+$∑(E[child[i]])=∑Aj*E[1]+∑Bj*E[i]+∑Cj$
 
-E[i]=ei*E[1] + (1-ki-ei)/m*E[father[i]] + (1-ki-ei)/m*(∑Aj*E[1]+∑Bj*E[i]+∑Cj) + (1-ki-ei)
-(1-(1-ki-ei)/m*∑Bj)E[i]=(ki+(1-ki-ei)/m*∑Aj)*E[1] + (1-ki-ei)/m*E[father[i]]+(1-ki-ei)/m*∑Cj+(1-ki-ei)
+$E[i]=ei*E[1] + (1-ki-ei)/m*E[father[i]] + (1-ki-ei)/m*(∑Aj*E[1]+∑Bj*E[i]+∑Cj) + (1-ki-ei)$
+$(1-(1-ki-ei)/m*∑Bj)E[i]=(ki+(1-ki-ei)/m*∑Aj)*E[1] + (1-ki-ei)/m*E[father[i]]+(1-ki-ei)/m*∑Cj+(1-ki-ei)$
 从叶子到根推出ABC系数即可，当A[1]趋近于1则无解。
 卡精度。
 **AC_CODE**
