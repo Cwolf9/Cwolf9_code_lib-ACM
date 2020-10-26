@@ -3,7 +3,7 @@
 传送门: [here](https://codeforces.com/contest/165/problem/E)
 **题意**
 $n(1e6)$
-对每个$a_i$输出一个$a_j$, 满足$a_i&a_j == 0$.
+对每个$a_i$输出一个$a_j$, 满足$a_i\&a_j == 0$.
 **思路**
 SOSdp
 a&b = 0 等价于 a\in b的补集
