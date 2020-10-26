@@ -21,10 +21,9 @@ template <class T>inline void write(T x, char c = '\n') {print(x);putchar(c);}
 #define per(i, s, t) for(register int i = (s), LIM=(t); i >= LIM; --i)
 #define GKD std::ios::sync_with_stdio(false);cin.tie(0)
 #define my_unique(x) sort(all(x)), x.erase(unique(all(x)), x.end())
-// mt19937 rng(time(NULL));
+// mt19937 rng(time(NULL));//std::clock()
 // mt19937_64 rng64(chrono::steady_clock::now().time_since_epoch().count());
-// mt19937_64 generator(std::clock());
-// shuffle(arr, arr + n, generator);
+// shuffle(arr, arr + n, rng64);
 void debug_out() { cout << '\n'; }
 template <typename T, typename... R>
 void debug_out(const T &f, const R &... r) {

@@ -21,9 +21,10 @@ typedef long long LL;
 typedef long long int64;
 typedef unsigned long long uint64;
 typedef pair<int, int> pii;
-// mt19937 rng(time(NULL));//std::clock()
+// mt19937 rng(time(NULL));
 // mt19937_64 rng64(chrono::steady_clock::now().time_since_epoch().count());
-// shuffle(arr, arr + n, rng64);
+// mt19937_64 generator(std::clock());
+// shuffle(arr, arr + n, generator);
 inline int64 read() {
     int64 x = 0;int f = 0;char ch = getchar();
     while (ch < '0' || ch > '9') f |= (ch == '-'), ch = getchar();
@@ -65,13 +66,13 @@ const int mod = 998244353;// 998244353
 const int MXN = 2e5 + 5;
 const int MXE = 2e6 + 5;
 int n, m;
-
 int main() {
 #ifndef ONLINE_JUDGE
     freopen("D:in.in", "r", stdin);
     freopen("D:out.out", "w", stdout);
 #endif
     n = read();
+    
 #ifndef ONLINE_JUDGE
     cout << "time cost:" << 1.0 * clock() / CLOCKS_PER_SEC << "s" << endl;
     // system("pause");

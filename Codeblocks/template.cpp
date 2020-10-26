@@ -21,10 +21,9 @@ typedef long long LL;
 typedef long long int64;
 typedef unsigned long long uint64;
 typedef pair<int, int> pii;
-// mt19937 rng(time(NULL));
+// mt19937 rng(time(NULL));//std::clock()
 // mt19937_64 rng64(chrono::steady_clock::now().time_since_epoch().count());
-// mt19937_64 generator(std::clock());
-// shuffle(arr, arr + n, generator);
+// shuffle(arr, arr + n, rng64);
 inline int64 read() {
     int64 x = 0;int f = 0;char ch = getchar();
     while (ch < '0' || ch > '9') f |= (ch == '-'), ch = getchar();
