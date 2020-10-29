@@ -75,8 +75,10 @@ int main() {
     freopen("D:in.txt", "r", stdin);
     //freopen("D:out.txt", "w", stdout);
 #endif
+    printf("方法%d\n", 23333);
     n = read();
-
+    cout << n << endl;
+    
 #ifdef LH_LOCAL
     cout << "time cost:" << 1.0 * clock() / CLOCKS_PER_SEC << "s" << endl;
     // system("pause");
