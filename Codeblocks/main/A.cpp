@@ -75,7 +75,7 @@ int main() {
     freopen("D:in.txt", "r", stdin);
     //freopen("D:out.txt", "w", stdout);
 #endif
-    printf("方法%d\n", 23333);
+    printf("方法%d\n", 3323333);
     n = read();
     cout << n << endl;
     
