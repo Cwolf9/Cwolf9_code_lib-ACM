@@ -112,7 +112,7 @@ int query(int L, int R, int l, int r, int rt) {
 
 int main() {
 #ifndef ONLINE_JUDGE
-    freopen("D:\\ACM\\mtxt\\in.txt", "r", stdin);
+    // freopen("D:\\ACM\\mtxt\\in.txt", "r", stdin);
     // freopen("D:\\ACM\\mtxt\\out.txt", "w", stdout);
 #endif
     while(~scanf("%d", &n)) {

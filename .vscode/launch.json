@@ -18,7 +18,7 @@
             "console": "integratedTerminal"
         },
         {
-            "name": "g++.exe - 生成和调试活动文件",
+            "name": "g++.exe",
             "type": "cppdbg",
             "request": "launch",
             "program": "${fileDirname}/${fileBasenameNoExtension}.exe",
