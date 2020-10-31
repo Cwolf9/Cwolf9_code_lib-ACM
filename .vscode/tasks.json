@@ -4,7 +4,7 @@
 		{
 			"type": "shell",
 			"label": "g++.exe build active file",
-			"command": "E:\\ADpan\\codeblocks\\MinGW\\bin\\g++.exe",
+			"command": "D:\\ACM\\MinGW\\bin\\g++.exe",
 			"args": [
 				"-g",
 				"${file}",
@@ -13,7 +13,7 @@
 				"-std=c++11",
 			],
 			"options": {
-				"cwd": "E:\\ADpan\\codeblocks\\MinGW\\bin"
+				"cwd": "D:\\ACM\\MinGW\\bin"
 			},
 			"problemMatcher": [
 				"$gcc"

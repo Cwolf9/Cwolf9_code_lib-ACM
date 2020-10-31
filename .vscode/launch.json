@@ -28,7 +28,7 @@
             "environment": [],
             "externalConsole": true,
             "MIMode": "gdb",
-            "miDebuggerPath": "E:/ADpan/codeblocks/MinGW/bin/gdb.exe",
+            "miDebuggerPath": "D:/ACM/MinGW/bin/gdb.exe",
             "setupCommands": [
                 {
                     "description": "为 gdb 启用整齐打印",
