@@ -1,18 +1,3 @@
-/*
-链接：
-[点我点我](https://www.luogu.com.cn/problem/P4331)
-题意：
-n(1e6),a_i([0,2e9])，给定一个整数序列a1,...,an，求出一个递增序列b1<b2<...<bn，使得a_i和b_i各
-项之差绝对值和最小。\sum_{i=1}^{n}|a_i-b_i|.
-思路：
-保序回归论文题
-
-*/
-#pragma comment(linker, "/STACK:102400000,102400000")
-#pragma GCC optimize("unroll-loops")
-#pragma GCC optimize(3,"Ofast","inline")
-#pragma GCC optimize("Ofast,no-stack-protector")
-#pragma GCC target("sse,sse2,sse3,ssse3,sse4,popcnt,abm,mmx,avx,tune=native")
 #include <bits/stdc++.h>
 #define fi first
 #define se second
@@ -22,8 +7,8 @@ n(1e6),a_i([0,2e9])，给定一个整数序列a1,...,an，求出一个递增序�
 #define SZ(x) ((int)(x).size())
 #define all(x) (x).begin(), (x).end()
 #define clr(a, b) memset((a), (b), sizeof((a)))
-#define rep(i,s,t) for(register int i=s;i<t;++i)
-#define per(i,s,t) for(register int i=s;i>=t;--i)
+#define rep(i, s, t) for(register int i = (s), LIM=(t); i < LIM; ++i)
+#define per(i, s, t) for(register int i = (s), LIM=(t); i >= LIM; --i)
 #define GKD std::ios::sync_with_stdio(false);cin.tie(0)
 #define my_unique(x) sort(all(x)), x.erase(unique(all(x)), x.end())
 using namespace std;
@@ -31,10 +16,9 @@ typedef long long LL;
 typedef long long int64;
 typedef unsigned long long uint64;
 typedef pair<int, int> pii;
-// mt19937 rng(time(NULL));
+// mt19937 rng(time(NULL));//std::clock()
 // mt19937_64 rng64(chrono::steady_clock::now().time_since_epoch().count());
-// mt19937_64 generator(std::clock());
-// shuffle(arr, arr + n, generator);
+// shuffle(arr, arr + n, rng64);
 inline int64 read() {
     int64 x = 0;int f = 0;char ch = getchar();
     while (ch < '0' || ch > '9') f |= (ch == '-'), ch = getchar();
@@ -65,7 +49,7 @@ void debug_out(const T &f, const R &... r) {
     cout << f << " ";
     debug_out(r...);
 }
-#ifdef LH_LOCAL
+#ifndef ONLINE_JUDGE
 #define debug(...) cout << "[" << #__VA_ARGS__ << "]: ", debug_out(__VA_ARGS__);
 #else
 #define debug(...) ;
@@ -73,18 +57,18 @@ void debug_out(const T &f, const R &... r) {
 /*================Header Template==============*/
 const int INF = 0x3f3f3f3f;
 const int mod = 998244353;// 998244353
-const int MXN = 1e6 + 5;
+const int MXN = 2e5 + 5;
 const int MXE = 2e6 + 5;
 int n, m;
 
-int main() {
-#ifdef LH_LOCAL
-    freopen("D:in.txt", "r", stdin);
-    //freopen("D:out.txt", "w", stdout);
-#endif
-    n = read();
 
-#ifdef LH_LOCAL
+int main() {
+#ifndef ONLINE_JUDGE
+    freopen("D:\\ACM\\mtxt\\in.txt", "r", stdin);
+    // freopen("D:\\ACM\\mtxt\\out.txt", "w", stdout);
+#endif
+    
+#ifndef ONLINE_JUDGE
     cout << "time cost:" << 1.0 * clock() / CLOCKS_PER_SEC << "s" << endl;
     // system("pause");
 #endif

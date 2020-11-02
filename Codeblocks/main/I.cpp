@@ -7,8 +7,8 @@
 #define SZ(x) ((int)(x).size())
 #define all(x) (x).begin(), (x).end()
 #define clr(a, b) memset((a), (b), sizeof((a)))
-#define rep(i, s, t) for(int i = (s), LIM=(t); i < LIM; ++i)
-#define per(i, s, t) for(int i = (s), LIM=(t); i >= LIM; --i)
+#define rep(i, s, t) for(register int i = (s), LIM=(t); i < LIM; ++i)
+#define per(i, s, t) for(register int i = (s), LIM=(t); i >= LIM; --i)
 #define GKD std::ios::sync_with_stdio(false);cin.tie(0)
 #define my_unique(x) sort(all(x)), x.erase(unique(all(x)), x.end())
 using namespace std;
@@ -57,34 +57,17 @@ void debug_out(const T &f, const R &... r) {
 /*================Header Template==============*/
 const int INF = 0x3f3f3f3f;
 const int mod = 998244353;// 998244353
-const int MXN = 1e5 + 5;
+const int MXN = 2e5 + 5;
 const int MXE = 2e6 + 5;
-int ans;
-int ar[MXN];
-void dfs(int c, int d) {
-    if(c == d) {
-        int f = 1;
-        rep(i, 1, d) {
-            if(ar[i] * ar[i] < ar[i - 1] * ar[i + 1]) f = 0;
-        }
-        ans += f;
-        return ;
-    }
-    rep(i, 0, 3) {
-        ar[c] = i;
-        dfs(c + 1, d);
-    }
-}
+int n, m;
+
+
 int main() {
 #ifndef ONLINE_JUDGE
     freopen("D:\\ACM\\mtxt\\in.txt", "r", stdin);
     // freopen("D:\\ACM\\mtxt\\out.txt", "w", stdout);
 #endif
-    rep(i, 3, 10) {
-        ans = 0;
-        dfs(0, i);
-        debug(i, ans, (int)pow(3, i))
-    }
+    
 #ifndef ONLINE_JUDGE
     cout << "time cost:" << 1.0 * clock() / CLOCKS_PER_SEC << "s" << endl;
     // system("pause");
