@@ -57,33 +57,33 @@ void debug_out(const T &f, const R &... r) {
 /*================Header Template==============*/
 const int INF = 0x3f3f3f3f;
 const int mod = 998244353;// 998244353
-const int MXN = 2e3 + 5;
+const int MXN = 1e5 + 5;
 const int MXE = 2e6 + 5;
-int n, m;
-char s[MXN], t[MXN];
-int dp[MXN][MXN];
+int ans;
+int ar[MXN];
+void dfs(int c, int d) {
+    if(c == d) {
+        int f = 1;
+        rep(i, 1, d) {
+            if(ar[i] * ar[i] < ar[i - 1] * ar[i + 1]) f = 0;
+        }
+        ans += f;
+        return ;
+    }
+    rep(i, 0, 3) {
+        ar[c] = i;
+        dfs(c + 1, d);
+    }
+}
 int main() {
 #ifndef ONLINE_JUDGE
     freopen("D:\\ACM\\mtxt\\in.txt", "r", stdin);
     // freopen("D:\\ACM\\mtxt\\out.txt", "w", stdout);
 #endif
-    while(~scanf("%s%s", s + 1, t + 1)) {
-        n = strlen(s + 1), m = strlen(t + 1);
-        rep(i, 0, n + 1) rep(j, 0, m + 1) dp[i][j] = 0;
-        rep(i, 1, n + 1) {
-            rep(j, 1, m + 1) {
-                dp[i][j] = max(dp[i-1][j], dp[i][j-1]);
-                if(s[i] == t[j]) dp[i][j] = max(dp[i][j], dp[i-1][j-1] + 2);
-            }
-        }
-        int ans = m;
-        rep(i, 1, n + 1) {
-            rep(j, 1, m + 1) {
-                if(s[i] < t[j]) ans = max(ans, dp[i-1][j-1] + n - i + 1 + m - j + 1);
-                else if(s[i] == t[j]) ans = max(ans, dp[i-1][j-1] + m - j + 1 + 1);
-            }
-        }
-        printf("%d\n", ans);
+    rep(i, 3, 10) {
+        ans = 0;
+        dfs(0, i);
+        debug(i, ans, (int)pow(3, i))
     }
 #ifndef ONLINE_JUDGE
     cout << "time cost:" << 1.0 * clock() / CLOCKS_PER_SEC << "s" << endl;
