@@ -7,8 +7,8 @@
 #define SZ(x) ((int)(x).size())
 #define all(x) (x).begin(), (x).end()
 #define clr(a, b) memset((a), (b), sizeof((a)))
-#define rep(i, s, t) for(register int i = (s), LIM=(t); i < LIM; ++i)
-#define per(i, s, t) for(register int i = (s), LIM=(t); i >= LIM; --i)
+#define rep(i, s, t) for(int i = (s), LIM=(t); i < LIM; ++i)
+#define per(i, s, t) for(int i = (s), LIM=(t); i >= LIM; --i)
 #define GKD std::ios::sync_with_stdio(false);cin.tie(0)
 #define my_unique(x) sort(all(x)), x.erase(unique(all(x)), x.end())
 using namespace std;
@@ -57,10 +57,9 @@ void debug_out(const T &f, const R &... r) {
 /*================Header Template==============*/
 const int INF = 0x3f3f3f3f;
 const int mod = 998244353;// 998244353
-const int MXN = 2e5 + 5;
+const int MXN = 1e6 + 5;
 const int MXE = 2e6 + 5;
 int n, m;
-
 
 int main() {
 #ifndef ONLINE_JUDGE
