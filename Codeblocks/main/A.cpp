@@ -199,7 +199,7 @@ int main() {
     }
 #ifndef ONLINE_JUDGE
     cout << "time cost:" << 1.0 * clock() / CLOCKS_PER_SEC << "s" << endl;
-    // system("pause");
+    system("pause");
 #endif
     return 0;
 }
