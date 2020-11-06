@@ -23,7 +23,7 @@ inline int64 read() {
     int64 x = 0;int f = 0;char ch = getchar();
     while (ch < '0' || ch > '9') f |= (ch == '-'), ch = getchar();
     while (ch >= '0' && ch <= '9') x = (x << 3) + (x << 1) + ch - '0', ch =
-    getchar(); return x = f ? -x : x;
+                                                                               getchar(); return x = f ? -x : x;
 }
 inline void write(int64 x, bool f = true) {
     if (x == 0) {putchar('0'); if(f)putchar('\n');else putchar(' ');return;}
@@ -62,61 +62,84 @@ const int MXE = 1e6 + 5;
 int n, m;
 char s[MXN];
 int st[MXN], len[MXN], val[MXN], sid[MXN];
-int nex[MXN][26], siz, cnt[MXN], sum[MXN], islca[MXN], choose[MXN], fk[MXN];
+int nex[MXN][26], siz, cnt[MXN][2], sum[MXN], islca[MXN], choose[MXN], fk[MXN], nodeval[MXN], die[MXN];
 int lasnode, flag;
 int new_node() {
     ++ siz;
     clr(nex[siz], -1);
-    cnt[siz] = sum[siz] = islca[siz] = choose[siz] = fk[siz] = 0;
+    cnt[siz][0] = cnt[siz][1] = -1;
+    nodeval[siz] = -1;
+    sum[siz] = islca[siz] = choose[siz] = fk[siz] = die[siz] = 0;
     return siz;
 }
-void add(int st, int len, int id, int l) {
+void add(int st, int len, int l, int id) {
     int rt = 0;
     rep(i, 0, len) {
-        if(id == l) cnt[rt] = 1;
-        else ++ cnt[rt];
-        if(cnt[rt] >= cnt[lasnode]) lasnode = rt;
+        if(cnt[rt][1] != l) cnt[rt][0] = 1, cnt[rt][1] = l;
+        else ++ cnt[rt][0];
+        if(cnt[rt][0] >= cnt[lasnode][0]) lasnode = rt;
         int now = s[st + i] - 'a';
-        if(nex[rt][now] == -1) {
-            nex[rt][now] = new_node();
-        }
+        if(nex[rt][now] == -1) nex[rt][now] = new_node();
         // debug(rt, nex[rt][now], now)
         rt = nex[rt][now];
     }
-    if(id == l) cnt[rt] = 1;
-    else ++ cnt[rt];
-    if(cnt[rt] >= cnt[lasnode]) lasnode = rt;
+    if(cnt[rt][1] != l) cnt[rt][0] = 1, cnt[rt][1] = l;
+    else ++ cnt[rt][0];
+    if(cnt[rt][0] >= cnt[lasnode][0]) lasnode = rt;
+    if(nodeval[rt] != -1 && nodeval[rt] != val[id]) {
+        flag = 0;
+    }
+    nodeval[rt] = val[id];
 }
 void add2(int st, int len, int ip) {
-    int rt = 0;
     if(lasnode == 0) {
-        flag = 0;
+        if(islca[0] || fk[0]) flag = 0;
+        fk[0] = islca[0] = 1;
         return;
     }
+    int rt = 0;
     rep(i, 0, len) {
-        ++ sum[rt];
-        if(islca[rt]) flag = 0;
         int now = s[st + i] - 'a';
         rt = nex[rt][now];
         if(rt == lasnode) break;
     }
-    ++ sum[rt];
     if(islca[rt]) flag = 0;
-    if(ip) islca[rt] = 1;
+    if(ip) {
+        if(fk[rt]) flag = 0;
+        islca[rt] = 1;
+    }
     fk[rt] = 1;
+}
+void godie(int st, int len) {
+    int rt = 0;
+    rep(i, 0, len) {
+        int now = s[st + i] - 'a';
+        if(rt == lasnode) {
+            die[nex[rt][now]] = 1;
+            break;
+        }
+        rt = nex[rt][now];
+    }
 }
 void check(int rt) {
     // debug(rt, sum[rt], islca[rt], fk[rt])
+    sum[rt] = fk[rt];
     rep(i, 0, 26) {
         if(nex[rt][i] != -1) {
             check(nex[rt][i]);
+            sum[rt] += sum[nex[rt][i]];
         }
     }
+    if(die[rt] == 1 && sum[rt]) flag = 0;
 }
 void dfs(int rt) {
     vector<pii> vs;
     rep(i, 0, 26) {
         if(nex[rt][i] == -1) continue;
+        if(sum[nex[rt][i]] == 0) {
+            nex[rt][i] = -1;
+            continue;
+        }
         vs.eb(mk(sum[nex[rt][i]], i));
     }
     sort(all(vs));
@@ -155,8 +178,7 @@ bool cmp(const int&a, const int&b) {
 }
 int main() {
 #ifndef ONLINE_JUDGE
-    freopen("D:\\ACM\\mtxt\\in.txt", "r", stdin);
-    // freopen("D:\\ACM\\mtxt\\out.txt", "w", stdout);
+    freopen("/home/cwolf9/CLionProjects/mtxt/in.txt", "r", stdin);
 #endif
     int tim = read(), cas = 0;
     while(tim --) {
@@ -178,16 +200,22 @@ int main() {
         lasnode = 0;
         rep(ti, 0, n) {
             int i = sid[ti], ni = sid[ti + 1];
-            add(st[i], len[i], i, l);
+            add(st[i], len[i], l, i);
             // debug(i, val[i], val[ni])
             if(ti == n - 1 || val[i] != val[ni]) {
-                // debug(lasnode)
+//                debug(lasnode)
+                if(l != ti) {
+                    rep(j, l, ti + 1) {
+                        godie(st[j], len[j]);
+                    }
+                }
                 add2(st[i], len[i], l != ti);
                 l = ti + 1;
                 lasnode = 0;
             }
+            if(flag != 1) break;
         }
-        // check(0);
+        check(0);
         if(flag == 0) {
             printf("-1\n");
             continue;
@@ -199,7 +227,6 @@ int main() {
     }
 #ifndef ONLINE_JUDGE
     cout << "time cost:" << 1.0 * clock() / CLOCKS_PER_SEC << "s" << endl;
-    system("pause");
 #endif
     return 0;
 }
