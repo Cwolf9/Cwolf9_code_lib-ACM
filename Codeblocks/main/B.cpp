@@ -63,10 +63,10 @@ int n, m;
 
 int main() {
 #ifndef ONLINE_JUDGE
-    freopen("D:\\ACM\\mtxt\\in.txt", "r", stdin);
+    // freopen("D:\\ACM\\mtxt\\in.txt", "r", stdin);
     // freopen("D:\\ACM\\mtxt\\out.txt", "w", stdout);
 #endif
-    
+    debug(1)
 #ifndef ONLINE_JUDGE
     cout << "time cost:" << 1.0 * clock() / CLOCKS_PER_SEC << "s" << endl;
     // system("pause");
