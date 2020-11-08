@@ -83,14 +83,13 @@ void add(int st, int len, int l, int val) {
         upd_lca(rt, l);
         int now = s[st + i] - 'a';
         if(nex[rt][now] == -1) nex[rt][now] = new_node();
-        // debug(rt, nex[rt][now], now)
         rt = nex[rt][now];
     }
     upd_lca(rt, l);
     if(nodeval[rt] != -1 && nodeval[rt] != val) flag = 0;
     nodeval[rt] = val;
 }
-void add2(int st, int len, int ip) {//ip表示是否是多个串的lca
+void add2(int st, int len, int ip) {
     if(lasnode == 0) {
         if(islca[0] || fk[0]) flag = 0;
         fk[0] = islca[0] = 1;
@@ -102,11 +101,8 @@ void add2(int st, int len, int ip) {//ip表示是否是多个串的lca
         rt = nex[rt][now];
         if(rt == lasnode) break;
     }
-    if(islca[rt]) flag = 0;
-    if(ip) {
-        if(fk[rt]) flag = 0;
-        islca[rt] = 1;
-    }
+    if(islca[rt] || fk[rt]) flag = 0;
+    if(ip) islca[rt] = 1;
     fk[rt] = 1;
 }
 void godie(int st, int len) {
@@ -143,7 +139,7 @@ void dfs(int rt) {
     rep(i, 0, (int)vs.size()) if(vs[i].fi == 1) lo = i;
     if(lo != -1) {
         if(fk[rt] == 0) nex[rt][vs[0].se] = -1;
-        rep(i, 0, lo + 1) clr(nex[nex[rt][vs[i].se]], -1);    
+        rep(i, 0, lo + 1) if(nex[rt][vs[i].se] != -1) clr(nex[nex[rt][vs[i].se]], -1);    
     }
     rep(i, lo + 1, (int)vs.size()) {
         dfs(nex[rt][vs[i].se]);
@@ -151,6 +147,10 @@ void dfs(int rt) {
     vs.clear(); vs.shrink_to_fit();
 }
 void getAns(int rt, int &ans) {
+    if(die[rt]) {
+        // assert(0);
+        return ;
+    }
     ++ ans;
     rep(i, 0, 26) if(nex[rt][i] != -1) getAns(nex[rt][i], ans);
 }
