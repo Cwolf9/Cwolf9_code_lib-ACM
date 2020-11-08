@@ -67,31 +67,30 @@ int siz, lasnode, flag, ans;
 int new_node() {
     ++ siz;
     clr(nex[siz], -1);
-    cnt[siz][0] = cnt[siz][1] = -1;
     nodeval[siz] = -1;
+    cnt[siz][0] = cnt[siz][1] = -1;
     sum[siz] = islca[siz] = fk[siz] = die[siz] = 0;
     return siz;
 }
-void add(int st, int len, int l, int id) {
+void upd_lca(int rt, int l) {
+    if(cnt[rt][1] != l) cnt[rt][0] = 1, cnt[rt][1] = l;
+    else ++ cnt[rt][0];
+    if(cnt[rt][0] >= cnt[lasnode][0]) lasnode = rt;
+}
+void add(int st, int len, int l, int val) {
     int rt = 0;
     rep(i, 0, len) {
-        if(cnt[rt][1] != l) cnt[rt][0] = 1, cnt[rt][1] = l;
-        else ++ cnt[rt][0];
-        if(cnt[rt][0] >= cnt[lasnode][0]) lasnode = rt;
+        upd_lca(rt, l);
         int now = s[st + i] - 'a';
         if(nex[rt][now] == -1) nex[rt][now] = new_node();
         // debug(rt, nex[rt][now], now)
         rt = nex[rt][now];
     }
-    if(cnt[rt][1] != l) cnt[rt][0] = 1, cnt[rt][1] = l;
-    else ++ cnt[rt][0];
-    if(cnt[rt][0] >= cnt[lasnode][0]) lasnode = rt;
-    if(nodeval[rt] != -1 && nodeval[rt] != val[id]) {
-        flag = 0;
-    }
-    nodeval[rt] = val[id];
+    upd_lca(rt, l);
+    if(nodeval[rt] != -1 && nodeval[rt] != val) flag = 0;
+    nodeval[rt] = val;
 }
-void add2(int st, int len, int ip) {
+void add2(int st, int len, int ip) {//ip表示是否是多个串的lca
     if(lasnode == 0) {
         if(islca[0] || fk[0]) flag = 0;
         fk[0] = islca[0] = 1;
@@ -156,9 +155,7 @@ void dfs(int rt) {
 }
 void getAns(int rt, int &ans) {
     ++ ans;
-    rep(i, 0, 26) {
-        if(nex[rt][i] != -1) getAns(nex[rt][i], ans);
-    }
+    rep(i, 0, 26) if(nex[rt][i] != -1) getAns(nex[rt][i], ans);
 }
 bool cmp(const int&a, const int&b) {
     return val[a] < val[b];
@@ -186,10 +183,10 @@ int main() {
         int l = 0;
         rep(ti, 0, n) {
             int i = sid[ti], ni = sid[ti + 1];
-            add(st[i], len[i], l, i);
+            add(st[i], len[i], l, val[i]);
             // debug(i, val[i], val[ni])
             if(ti == n - 1 || val[i] != val[ni]) {
-//                debug(lasnode)
+                // debug(lasnode)
                 if(l != ti) {
                     rep(j, l, ti + 1) godie(st[j], len[j]);
                 }
