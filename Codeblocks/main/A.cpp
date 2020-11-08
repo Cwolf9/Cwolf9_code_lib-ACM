@@ -135,11 +135,8 @@ void dfs(int rt) {
     vector<pii> vs;
     rep(i, 0, 26) {
         if(nex[rt][i] == -1) continue;
-        if(sum[nex[rt][i]] == 0) {
-            nex[rt][i] = -1;
-            continue;
-        }
-        vs.eb(mk(sum[nex[rt][i]], i));
+        if(sum[nex[rt][i]] == 0) nex[rt][i] = -1;
+        else vs.eb(mk(sum[nex[rt][i]], i));
     }
     sort(all(vs));
     int lo = -1;
