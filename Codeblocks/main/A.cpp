@@ -148,7 +148,7 @@ void dfs(int rt) {
 }
 void getAns(int rt, int &ans) {
     if(die[rt]) {
-        // assert(0);
+        //assert(0);
         return ;
     }
     ++ ans;
