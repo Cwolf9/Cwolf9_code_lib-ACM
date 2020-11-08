@@ -62,14 +62,14 @@ const int MXE = 1e6 + 5;
 int n, m;
 char s[MXN];
 int st[MXN], len[MXN], val[MXN], sid[MXN];
-int nex[MXN][26], siz, cnt[MXN][2], sum[MXN], islca[MXN], choose[MXN], fk[MXN], nodeval[MXN], die[MXN];
-int lasnode, flag;
+int nex[MXN][26], cnt[MXN][2], sum[MXN], islca[MXN], fk[MXN], nodeval[MXN], die[MXN];
+int siz, lasnode, flag, ans;
 int new_node() {
     ++ siz;
     clr(nex[siz], -1);
     cnt[siz][0] = cnt[siz][1] = -1;
     nodeval[siz] = -1;
-    sum[siz] = islca[siz] = choose[siz] = fk[siz] = die[siz] = 0;
+    sum[siz] = islca[siz] = fk[siz] = die[siz] = 0;
     return siz;
 }
 void add(int st, int len, int l, int id) {
@@ -144,31 +144,18 @@ void dfs(int rt) {
     }
     sort(all(vs));
     int lo = -1;
-    for(int i = 0; i < (int)vs.size(); ++i) {
-        if(vs[i].fi == 1) lo = i;
-    }
+    rep(i, 0, (int)vs.size()) if(vs[i].fi == 1) lo = i;
     if(lo != -1) {
-        if(fk[rt]) {
-            rep(i, 0, lo + 1) {
-                choose[nex[rt][vs[i].se]] = 1;
-            }
-        }else {
-            // debug(111, lo)
-            nex[rt][vs[0].se] = -1;
-            rep(i, 1, lo + 1) {
-                choose[nex[rt][vs[i].se]] = 1;
-            }
-        }
+        if(fk[rt] == 0) nex[rt][vs[0].se] = -1;
+        rep(i, 0, lo + 1) clr(nex[nex[rt][vs[i].se]], -1);    
     }
     rep(i, lo + 1, (int)vs.size()) {
         dfs(nex[rt][vs[i].se]);
     }
-    vs.clear();
-    vs.shrink_to_fit();
+    vs.clear(); vs.shrink_to_fit();
 }
 void getAns(int rt, int &ans) {
     ++ ans;
-    if(choose[rt]) return;
     rep(i, 0, 26) {
         if(nex[rt][i] != -1) getAns(nex[rt][i], ans);
     }
@@ -178,14 +165,14 @@ bool cmp(const int&a, const int&b) {
 }
 int main() {
 #ifndef ONLINE_JUDGE
-    freopen("/home/cwolf9/CLionProjects/mtxt/in.txt", "r", stdin);
+    // freopen("/home/cwolf9/CLionProjects/mtxt/in.txt", "r", stdin);
+    freopen("D:\\ACM\\mtxt\\in.txt", "r", stdin);
 #endif
     int tim = read(), cas = 0;
     while(tim --) {
         printf("Case #%d: ", ++ cas);
         n = read();
-        flag = 1;
-        siz = -1;
+        siz = -1, lasnode = 0, flag = 1, ans = 0;
         new_node();
         int lenl = 0;
         rep(i, 0, n) {
@@ -197,7 +184,6 @@ int main() {
         }
         sort(sid, sid + n, cmp);
         int l = 0;
-        lasnode = 0;
         rep(ti, 0, n) {
             int i = sid[ti], ni = sid[ti + 1];
             add(st[i], len[i], l, i);
@@ -205,9 +191,7 @@ int main() {
             if(ti == n - 1 || val[i] != val[ni]) {
 //                debug(lasnode)
                 if(l != ti) {
-                    rep(j, l, ti + 1) {
-                        godie(st[j], len[j]);
-                    }
+                    rep(j, l, ti + 1) godie(st[j], len[j]);
                 }
                 add2(st[i], len[i], l != ti);
                 l = ti + 1;
@@ -216,14 +200,12 @@ int main() {
             if(flag != 1) break;
         }
         check(0);
-        if(flag == 0) {
-            printf("-1\n");
-            continue;
+        if(flag == 0) printf("-1\n");
+        else {
+            dfs(0);
+            getAns(0, ans);
+            printf("%d\n", ans);
         }
-        dfs(0);
-        int ans = 0;
-        getAns(0, ans);
-        printf("%d\n", ans);
     }
 #ifndef ONLINE_JUDGE
     cout << "time cost:" << 1.0 * clock() / CLOCKS_PER_SEC << "s" << endl;
