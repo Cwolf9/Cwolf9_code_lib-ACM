@@ -1,6 +1,3 @@
-/*
-
-*/
 #include <bits/stdc++.h>
 #define fi first
 #define se second
@@ -61,29 +58,52 @@ void debug_out(const T &f, const R &... r) {
 /*================Header Template==============*/
 const int INF = 0x3f3f3f3f;
 const int mod = 998244353;// 998244353
-const int MXN = 1e6 + 5;
+const int MXN = 1500 + 5;
 const int MXE = 2e6 + 5;
-int n, m;
-int64 a, b, c;
+int n, m, h, w;
+int mp[MXN][MXN];
+vector<pii> col[MXN], row[MXN];
 int main() {
 #ifdef LH_LOCAL
     freopen("D:in.txt", "r", stdin);
     //freopen("D:out.txt", "w", stdout);
 #endif
-    GKD;
-    int tim;
-    cin >> tim;
-    while(tim --) {
-        cin >> a >> b >> c;
-        if(b < c) swap(b, c);
-        int64 ans = 0;
-        int64 all = (a - b + 1) % mod * (a - b + 1) % mod * (a - c + 1) % mod * (a - c + 1) % mod;
-        rep(L, 0, a - b) {
-            ans += max(0LL, min(a - c, b + L - 1) - max(0LL, L + c - 1) + 1);
-            ans %= mod;
-        }
-        cout << all - ans * ans % mod * (a - b + 1) % mod * (a - b + 1) % mod << endl;
+    n = read(), m = read(), h = read(), w = read();
+    rep(i, 0, h) {
+        int x = read(), y = read();
+        row[x].eb(mk(y, 1));
+        col[y].eb(mk(x, 1));
+        mp[x][y] = 1;
     }
+    rep(i, 0, w) {
+        int x = read(), y = read();
+        row[x].eb(mk(y, -1));
+        col[y].eb(mk(x, -1));
+        mp[x][y] = -1;
+    }
+    rep(i, 1, n + 1) sort(all(row[i]));
+    rep(j, 1, m + 1) sort(all(col[j]));
+    int ans = 0;
+    rep(i, 1, n + 1) {
+        rep(j, 1, m + 1) {
+            if(mp[i][j] == 1) ++ ans;
+            if(mp[i][j]) continue;
+            int flag = 0;
+            ans += flag;
+            pii tmp = mk(j, 0);
+            int p = lower_bound(all(row[i]), tmp) - row[i].begin();
+            if(p < (int)row[i].size() && row[i][p].se == 1) flag = 1;
+            -- p;
+            if(p >= 0 && p < (int)row[i].size() && row[i][p].se == 1) flag = 1;
+            tmp = mk(i, 0);
+            p = lower_bound(all(col[j]), tmp) - col[j].begin();
+            if(p < (int)col[j].size() && col[j][p].se == 1) flag = 1;
+            -- p;
+            if(p >= 0 && p < (int)col[j].size() && col[j][p].se == 1) flag = 1;
+            ans += flag;
+        }
+    }
+    printf("%d\n", ans);
 #ifdef LH_LOCAL
     cout << "time cost:" << 1.0 * clock() / CLOCKS_PER_SEC << "s" << endl;
     // system("pause");
