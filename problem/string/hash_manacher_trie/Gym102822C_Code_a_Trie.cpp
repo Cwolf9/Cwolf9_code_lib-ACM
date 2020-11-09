@@ -90,6 +90,10 @@ char s[MXN];
 int st[MXN], len[MXN], val[MXN], sid[MXN];
 int nex[MXN][26], cnt[MXN][2], nodeval[MXN], sum[MXN], fk[MXN], die[MXN];
 int siz, lasnode, flag, ans;
+/*
+fk[rt]表示是否是lca节点
+sum[rt]表示子树内lca节点个数
+*/
 int new_node() {
     ++ siz;
     clr(nex[siz], -1);
