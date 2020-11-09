@@ -54,12 +54,15 @@ godie(st[j], len[j]);
 #include <bits/stdc++.h>
 #define fi first
 #define se second
+#define mk make_pair
 #define eb emplace_back
+#define all(x) (x).begin(), (x).end()
 #define clr(a, b) memset((a), (b), sizeof((a)))
 #define rep(i, s, t) for(int i = (s), LIM=(t); i < LIM; ++i)
 #define per(i, s, t) for(int i = (s), LIM=(t); i >= LIM; --i)
 using namespace std;
 typedef long long int64;
+typedef pair<int, int> pii;
 inline int64 read() {
     int64 x = 0;int f = 0;char ch = getchar();
     while (ch < '0' || ch > '9') f |= (ch == '-'), ch = getchar();
