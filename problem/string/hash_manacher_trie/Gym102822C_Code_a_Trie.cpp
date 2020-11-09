@@ -161,7 +161,7 @@ void dfs(int rt) {
     sort(all(vs));
     int lo = -1;
     rep(i, 0, (int)vs.size()) if(vs[i].fi == 1) lo = i;
-    if(lo != -1) {
+    if(lo != -1) {//求解答案情况3的两类如下
         if(fk[rt] == 0) nex[rt][vs[0].se] = -1;
         rep(i, 0, lo + 1) if(nex[rt][vs[i].se] != -1) clr(nex[nex[rt][vs[i].se]], -1);    
     }
