@@ -23,7 +23,7 @@ inline int64 read() {
     int64 x = 0;int f = 0;char ch = getchar();
     while (ch < '0' || ch > '9') f |= (ch == '-'), ch = getchar();
     while (ch >= '0' && ch <= '9') x = (x << 3) + (x << 1) + ch - '0', ch =
-    getchar(); return x = f ? -x : x;
+                                                                               getchar(); return x = f ? -x : x;
 }
 inline void write(int64 x, bool f = true) {
     if (x == 0) {putchar('0'); if(f)putchar('\n');else putchar(' ');return;}
@@ -57,19 +57,18 @@ void debug_out(const T &f, const R &... r) {
 /*================Header Template==============*/
 const int INF = 0x3f3f3f3f;
 const int mod = 998244353;// 998244353
-const int MXN = 1e6 + 5;
-const int MXE = 2e6 + 5;
+const int MXN = 5e5 + 5;
+const int MXE = 1e6 + 5;
 int n, m;
 
 int main() {
 #ifndef ONLINE_JUDGE
-    // freopen("D:\\ACM\\mtxt\\in.txt", "r", stdin);
-    // freopen("D:\\ACM\\mtxt\\out.txt", "w", stdout);
+    // freopen("/home/cwolf9/CLionProjects/mtxt/in.txt", "r", stdin);
+    freopen("D:\\ACM\\mtxt\\in.txt", "r", stdin);
 #endif
-    debug(1)
+    
 #ifndef ONLINE_JUDGE
     cout << "time cost:" << 1.0 * clock() / CLOCKS_PER_SEC << "s" << endl;
-    // system("pause");
 #endif
     return 0;
 }

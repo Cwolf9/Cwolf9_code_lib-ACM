@@ -1,112 +1,202 @@
-#include <cstdio>
-#include <iostream>
-#include <cmath>
-#include <cstring>
-#include <algorithm>
-#include <vector>
-#include <queue>
-#include <map>
+#include <bits/stdc++.h>
 #define fi first
 #define se second
+#define o2(x) (x) * (x)
+#define mk make_pair
+#define eb emplace_back
+#define SZ(x) ((int)(x).size())
+#define all(x) (x).begin(), (x).end()
+#define clr(a, b) memset((a), (b), sizeof((a)))
+#define rep(i, s, t) for(int i = (s), LIM=(t); i < LIM; ++i)
+#define per(i, s, t) for(int i = (s), LIM=(t); i >= LIM; --i)
+#define GKD std::ios::sync_with_stdio(false);cin.tie(0)
+#define my_unique(x) sort(all(x)), x.erase(unique(all(x)), x.end())
 using namespace std;
 typedef long long LL;
-typedef pair<int,int> pii;
-
-struct fastio{
-    char s[100005];
-    int it,len;
-    fastio(){it=len=0;}
-    inline char get(){
-        if(it<len)return s[it++];it=0;
-        len=fread(s,1,100000,stdin);
-        if(len==0)return EOF;else return s[it++];
-    }
-    bool notend(){
-        char c=get();
-        while(c==' '||c=='\n')c=get();
-        if(it>0)it--;
-        return c!=EOF;
-    }
-}BUFF;
-#define read(x) x=getnum()
-#define write(x) putnum(x),putchar(' ')
-#define writeln(x) putnum(x),putchar('\n')
-
-inline LL getnum(){
-    LL r=0;bool ng=0;char c;c=BUFF.get();
-    while(c!='-'&&(c<'0'||c>'9'))c=BUFF.get();
-    if(c=='-')ng=1,c=BUFF.get();
-    while(c>='0'&&c<='9')r=r*10+c-'0',c=BUFF.get();
-    return ng?-r:r;
+typedef long long int64;
+typedef unsigned long long uint64;
+typedef pair<int, int> pii;
+// mt19937 rng(time(NULL));//std::clock()
+// mt19937_64 rng64(chrono::steady_clock::now().time_since_epoch().count());
+// shuffle(arr, arr + n, rng64);
+inline int64 read() {
+    int64 x = 0;int f = 0;char ch = getchar();
+    while (ch < '0' || ch > '9') f |= (ch == '-'), ch = getchar();
+    while (ch >= '0' && ch <= '9') x = (x << 3) + (x << 1) + ch - '0', ch =
+                                                                               getchar(); return x = f ? -x : x;
 }
-template<class T> inline void putnum(T x){
-    if(x<0)putchar('-'),x=-x;
-    register short a[20]={},sz=0;
-    while(x)a[sz++]=x%10,x/=10;
-    if(sz==0)putchar('0');
-    for(int i=sz-1;i>=0;i--)putchar('0'+a[i]);
+inline void write(int64 x, bool f = true) {
+    if (x == 0) {putchar('0'); if(f)putchar('\n');else putchar(' ');return;}
+    if (x < 0) {putchar('-');x = -x;}
+    static char s[23];
+    int l = 0;
+    while (x != 0)s[l++] = x % 10 + 48, x /= 10;
+    while (l)putchar(s[--l]);
+    if(f)putchar('\n');else putchar(' ');
 }
-inline char getreal(){char c=BUFF.get();while(c<=32)c=BUFF.get();return c;}
-
-
-const int MXN = 1e5 + 5;
-const int mod = 1e9 + 7;
+int lowbit(int x) { return x & (-x); }
+template <class T>
+T big(const T &a1, const T &a2) {return a1 > a2 ? a1 : a2;}
+template <class T>
+T sml(const T &a1, const T &a2) {return a1 < a2 ? a1 : a2;}
+template <typename T, typename... R>
+T big(const T &f, const R &... r) {return big(f, big(r...));}
+template <typename T, typename... R>
+T sml(const T &f, const R &... r) {return sml(f, sml(r...));}
+void debug_out() { cout << '\n'; }
+template <typename T, typename... R>
+void debug_out(const T &f, const R &... r) {
+    cout << f << " ";
+    debug_out(r...);
+}
+#ifndef ONLINE_JUDGE
+#define debug(...) cout << "[" << #__VA_ARGS__ << "]: ", debug_out(__VA_ARGS__);
+#else
+#define debug(...) ;
+#endif
+/*================Header Template==============*/
 const int INF = 0x3f3f3f3f;
-
-
+const int mod = 998244353;// 998244353
+const int MXN = 5e5 + 5;
+const int MXE = 1e6 + 5;
 int n, m;
-int ar[MXN], que[MXN], rightMin[MXN];
-pii sum[MXN<<2];
-void build(int l,int r,int rt) {
-    if(l == r) {
-        sum[rt].first = l;
-        sum[rt].second = ar[l];
+char s[MXN];
+int st[MXN], len[MXN], val[MXN], sid[MXN];
+int nex[MXN][26], cnt[MXN][2], sum[MXN], islca[MXN], fk[MXN], nodeval[MXN], die[MXN];
+int siz, lasnode, flag, ans;
+int new_node() {
+    ++ siz;
+    clr(nex[siz], -1);
+    nodeval[siz] = -1;
+    cnt[siz][0] = cnt[siz][1] = -1;
+    sum[siz] = islca[siz] = fk[siz] = die[siz] = 0;
+    return siz;
+}
+void upd_lca(int rt, int l) {
+    if(cnt[rt][1] != l) cnt[rt][0] = 1, cnt[rt][1] = l;
+    else ++ cnt[rt][0];
+    if(cnt[rt][0] >= cnt[lasnode][0]) lasnode = rt;
+}
+void add(int st, int len, int l, int val) {
+    int rt = 0;
+    rep(i, 0, len) {
+        upd_lca(rt, l);
+        int now = s[st + i] - 'a';
+        if(nex[rt][now] == -1) nex[rt][now] = new_node();
+        rt = nex[rt][now];
+    }
+    upd_lca(rt, l);
+    if(nodeval[rt] != -1 && nodeval[rt] != val) flag = 0;
+    nodeval[rt] = val;
+}
+void add2(int st, int len, int ip) {
+    if(lasnode == 0) {
+        if(islca[0] || fk[0]) flag = 0;
+        fk[0] = islca[0] = 1;
         return;
     }
-    int mid = (l+r)>>1;
-    build(l,mid,rt<<1), build(mid+1,r,rt<<1|1);
-    if(sum[rt<<1].second >= sum[rt<<1|1].second) {
-        sum[rt] = sum[rt<<1];
-    }else {
-        sum[rt] = sum[rt<<1|1];
+    int rt = 0;
+    rep(i, 0, len) {
+        int now = s[st + i] - 'a';
+        rt = nex[rt][now];
+        if(rt == lasnode) break;
+    }
+    if(islca[rt] || fk[rt]) flag = 0;
+    if(ip) islca[rt] = 1;
+    fk[rt] = 1;
+}
+void godie(int st, int len) {
+    int rt = 0;
+    rep(i, 0, len) {
+        int now = s[st + i] - 'a';
+        if(rt == lasnode) {
+            die[nex[rt][now]] = 1;
+            break;
+        }
+        rt = nex[rt][now];
     }
 }
-pii query(int L,int R,int l,int r,int rt) {
-    if(L == l && r == R) {
-        return sum[rt];
+void check(int rt) {
+    // debug(rt, sum[rt], islca[rt], fk[rt])
+    sum[rt] = fk[rt];
+    rep(i, 0, 26) {
+        if(nex[rt][i] != -1) {
+            check(nex[rt][i]);
+            sum[rt] += sum[nex[rt][i]];
+        }
     }
-    int mid = (l+r)>>1;
-    if(L > mid) return query(L,R,mid+1,r,rt<<1|1);
-    else if(R <= mid) return query(L,R,l,mid,rt<<1);
-    else {
-        pii a = query(L,mid,l,mid,rt<<1);
-        pii b = query(mid+1,R,mid+1,r,rt<<1|1);
-        if(a.second >= b.second) return a;
-        return b;
-    }
+    if(die[rt] == 1 && sum[rt]) flag = 0;
 }
-int main(){
-    scanf("%d", &n);
-    for(int i = 1; i <= n; ++i) {
-        scanf("%d", &ar[i]);
+void dfs(int rt) {
+    vector<pii> vs;
+    rep(i, 0, 26) {
+        if(nex[rt][i] == -1) continue;
+        if(sum[nex[rt][i]] == 0) nex[rt][i] = -1;
+        else vs.eb(mk(sum[nex[rt][i]], i));
     }
-    build(1, n, 1);
-    int front = 0, near = 0;
-    for(int i = n; i >= 1; --i) {
-        while(front<near&&ar[que[near-1]]>ar[i]) -- near;
-        if(front == near) rightMin[i] = -1;
-        else rightMin[i] = que[near-1];
-        que[near ++] = i;
+    sort(all(vs));
+    int lo = -1;
+    rep(i, 0, (int)vs.size()) if(vs[i].fi == 1) lo = i;
+    if(lo != -1) {
+        if(fk[rt] == 0) nex[rt][vs[0].se] = -1;
+        rep(i, 0, lo + 1) if(nex[rt][vs[i].se] != -1) clr(nex[nex[rt][vs[i].se]], -1);    
     }
-    int ans = 0;
-    for(int i = 1, tmp; i <= n - 1; ++i) {
-        if(rightMin[i] == i + 1) continue;
-        tmp = rightMin[i] - 1;
-        if(rightMin[i] == -1) tmp = n;
-        pii hh = query(i, tmp, 1, n, 1);
-        ans = max(ans, hh.first - i);
-        if(ans >= n - i) break;
+    rep(i, lo + 1, (int)vs.size()) {
+        dfs(nex[rt][vs[i].se]);
     }
-    printf("%d\n", ans);
+    vs.clear(); vs.shrink_to_fit();
+}
+void getAns(int rt, int &ans) {
+    if(die[rt]) {
+        //assert(0);
+        return ;
+    }
+    ++ ans;
+    rep(i, 0, 26) if(nex[rt][i] != -1) getAns(nex[rt][i], ans);
+}
+bool cmp(int a, int b) {
+    return val[a] < val[b];
+}
+int main() {
+    int tim = read(), cas = 0;
+    while(tim --) {
+        printf("Case #%d: ", ++ cas);
+        n = read();
+        siz = -1, lasnode = 0, flag = 1, ans = 0;
+        new_node();
+        int lenl = 0;
+        rep(i, 0, n) {
+            scanf("%s%d", s + lenl, val + i);
+            st[i] = lenl;
+            len[i] = strlen(s + lenl);
+            lenl += len[i];
+            sid[i] = i;
+        }
+        sort(sid, sid + n, cmp);
+        int l = 0;
+        rep(ti, 0, n) {
+            int i = sid[ti], ni = sid[ti + 1];
+            add(st[i], len[i], l, val[i]);
+            // debug(i, val[i], val[ni])
+            if(ti == n - 1 || val[i] != val[ni]) {
+                // debug(lasnode)
+                if(l != ti) {
+                    rep(j, l, ti + 1) godie(st[j], len[j]);
+                }
+                add2(st[i], len[i], l != ti);
+                l = ti + 1;
+                lasnode = 0;
+            }
+            if(flag != 1) break;
+        }
+        check(0);
+        if(flag == 0) printf("-1\n");
+        else {
+            dfs(0);
+            getAns(0, ans);
+            printf("%d\n", ans);
+        }
+    }
     return 0;
 }
+

@@ -9,11 +9,11 @@ using namespace std;
 
 int main(){
     int t = 100;
-    while (t--){
+    while (t--) {
         //system("suiji > mi.in");
         //system("cpp1 < mi.in > 1.out");
         //system("cpp2 < mi.in > 2.out");
-        if (system("fc 1.out 2.out")){
+        if (system("fc 1.out 2.out")) {
         	printf("---\n");
 			break;
 		}
