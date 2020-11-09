@@ -91,6 +91,8 @@ int st[MXN], len[MXN], val[MXN], sid[MXN];
 int nex[MXN][26], cnt[MXN][2], nodeval[MXN], sum[MXN], fk[MXN], die[MXN];
 int siz, lasnode, flag, ans;
 /*
+求lca的方法是按权值排序后依次插入字典树贪心寻找
+
 fk[rt]表示是否是lca节点
 sum[rt]表示子树内lca节点个数
 */
@@ -201,7 +203,7 @@ int main() {
             sid[i] = i;
         }
         sort(sid, sid + n, cmp);//把字符串按权值排序，sid对应真实下标
-        int l = 0;
+        int l = 0;//l表示这一段相同权值区间的左端点
         rep(ti, 0, n) {
             int i = sid[ti], ni = sid[ti + 1];
             add_str(st[i], len[i], l, val[i]);
