@@ -1,5 +1,7 @@
 /*
-线段树优化DP并上线段树上二分好题
+[toc]
+
+## 线段树优化DP并上线段树上二分好题
 **链接**
 传送门: [here](https://ac.nowcoder.com/acm/contest/7501/E)
 **题意**

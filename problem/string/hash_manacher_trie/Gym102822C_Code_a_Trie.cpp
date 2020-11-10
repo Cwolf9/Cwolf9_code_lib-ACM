@@ -1,4 +1,7 @@
 /*
+@[toc]
+
+## Gym102822C Code a Trie: 字典树
 **链接**
 传送门: [here](https://codeforces.com/gym/102822/problem/C)
 **题意**
@@ -46,7 +49,8 @@ godie(st[sid[j]], len[sid[j]]);
 godie(st[j], len[j]);
 想die哦。
 ```
-
+时间复杂度：$O(nlog(n))$
+空间复杂度：$O(\sum |s| *26)$
 **AC_CODE**
 思路很简单，可惜我代码写的有点冗杂。
 [here](https://github.com/Cwolf9/Cwolf9_code_lib-ACM/blob/master/problem/string/hash_manacher_trie/Gym102822C_Code_a_Trie.cpp)
