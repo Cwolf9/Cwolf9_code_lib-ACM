@@ -27,6 +27,7 @@ int randint(int a, int b, int ip = 3) {
 int randint64(int64 a, int64 b, int ip = 1) {
 	if(a > b) swap(a, b);
 	if(ip == 1) return rng64() % (b - a + 1) + a;
+	else return rng64() % (b - a + 1) + a;
 }
 void randstr(int len) {
 	rep(i, 0, len) {
@@ -41,17 +42,17 @@ int main() {
 #endif
 	srand(time(0));
     int tim = 1;
-    printf("%d\n", tim);
+    // printf("%d\n", tim);
     while(tim--) {
 		int n, m;
-		n = randint(1, 5);
-		printf("%d\n", n);
-		rep(i, 0, n) {
-			int len = randint(1, 7);
-			randstr(len);
-			len = randint(1, n + 2);
-			printf("%d\n", len);
-		}
+		n = randint(5, 100);
+		m = randint(3, n);
+		printf("%d %d\n", n, m);
+		vector<int> ar(m);
+		rep(i, 0, m) ar[i] = i + 1;
+		rep(i, 0, n - m) ar.emplace_back(rng() % m + 1);
+		shuffle(all(ar), rng64);
+		rep(i, 0, n) printf("%d%c", ar[i], " \n"[i == n - 1]);
 	}
 	return 0;
 } 

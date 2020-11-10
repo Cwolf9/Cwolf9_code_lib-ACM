@@ -1,3 +1,23 @@
+/*
+线段树优化DP并上线段树上二分好题
+**链接**
+传送门: [here](https://ac.nowcoder.com/acm/contest/7501/E)
+**题意**
+有一个长度为$n$的序列，每个点权值为在范围$[1,m]$内，保证每个值都出现过。
+对每个$i(1\le i\le m)$询问包含权值$[1,i]$的区间最小长度。
+$1\le 1\le m\le n\le 200000$
+
+**思路**
+不太会，只知道答案有单调性，然后听TDM提示了一个$dp$状态定义。
+$dp[i][j]$表示以$i$为左端点的区间包含权值$[1,j]$的最小右端点。
+
+$over!$稍微复杂点的签到题罢了。
+
+**备注**
+第一次写线段树上二分
+**AC_CODE**
+[here](https://github.com/Cwolf9/Cwolf9_code_lib-ACM/blob/master/problem/string/hash_manacher_trie/Gym102822C_Code_a_Trie.cpp)
+*/
 #include <bits/stdc++.h>
 #define fi first
 #define se second
