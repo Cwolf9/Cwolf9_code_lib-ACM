@@ -10,13 +10,27 @@ $1\le 1\le m\le n\le 200000$
 **思路**
 不太会，只知道答案有单调性，然后听TDM提示了一个$dp$状态定义。
 $dp[i][j]$表示以$i$为左端点的区间包含权值$[1,j]$的最小右端点。
+暴力$O(n^2)$的写法：
+先从小到大枚举$j$，然后枚举$j$的每一次出现的位置$lasJ$，右边没有$j$的赋值为无穷大。
+状态转移：$dp[i][j]=max(dp[i][j-1],lasJ)$.
 
-$over!$稍微复杂点的签到题罢了。
+考虑用线段树维护，从小到大枚举$j$，然后更新$n$个点的$dp$值。
+线段树每个节点维护两个值：
+$sum[rt]$代表子树内$dp[i][j]$的最大值，$ans[rt]$表示子树内的答案即$(dp[i][j]-i+1)$的最小值。
 
+一个显然的性质：对于任何$1\le a\le b\le n$满足$dp[a][j]\le dp[b][j]$。即$dp[i][j]$有一个单调性。
+对于某一段区间的更新是区间$sum[rt]$与$lasJ$取最大值的操作。
+显然需要更新的是一段前缀，又因为$dp[i][j]$具有单调性，且线段树本来就是一个二分的结构。
+那么就可以写一个线段树二分来更新区间$sum[rt]$，当然也可以先二分出右端点再区间覆盖，不过这样复杂度多一个$log$。
+当$sum[rt]$被更新时，$ans[rt]$复制为$sum[rt] - r + 1$即可，最小值肯定在右端点取嘛。
+
+$over!$
 **备注**
 第一次写线段树上二分
+时间复杂度：$O(nlog(n))$
+空间复杂度：$O(\alpha *n)$
 **AC_CODE**
-[here](https://github.com/Cwolf9/Cwolf9_code_lib-ACM/blob/master/problem/string/hash_manacher_trie/Gym102822C_Code_a_Trie.cpp)
+[here](https://github.com/Cwolf9/Cwolf9_code_lib-ACM/blob/master/problem/dataStructure/segmentTree/NC7501E_%E7%BA%BF%E6%AE%B5%E6%A0%91%E4%BC%98%E5%8C%96DP%E7%BA%BF%E6%AE%B5%E6%A0%91%E4%B8%8A%E4%BA%8C%E5%88%86.cpp)
 */
 #include <bits/stdc++.h>
 #define fi first
@@ -80,7 +94,7 @@ const int mod = 998244353;// 998244353
 const int MXN = 2e5 + 5;
 const int MXE = 1e6 + 5;
 int n, m;
-int ar[MXN], sum[MXN<<2], sumfg[MXN<<2], ans[MXN<<2], mn[MXN<<2];
+int ar[MXN], sum[MXN<<2], sumfg[MXN<<2], ans[MXN<<2];
 vector<int> num[MXN];
 void push_up(int rt) {
     sum[rt] = max(sum[rt << 1], sum[rt << 1 | 1]);
