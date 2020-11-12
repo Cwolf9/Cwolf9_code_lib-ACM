@@ -56,20 +56,140 @@ void debug_out(const T &f, const R &... r) {
 #endif
 /*================Header Template==============*/
 const int INF = 0x3f3f3f3f;
-const int mod = 998244353;// 998244353
-const int MXN = 2e5 + 5;
+const int mod = 1e9 + 7;// 998244353
+const int MXN = 4e5 + 5;
 const int MXE = 1e6 + 5;
 int n, m;
-
+int64 ar[MXN], res[MXN], res2[MXN], res3[MXN], res4[MXN];
 int main() {
 #ifndef ONLINE_JUDGE
     // freopen("/home/cwolf9/CLionProjects/mtxt/in.txt", "r", stdin);
     freopen("D:\\ACM\\mtxt\\in.txt", "r", stdin);
 #endif
-    n = read(), m = read();
-    
+    int tim = read();
+    while(tim --) {
+        n = read();
+        int flag = 1, fir = 0;
+        int64 sum = 0, tmp1 = 0, tmp2 = 0;
+        ar[n + 1] = 0;
+        rep(i, 1, n + 1) {
+            ar[i] = read();
+            sum += ar[i];
+            if(fir >= 0) {
+                if(ar[i] == 1) ++ fir;
+                else fir = - fir - 1;
+            }
+        }
+        fir = - fir - 1;
+        // debug(fir)
+        flag = (fir % 2 == 0);
+        int st = 1;
+        if(flag == 0) st = fir + 1;
+        rep(i, 1, st) {
+            if(i % 2 == 1) ++ tmp1;
+            else ++ tmp2;
+            res[i] = tmp1, res2[i] = tmp2;
+        }
+        rep(i, st, n + 1) {
+            if(ar[i + 1] == 1) {
+                int k = 1;
+                while(i + k <= n && ar[i + k] == 1) ++ k;
+                -- k;
+                int fg = 0, sub = 0, fg2 = 0;
+                if(i + k == n) {
+                    if(k % 2 == 0) {
+                        fg = 1;
+                        if(ar[i] % 2 == 0) sub = 1;
+                    }else {
+                        fg = 0;
+                        if(ar[i] % 2 == 1) sub = 1;
+                    }
+                }else {
+                    if(k % 2 == 0) {
+                        fg = 0;
+                        if(ar[i] % 2 == 1) sub = 1;
+                    }else {
+                        fg = 1;
+                        if(ar[i] % 2 == 0) sub = 1;
+                    }
+                }
+                if(flag) {
+                    res3[i] = (tmp1 + ar[i]) % mod;
+                    tmp1 += ar[i] - sub;
+                }else {
+                    res4[i] = (tmp2 + ar[i]) % mod;
+                    tmp2 += ar[i] - sub;
+                }
+                fg2 = ar[i] % 2;
+                tmp1 %= mod, tmp2 %= mod;
+                res[i] = tmp1, res2[i] = tmp2;
+                rep(j, 1, k + 1) {
+                    if(flag ^ fg) ++ tmp1;
+                    else ++ tmp2;
+                    tmp1 %= mod, tmp2 %= mod;
+                    res[i + j] = tmp1, res2[i + j] = tmp2;
+                    fg ^= 1;
+                    res3[i + j] = res3[i + j - 1];
+                    res4[i + j] = res4[i + j - 1];
+                    if(flag ^ fg2) ++ res3[i + j];
+                    else ++ res4[i + j];
+                    fg2 ^= 1;
+                }
+                i += k;
+            }else {
+                int sub = 0;
+                if(i == n) {
+                    if(ar[i] % 2 == 0) sub = 1;
+                }else {
+                    if(ar[i] % 2 == 1) sub = 1;
+                }
+                if(flag) {
+                    res3[i] = (tmp1 + ar[i]) % mod;
+                    tmp1 += ar[i] - sub;
+                }else {
+                    res4[i] = (tmp2 + ar[i]) % mod;
+                    tmp2 += ar[i] - sub;
+                }
+                tmp1 %= mod, tmp2 %= mod;
+                res[i] = tmp1, res2[i] = tmp2;
+            }
+        }
+        m = read();
+        while(m --) {
+            int64 R = read(), ans = 0;
+            if(sum == n) {
+                if(n % 2 == 0) {
+                    ans = (R / n) % mod * (n / 2) % mod;
+                    if((R / n) % 2 == 1) ans += (R % n) / 2;
+                    else ans += (R % n + 1) / 2;
+                }else {
+                    ans = (R / n) % mod * (n / 2 + 1) % mod;
+                    ans += (R % n + 1) / 2;
+                }
+                ans %= mod;
+            }else if(flag) {
+                ans = (R / n) % mod * res[n] % mod;
+                ans = (ans + res3[R % n]) % mod;
+                if(R % n == 0) {
+                    ans = (R / n - 1) % mod * res[n] % mod;
+                    ans = (ans + res3[n]) % mod;
+                }
+            }else {
+                ans = (R / n) % mod * res2[n] % mod;
+                ans = (ans + res4[R % n]) % mod;
+                if(R % n == 0) {
+                    ans = (R / n - 1) % mod * res2[n] % mod;
+                    ans = (ans + res4[n]) % mod;
+                }
+            }
+            printf("%lld\n", (ans + mod) % mod);
+        }
+    }
 #ifndef ONLINE_JUDGE
     cout << "time cost:" << 1.0 * clock() / CLOCKS_PER_SEC << "s" << endl;
 #endif
     return 0;
 }
+/*
+
+*/
