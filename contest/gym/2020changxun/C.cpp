@@ -60,86 +60,82 @@ const int mod = 1e9 + 7;// 998244353
 const int MXN = 1e5 + 5;
 const int MXE = 1e6 + 5;
 const int maxn = 1e5+7;
-int n;
-int ans[MXE][19], cnt[MXE];
-int val[MXN], sz[MXN], son[MXN];
-int inde, fid[MXN], lid[MXN], rid[MXN];
-vector<int> mp[MXN];
-int64 res;
-void dfs_sz(int u, int ba) {
-    sz[u] = 1;
-    son[u] = 0;
-    fid[u] = ++ inde;
-    rid[inde] = u;
-    for(int v: mp[u]) {
-        if(v == ba) continue;
-        dfs_sz(v, u);
-        sz[u] += sz[v];
-        if(sz[v] > sz[son[u]]) son[u] = v;
-    }
-    lid[u] = inde;
-}
-void dfs(int u, int ba, int cl) {
-    for(int v: mp[u]) {
-        if(v == ba || v == son[u]) continue;
-        dfs(v, u, 1);
-    }
-    if(son[u]) dfs(son[u], u, 0);
-    for(int v: mp[u]) {
-        if(v == ba || v == son[u]) continue;
-        for(int i = fid[v]; i <= lid[v]; ++i) {
-            int vi = rid[i];
-            rep(j, 0, 18) {
-                if(vi & (1 << j)) {
-                    if((val[u] ^ val[vi]) < MXE) res += (int64)ans[val[u] ^ val[vi]][j] * (1LL << j);
-                }else {
-                    if((val[u] ^ val[vi]) < MXE) res += (int64)(cnt[val[u] ^ val[vi]] - ans[val[u] ^ val[vi]][j]) * (1LL << j);
-                }
-            }
-        }
-        for(int i = fid[v]; i <= lid[v]; ++i) {
-            int vi = rid[i];
-            ++ cnt[val[vi]];
-            rep(j, 0, 18) {
-                if(!(vi & (1 << j))) {
-                    ++ ans[val[vi]][j];
-                }
-            }
-        }
-    }
-    ++ cnt[val[u]];
-    rep(j, 0, 18) {
-        if(!(u & (1 << j))) {
-            ++ ans[val[u]][j];
-        }
-    }
-    if(cl) {
-        clr(cnt, 0);
-        clr(ans, 0);
-    }
-}
+int64 n, k, s;
 
-int gcd(int a,int b) {
-    return b==0? a:gcd(b,a%b);
+int64 Exgcd(int64 a, int64 b, int64 &x, int64 &y) {
+    if (!b) {
+        x = 1;
+        y = 0;
+        return a;
+    }
+    int64 d = Exgcd(b, a % b, x, y);
+    int64 t = x;
+    x = y;
+    y = t - (a / b) * y;
+    return d;
 }
-
+int id[MXN];
+int64 ar[MXN];
+int fuck(int64 ansL) {
+	int64 c = (ansL + ansL + n - 1) * n / 2 - s;
+	if(c == (int64)0) {
+    	int64 xx = ansL;
+    	//debug(xx)
+        rep(i, 0, n) printf("%lld%c", xx + i, " \n"[i == n - 1]);
+        return 0;
+    }
+    int64 A = k + 1, B = n, C = c;
+    int64 x = 0, y = 0;
+    int64 g = __gcd(A, B);
+    if(C % g != 0) return 1;
+    A /= g, B /= g, C /= g;
+    Exgcd(A, B, x, y);
+    x *= C;
+    y *= C;
+    y %= A;
+    if(y > 0) {
+        y -= A;
+    }
+    x = (C - B * y) / A;
+    rep(tx, 0, 2) {
+		int64 nx = x + B * tx;
+    	int64 ny = y - A * tx;
+    	ar[1] = ansL - ny;
+	    rep(i, 2, n + 1) {
+	        ar[i] = ar[i - 1] + 1;
+	        if(nx >= n - i + 1 && ar[i - 1] - k >= 0) {
+	            id[i] = 1;
+	            nx -= n - i + 1;
+	            ar[i] = ar[i - 1] - k;
+	        }
+	    }
+	    if(nx == 0) {
+	    	rep(i, 1, n + 1) printf("%lld%c", ar[i], " \n"[i == n]);
+			return 0;	
+		}
+	}
+    return 1;
+}
 int main() {
 #ifndef ONLINE_JUDGE
     freopen("D:\\ACM\\mtxt\\in.txt", "r", stdin);
-    freopen("D:\\ACM\\mtxt\\out.txt", "w", stdout);
+    // freopen("D:\\ACM\\mtxt\\out.txt", "w", stdout);
 #endif
-    for(int i=1;i<=100;i++) {
-        for(int j=i+1;j<=100;j++) {
-            if((((i/gcd(i,j))^(j/gcd(i,j))) ==1 && (i^j) != gcd(i,j))) {
-                printf("!!!%d %d\n",i,j);
-            }
-            if((i^j) == gcd(i,j)) {
-                if( i %2 != 0 || j != i+1) {
-                    printf("%d %d %d %d\n",gcd(i,j),i,j,(i/gcd(i,j))^(j/gcd(i,j)));
-                }
-            }
-        }
+    n = read(), k = read(), s = read();
+    //debug(n, k, s)
+    int64 L = 1, R = s / n, mid, ansL = 0;
+    while(L <= R) {
+        mid = (L + R) >> 1;
+        if((mid + mid + n - 1) * n / 2 >= s) ansL = mid, R = mid - 1;
+        else L = mid + 1;
     }
+    //ansL = 6;
+    //write(ansL);
+    rep(i, -1, 1) {
+    	int x = fuck(max(ansL + i, (int64)0));
+		if(x == 0) return 0;
+	}
+    printf("-1\n");
 #ifndef ONLINE_JUDGE
     cout << "time cost:" << 1.0 * clock() / CLOCKS_PER_SEC << "s" << endl;
     // system("pause");
