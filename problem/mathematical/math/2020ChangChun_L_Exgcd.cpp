@@ -1,3 +1,45 @@
+/*
+## 2020 CCPC Changchun gym102832L
+
+ **题意**
+ 链接：[点我点我](https://codeforces.com/gym/102832)
+你需要构造出一个长度为$n$的序列满足以下三个条件：
+1. $a_i\ge 0$
+2. $(\sum_{i=1}^na_i)=s$
+3. 对于任意$i\ge 2,\; a_i=a_{i-1}+1$或者$a_i=a_{i-1}-k$
+
+$1\le n,k\le 1e5,1\le s\le 1e18$
+
+**思路**
+首先假设当$i\ge 2$的时候恒定有$a_i=a_{i-1}+1$成立，现在需要选出几个特殊的下标$i$令$a_i=a_{i-1}-k$，其他下标依然满足$a_i=a_{i-1}+1$。
+
+如果第$i$个数转为满足条件$B$的话，序列权值和会减少$(n-i+1)*(k+1)$
+修改操作只会让序列权值减少，如果初始时一定要保证序列权值大于等于$s$才行。
+
+所以初始$a_1$至少等于最小非负整数$ansL$满足$\frac {(a_1+a_1+n-1)*n}{2}$大于等于$s$，令$c=\frac {(a_1+a_1+n-1)*n}{2}-s$.
+如果$c=0$直接输出解即可。
+
+所以我现在只有两种操作：
+1. $a_1=a_1+1$，权值和加$n$；
+2. 选择一个$i(2\le i\le n)$，令$a_i=a_{i-1}-k$，权值和减少$(n-i+1)*(k+1)$且每个$i$只能被选中依次。
+
+求出一组合法解$(a,b)$满足$c+b*n = (k+1)*a$且$a\le \frac {n*(n-1)}2$即可。
+使用扩展欧几里得求出$a$的最小整数解即可还原出整个数组来，但是要满足$a_i\le 0$。
+又因为最小整数解是一组通解，所以我还可以得到任意多组解，包括$a$的次小整数解。
+
+实测只需要使用$a$的最小整数解和次小整数解即可通过本题。
+
+使用$a$还原数组的过程就是尽可能选择小的下标进行操作2。
+
+**AC_CODE**
+[点我点我](https://github.com/Cwolf9/Cwolf9_code_lib-ACM/blob/master/contest/gym/2020changxun/L.cpp)
+
+
+
+
+> My approach to 2020 Changchun by Shanghai JTU Problem L is as follows:
+
+*/
 #include <bits/stdc++.h>
 #define fi first
 #define se second
