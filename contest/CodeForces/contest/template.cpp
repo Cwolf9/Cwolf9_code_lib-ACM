@@ -60,13 +60,18 @@ const int mod = 998244353;// 998244353
 const int MXN = 2e5 + 5;
 const int MXE = 2e6 + 5;
 int n, m;
-
+void work() {
+    n = read();
+}
 int main() {
 #ifndef ONLINE_JUDGE
     freopen("D:in.in", "r", stdin);
     freopen("D:out.out", "w", stdout);
 #endif
-    n = read();
+    for(int cas = 1, tim = 1; cas <= tim; ++ cas) {
+        // printf("Case #%d:\n", cas);
+        work();
+    }
 #ifndef ONLINE_JUDGE
     cout << "time cost:" << 1.0 * clock() / CLOCKS_PER_SEC << "s" << endl;
     // system("pause");

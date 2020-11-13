@@ -64,12 +64,18 @@ const int INF = 0x3f3f3f3f;
 const int mod = 998244353;// 998244353
 const int MXN = 2e5 + 5;
 int n, m;
+void work() {
+    n = read();
+}
 int main() {
 #ifdef LH_LOCAL
     freopen("D:in.txt", "r", stdin);
     freopen("D:out.txt", "w", stdout);
 #endif
-    n = read();
+    for(int cas = 1, tim = 1; cas <= tim; ++ cas) {
+        // printf("Case #%d:\n", cas);
+        work();
+    }
 #ifdef LH_LOCAL
     cout << "time cost:" << 1.0 * clock() / CLOCKS_PER_SEC << "s" << endl;
     // system("pause");

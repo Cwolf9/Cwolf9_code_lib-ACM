@@ -37,16 +37,17 @@ typedef pair<int, int> pii;
 constexpr int maxn = 4e5 + 5;
 constexpr int maxe = 2e6 + 5;
 int n, m;
-
+void work() {
+    n = read();
+}
 int main() {
 #ifdef LH_LOCAL
     freopen("D:in.txt", "r", stdin);
     freopen("D:out.txt", "w", stdout);
 #endif
-    int tim = read();
-    while(tim --) {
-        n = read();
-
+    for(int cas = 1, tim = 1; cas <= tim; ++ cas) {
+        // printf("Case #%d:\n", cas);
+        work();
     }
 #ifdef LH_LOCAL
     cout << "time cost:" << 1.0 * clock() / CLOCKS_PER_SEC << "s" << endl;
