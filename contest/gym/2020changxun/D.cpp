@@ -1,3 +1,8 @@
+#pragma comment(linker, "/STACK:102400000,102400000")
+#pragma GCC optimize("unroll-loops")
+#pragma GCC optimize(3,"Ofast","inline")
+#pragma GCC optimize("Ofast,no-stack-protector")
+#pragma GCC target("sse,sse2,sse3,ssse3,sse4,popcnt,abm,mmx,avx,tune=native")
 #include <bits/stdc++.h>
 #define fi first
 #define se second
@@ -57,85 +62,62 @@ void debug_out(const T &f, const R &... r) {
 /*================Header Template==============*/
 const int INF = 0x3f3f3f3f;
 const int mod = 1e9 + 7;// 998244353
-const int MXN = 1e5 + 5;
-const int MXE = 1e6 + 5;
-const int maxn = 1e5+7;
-int64 n, k, s;
-
-int64 Exgcd(int64 a, int64 b, int64 &x, int64 &y) {
-    if (!b) {
-        x = 1;
-        y = 0;
-        return a;
+const int MXN = 2e5 + 5;
+const int MXE = 2e6 + 5;
+int n, m;
+int ar[MXN];
+char s[MXN];
+int64 ksm(int64 a, int64 b) {
+    int64 res = 1;
+    while(b > 0) {
+        if(b & 1) res = res * a % mod;
+        a = a * a % mod;
+        b >>= 1;
     }
-    int64 d = Exgcd(b, a % b, x, y);
-    int64 t = x;
-    x = y;
-    y = t - (a / b) * y;
-    return d;
+    return res;
 }
-int id[MXN];
-int64 ar[MXN];
-int fuck(int64 ansL) {
-	int64 c = (ansL + ansL + n - 1) * n / 2 - s;
-	if(c == (int64)0) {
-    	int64 xx = ansL;
-    	//debug(xx)
-        rep(i, 0, n) printf("%lld%c", xx + i, " \n"[i == n - 1]);
-        return 0;
-    }
-    int64 A = k + 1, B = n, C = c;
-    int64 x = 0, y = 0;
-    int64 g = __gcd(A, B);
-    if(C % g != 0) return 1;
-    A /= g, B /= g, C /= g;
-    Exgcd(A, B, x, y);
-    x *= C;
-    y *= C;
-    y %= A;
-    if(y > 0) {
-        y -= A;
-    }
-    x = (C - B * y) / A;
-    rep(tx, 0, 2) {
-		int64 nx = x + B * tx;
-    	int64 ny = y - A * tx;
-    	ar[1] = ansL - ny;
-	    rep(i, 2, n + 1) {
-	        ar[i] = ar[i - 1] + 1;
-	        if(nx >= n - i + 1 && ar[i - 1] - k >= 0) {
-	            id[i] = 1;
-	            nx -= n - i + 1;
-	            ar[i] = ar[i - 1] - k;
-	        }
-	    }
-	    if(nx == 0) {
-	    	rep(i, 1, n + 1) printf("%lld%c", ar[i], " \n"[i == n]);
-			return 0;	
-		}
-	}
-    return 1;
+const int MAXN = 3000 + 6;
+LL fac[MAXN], facInv[MAXN], inv[MAXN];
+LL COMB(int n, int m) {
+    if(n < m) return 0; if(n == m)return 1;
+    return fac[n] * facInv[m] % mod * facInv[n-m] % mod;
 }
 int main() {
 #ifndef ONLINE_JUDGE
     freopen("D:\\ACM\\mtxt\\in.txt", "r", stdin);
-    // freopen("D:\\ACM\\mtxt\\out.txt", "w", stdout);
+    freopen("D:\\ACM\\mtxt\\out.txt", "w", stdout);
 #endif
-    n = read(), k = read(), s = read();
-    //debug(n, k, s)
-    int64 L = 1, R = s / n, mid, ansL = 0;
-    while(L <= R) {
-        mid = (L + R) >> 1;
-        if((mid + mid + n - 1) * n / 2 >= s) ansL = mid, R = mid - 1;
-        else L = mid + 1;
+    inv[1] = 1;
+    fac[0] = facInv[0] = 1;
+    for(int i = 1; i < MAXN; ++i) {
+        if(i != 1) inv[i] = (mod - mod / i)*inv[mod % i] % mod;
+        fac[i] = fac[i-1] * i % mod;
+        facInv[i] = facInv[i-1] * inv[i] % mod;
     }
-    //ansL = 6;
-    //write(ansL);
-    rep(i, -1, 1) {
-    	int x = fuck(max(ansL + i, (int64)0));
-		if(x == 0) return 0;
-	}
-    printf("-1\n");
+    scanf("%s", s);
+    n = strlen(s);
+    m = read();
+    if(m == 0) {
+        printf("1\n");
+        return 0;
+    }
+    int one = 0;
+    int64 ans = 0;
+    rep(i, 0, n) {
+        if(s[i] == '1') {
+            // debug(n - i - 1)
+            rep(j, 0, n - i) {
+                int64 x = COMB(n - i - 1, j);
+                if(j + one) ans += ksm(m, j + one) * x % mod;
+                // debug(j + one)
+                ans %= mod;
+            }
+            ++ one;
+        }
+    }
+    if(one) ans += ksm(m, one);
+    ++ ans;
+    printf("%lld\n", (ans + mod) % mod);
 #ifndef ONLINE_JUDGE
     cout << "time cost:" << 1.0 * clock() / CLOCKS_PER_SEC << "s" << endl;
     // system("pause");

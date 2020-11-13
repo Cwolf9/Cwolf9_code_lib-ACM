@@ -1,8 +1,3 @@
-#pragma comment(linker, "/STACK:102400000,102400000")
-#pragma GCC optimize("unroll-loops")
-#pragma GCC optimize(3,"Ofast","inline")
-#pragma GCC optimize("Ofast,no-stack-protector")
-#pragma GCC target("sse,sse2,sse3,ssse3,sse4,popcnt,abm,mmx,avx,tune=native")
 #include <bits/stdc++.h>
 #define fi first
 #define se second
@@ -61,53 +56,84 @@ void debug_out(const T &f, const R &... r) {
 #endif
 /*================Header Template==============*/
 const int INF = 0x3f3f3f3f;
-const int mod = 998244353;// 998244353
-const int MXN = 2e5 + 5;
-const int MXE = 2e6 + 5;
-int n, m;
-int mp[7][2] = {
-    1, 8,
-    6, 18,
-    28, 28,
-    88, 58,
-    198, 128,
-    328, 198,
-    648, 388,
-};
-int main() {
-#ifndef ONLINE_JUDGE
-    freopen("D:\\ACM\\mtxt\\in.txt", "r", stdin);
-#endif
-    n = read();
-    int sta = (1 << 7), ans = 0;
-    rep(i, 1, sta) {
-        int sum = 0, exa = 0;
-        rep(j, 0, 7) {
-            if(i & (1 << j)) {
-                sum += mp[j][0];
-                exa += mp[j][1];
-            }
-        }
-        if(sum > n) continue;
-        int tn = n - sum, res = exa + sum * 10;
-        if(tn == 0) {
-            ans = max(ans, res);
-            continue;
-        }
-        per(j, 6, 0) {
-            if(i & (1 << j)) {
-                while(tn >= mp[j][0]) {
-                    tn -= mp[j][0];
-                    res += mp[j][0] * 10;
+const int mod = 1e9 + 7;// 998244353
+const int MXN = 1e5 + 5;
+const int MXE = 1e6 + 5;
+const int maxn = 1e5+7;
+int n;
+int ans[MXE][19], cnt[MXE];
+vector<int> vs;
+int val[MXN], sz[MXN], son[MXN];
+int inde, fid[MXN], lid[MXN], rid[MXN];
+vector<int> mp[MXN];
+int64 res;
+void dfs_sz(int u, int ba) {
+    sz[u] = 1;
+    son[u] = 0;
+    fid[u] = ++ inde;
+    rid[inde] = u;
+    for(int v: mp[u]) {
+        if(v == ba) continue;
+        dfs_sz(v, u);
+        sz[u] += sz[v];
+        if(sz[v] > sz[son[u]]) son[u] = v;
+    }
+    lid[u] = inde;
+}
+void dfs(int u, int ba, int cl) {
+    for(int v: mp[u]) {
+        if(v == ba || v == son[u]) continue;
+        dfs(v, u, 1);
+    }
+    if(son[u]) dfs(son[u], u, 0);
+    for(int v: mp[u]) {
+        if(v == ba || v == son[u]) continue;
+        for(int i = fid[v]; i <= lid[v]; ++i) {
+            int vi = rid[i];
+            rep(j, 0, 18) {
+                if(vi & (1 << j)) {
+                    if((val[u] ^ val[vi]) < MXE) res += (int64)ans[val[u] ^ val[vi]][j] * (1LL << j);
+                }else {
+                    if((val[u] ^ val[vi]) < MXE) res += (int64)(cnt[val[u] ^ val[vi]] - ans[val[u] ^ val[vi]][j]) * (1LL << j);
                 }
             }
         }
-        if(tn == 0) ans = max(ans, res);
+        for(int i = fid[v]; i <= lid[v]; ++i) {
+            int vi = rid[i];
+            if(cnt[val[vi]] == 0) vs.eb(val[vi]);
+            ++ cnt[val[vi]];
+            rep(j, 0, 18) {
+                if(!(vi & (1 << j))) {
+                    ++ ans[val[vi]][j];
+                }
+            }
+        }
     }
-    printf("%d\n", ans);
-#ifndef ONLINE_JUDGE
-    cout << "time cost:" << 1.0 * clock() / CLOCKS_PER_SEC << "s" << endl;
-    // system("pause");
-#endif
+    if(cnt[val[u]] == 0) vs.eb(val[u]);
+    ++ cnt[val[u]];
+    rep(j, 0, 18) {
+        if(!(u & (1 << j))) {
+            ++ ans[val[u]][j];
+        }
+    }
+    if(cl) {
+        for(int v: vs) {
+            cnt[v] = 0;
+            clr(ans[v], 0);
+        }
+        vs.clear();
+    }
+}
+int main() {
+    scanf("%d",&n);
+    for(int i = 1; i <= n; ++i) scanf("%d", val + i);
+    int a, b;
+    for(int i = 1; i < n; ++i) {
+        scanf("%d%d", &a, &b);
+        mp[a].eb(b), mp[b].eb(a);
+    }
+    dfs_sz(1, 0);
+    dfs(1, 0, 0);
+    printf("%lld\n", res);
     return 0;
 }
