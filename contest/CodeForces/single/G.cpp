@@ -61,6 +61,7 @@ const int MXN = 4e5 + 5;
 const int MXE = 1e6 + 5;
 int n, m;
 int flag, sum;
+int lasf, lasf2;
 int64 ar[MXN], res1[MXN], res2[MXN], res3[MXN], res4[MXN];
 /**
  * flag表示先手能否永远保证他的先拿资格（全1情况特判）
@@ -146,7 +147,9 @@ void word() {
         }else {
             if(flag) {
                 res3[i] = (tmp1 + ar[i]) % mod;
+                res4[i] = res4[i - 1];
             }else {
+                res3[i] = res3[i - 1];
                 res4[i] = (tmp2 + ar[i]) % mod;
             }
             int sub = 0;
@@ -204,8 +207,16 @@ int main() {
                     ans = (R / n - 1) % mod * res1[n] % mod;
                     ans = (ans + res4[n]) % mod;
                 }else {
-                    ans = (R / n) % mod * res1[n] % mod;
-                    ans = (ans + res4[R % n]) % mod;
+                    ans = max(R / n - 1, 0LL) % mod * res1[n] % mod;
+                    if(ar[n] == 1) {
+
+                    }else if(ar[n] & 1) {
+                        if(ar[n] + res4[R % n] > ar[n] - 1 + res3[R % n] || (ar[n] + res4[R % n] == ar[n] - 1 + res3[R % n] && res3[R % n] <= res4[R % n])) {
+                            ans = (ans + res3[R % n]);
+                        }else {
+                            ans = (ans + res4[R % n]);
+                        }
+                    }
                 }
             }
             printf("%lld\n", (ans + mod) % mod);

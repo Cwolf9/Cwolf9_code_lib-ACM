@@ -7,8 +7,8 @@
 #define SZ(x) ((int)(x).size())
 #define all(x) (x).begin(), (x).end()
 #define clr(a, b) memset((a), (b), sizeof((a)))
-#define rep(i, s, t) for(int i = (s), LIM=(t); i < LIM; ++i)
-#define per(i, s, t) for(int i = (s), LIM=(t); i >= LIM; --i)
+#define rep(i, s, t) for(register int i = (s), LIM=(t); i < LIM; ++i)
+#define per(i, s, t) for(register int i = (s), LIM=(t); i >= LIM; --i)
 #define GKD std::ios::sync_with_stdio(false);cin.tie(0)
 #define my_unique(x) sort(all(x)), x.erase(unique(all(x)), x.end())
 using namespace std;
@@ -23,7 +23,7 @@ inline int64 read() {
     int64 x = 0;int f = 0;char ch = getchar();
     while (ch < '0' || ch > '9') f |= (ch == '-'), ch = getchar();
     while (ch >= '0' && ch <= '9') x = (x << 3) + (x << 1) + ch - '0', ch =
-                                                                               getchar(); return x = f ? -x : x;
+    getchar(); return x = f ? -x : x;
 }
 inline void write(int64 x, bool f = true) {
     if (x == 0) {putchar('0'); if(f)putchar('\n');else putchar(' ');return;}
@@ -49,7 +49,7 @@ void debug_out(const T &f, const R &... r) {
     cout << f << " ";
     debug_out(r...);
 }
-#ifndef ONLINE_JUDGE
+#ifdef LH_LOCAL
 #define debug(...) cout << "[" << #__VA_ARGS__ << "]: ", debug_out(__VA_ARGS__);
 #else
 #define debug(...) ;
@@ -57,18 +57,23 @@ void debug_out(const T &f, const R &... r) {
 /*================Header Template==============*/
 const int INF = 0x3f3f3f3f;
 const int mod = 998244353;// 998244353
-const int MXN = 5e5 + 5;
-const int MXE = 1e6 + 5;
+const int MXN = 2e5 + 5;
 int n, m;
-
+void work() {
+    n = read();
+}
 int main() {
-#ifndef ONLINE_JUDGE
-    // freopen("/home/cwolf9/CLionProjects/mtxt/in.txt", "r", stdin);
-    freopen("D:\\ACM\\mtxt\\in.txt", "r", stdin);
+#ifdef LH_LOCAL
+    freopen("D:in.txt", "r", stdin);
+    freopen("D:out.txt", "w", stdout);
 #endif
-    
-#ifndef ONLINE_JUDGE
+    for(int cas = 1, tim = 1; cas <= tim; ++ cas) {
+        // printf("Case #%d:\n", cas);
+        work();
+    }
+#ifdef LH_LOCAL
     cout << "time cost:" << 1.0 * clock() / CLOCKS_PER_SEC << "s" << endl;
+    // system("pause");
 #endif
     return 0;
 }

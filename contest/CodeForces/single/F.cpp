@@ -59,13 +59,28 @@ const int INF = 0x3f3f3f3f;
 const int mod = 998244353;// 998244353
 const int MXN = 2e5 + 5;
 int n, m;
+vector<int> mp[MXN];
+
+int sumDepths(int u, int dep) {
+    m += dep;
+    for(int v: mp[u]) {
+        sumDepths(v, dep + 1);
+    }
+}
+
 int main() {
 #ifdef LH_LOCAL
     debug(20)
     // freopen("D:\\ACM\\mtxt\\in.txt", "r", stdin);
 #endif
     n = read();
-    print(n);
+    for(int i = 1; i <= n; ++i) {
+        int a = read(), b = read();
+        mp[a].emplace_back(b);
+        mp[b].emplace_back(a);
+    }
+    sumDepths(1, 1);
+    printf("%d\n", m);
 #ifdef LH_LOCAL
     // cout << "time cost:" << 1.0 * clock() / CLOCKS_PER_SEC << "s" << endl;
     // system("pause");

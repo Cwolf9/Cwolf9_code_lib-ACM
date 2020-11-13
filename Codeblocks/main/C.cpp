@@ -49,7 +49,7 @@ void debug_out(const T &f, const R &... r) {
     cout << f << " ";
     debug_out(r...);
 }
-#ifndef ONLINE_JUDGE
+#ifdef LH_LOCAL
 #define debug(...) cout << "[" << #__VA_ARGS__ << "]: ", debug_out(__VA_ARGS__);
 #else
 #define debug(...) ;
@@ -58,17 +58,20 @@ void debug_out(const T &f, const R &... r) {
 const int INF = 0x3f3f3f3f;
 const int mod = 998244353;// 998244353
 const int MXN = 2e5 + 5;
-const int MXE = 2e6 + 5;
 int n, m;
-
-
+void work() {
+    n = read();
+}
 int main() {
-#ifndef ONLINE_JUDGE
-    freopen("D:\\ACM\\mtxt\\in.txt", "r", stdin);
-    // freopen("D:\\ACM\\mtxt\\out.txt", "w", stdout);
+#ifdef LH_LOCAL
+    freopen("D:in.txt", "r", stdin);
+    freopen("D:out.txt", "w", stdout);
 #endif
-    
-#ifndef ONLINE_JUDGE
+    for(int cas = 1, tim = 1; cas <= tim; ++ cas) {
+        // printf("Case #%d:\n", cas);
+        work();
+    }
+#ifdef LH_LOCAL
     cout << "time cost:" << 1.0 * clock() / CLOCKS_PER_SEC << "s" << endl;
     // system("pause");
 #endif
