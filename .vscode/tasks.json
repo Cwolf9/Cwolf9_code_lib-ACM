@@ -10,7 +10,9 @@
 				"${file}",
 				"-o",
 				"${fileDirname}\\${fileBasenameNoExtension}.exe",
-				"-std=c++11",
+				"-std=c++14",
+				"-D",
+				"LH_LOCAL",
 			],
 			"options": {
 				"cwd": "D:\\ACM\\MinGW\\bin"

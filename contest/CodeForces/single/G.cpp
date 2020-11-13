@@ -1,5 +1,3 @@
-#define LH_LOCAL
-// #define LLDO
 #include <bits/stdc++.h>
 #define fi first
 #define se second
@@ -9,23 +7,32 @@
 #define SZ(x) ((int)(x).size())
 #define all(x) (x).begin(), (x).end()
 #define clr(a, b) memset((a), (b), sizeof((a)))
-#define rep(i,s,t) for(register int i=s;i<t;++i)
-#define per(i,s,t) for(register int i=s;i>=t;--i)
-#define iis std::ios::sync_with_stdio(false);cin.tie(0)
+#define rep(i, s, t) for(int i = (s), LIM=(t); i < LIM; ++i)
+#define per(i, s, t) for(int i = (s), LIM=(t); i >= LIM; --i)
+#define GKD std::ios::sync_with_stdio(false);cin.tie(0)
 #define my_unique(x) sort(all(x)), x.erase(unique(all(x)), x.end())
 using namespace std;
+typedef long long LL;
 typedef long long int64;
 typedef unsigned long long uint64;
 typedef pair<int, int> pii;
-// mt19937 rng(time(NULL));
+// mt19937 rng(time(NULL));//std::clock()
 // mt19937_64 rng64(chrono::steady_clock::now().time_since_epoch().count());
-// mt19937_64 generator(std::clock());
-// shuffle(arr, arr + n, generator);
+// shuffle(arr, arr + n, rng64);
 inline int64 read() {
     int64 x = 0;int f = 0;char ch = getchar();
     while (ch < '0' || ch > '9') f |= (ch == '-'), ch = getchar();
     while (ch >= '0' && ch <= '9') x = (x << 3) + (x << 1) + ch - '0', ch =
-    getchar(); return x = f ? -x : x;
+                                                                               getchar(); return x = f ? -x : x;
+}
+inline void write(int64 x, bool f = true) {
+    if (x == 0) {putchar('0'); if(f)putchar('\n');else putchar(' ');return;}
+    if (x < 0) {putchar('-');x = -x;}
+    static char s[23];
+    int l = 0;
+    while (x != 0)s[l++] = x % 10 + 48, x /= 10;
+    while (l)putchar(s[--l]);
+    if(f)putchar('\n');else putchar(' ');
 }
 int lowbit(int x) { return x & (-x); }
 template <class T>
@@ -42,108 +49,170 @@ void debug_out(const T &f, const R &... r) {
     cout << f << " ";
     debug_out(r...);
 }
-#ifdef LH_LOCAL
+#ifndef ONLINE_JUDGE
 #define debug(...) cout << "[" << #__VA_ARGS__ << "]: ", debug_out(__VA_ARGS__);
 #else
 #define debug(...) ;
 #endif
-#ifdef LLDO
-    const char ptout[] = "%lld";
-#else
-    const char ptout[] = "%d";
-#endif
-template <typename T>
-void print(const T &f) {printf(ptout, f);putchar('\n');}
-template <typename T, typename... R>
-void print(const T &f, const R &... r) {printf(ptout, f);putchar(' ');print(r...);}
-
+/*================Header Template==============*/
 const int INF = 0x3f3f3f3f;
-const int mod = 1e6 + 3;// 998244353
-const int MXN = 5e5 + 5;
+const int mod = 1e9 + 7;// 998244353
+const int MXN = 4e5 + 5;
 const int MXE = 1e6 + 5;
 int n, m;
-struct my_FFT {
-    const double pi = acos (-1.0);
-    static const int MX = (1<<17) + 5;
-    static const int MM = MX * 4;
-    int len, res[MM], mx; //开大4倍
-    struct cpx {
-        double r, i;
-        cpx (double r = 0, double i = 0) : r (r), i (i) {};
-        cpx operator+ (const cpx &b) {return cpx (r + b.r, i + b.i);}
-        cpx operator- (const cpx &b) {return cpx (r - b.r, i - b.i);}
-        cpx operator* (const cpx &b) {return cpx (r*b.r - i*b.i,i*b.r + r * b.i);}
-    } va[MM], vb[MM];
-    void rader (cpx F[], int len) { //len = 2^M,reverse F[i] with  F[j] j为i二进制反转
-        int j = len >> 1;
-        for (int i = 1; i < len - 1; ++i) {
-            if (i < j) swap (F[i], F[j]); // reverse
-            int k = len >> 1;
-            while (j >= k) j -= k, k >>= 1;
-            if (j < k) j += k;
+int flag, sum;
+int64 ar[MXN], res1[MXN], res2[MXN], res3[MXN], res4[MXN];
+/**
+ * flag表示先手能否永远保证他的先拿资格（全1情况特判）
+ * res1[i]表示我是先手我为保证最后我先拿的情况下最大和
+ * res2[i]表示我是后手他为保证最后他先拿的情况下最大和
+ * res3[i]表示我是先手我不为保证最后我先拿的情况下最大和
+ * res4[i]表示我是后手他不为保证最后他先拿的情况下最大和
+ * tmp1先手得分
+ * tmp2后手得分
+ */
+void word() {
+    n = read();
+    sum = n;
+    flag = 1;
+    int fir = 0, st = 1;
+    ar[n + 1] = 0;
+    rep(i, 1, n + 1) {
+        ar[i] = read();
+        if(ar[i] != 1) sum = -1;
+        if(fir >= 0) {
+            if(ar[i] == 1) ++ fir;
+            else fir = - fir - 1;
         }
     }
-    void FFT (cpx F[], int len, int t) {
-        rader (F, len);
-        for (int h = 2; h <= len; h <<= 1) {
-            cpx wn (cos (-t * 2 * pi / h), sin (-t * 2 * pi / h) );
-            for (int j = 0; j < len; j += h) {
-                cpx E (1, 0); //旋转因子
-                for (int k = j; k < j + h / 2; ++k) {
-                    cpx u = F[k];
-                    cpx v = E * F[k + h / 2];
-                    F[k] = u + v;
-                    F[k + h / 2] = u - v;
-                    E = E * wn;
+    fir = - fir - 1;
+    // debug(fir)
+    flag = (fir % 2 == 0);
+    if(flag == 0) st = fir + 1;
+    int64 tmp1 = 0, tmp2 = 0;
+    rep(i, 1, st) {
+        if(i % 2 == 1) ++ tmp1;
+        else ++ tmp2;
+        res1[i] = tmp1, res2[i] = tmp2;
+        res3[i] = tmp1, res4[i] = tmp2;
+    }
+    rep(i, st, n + 1) {
+        if(ar[i + 1] == 1) {//后面有一连串1做好准备
+            int k = 1;
+            while(i + k <= n && ar[i + k] == 1) ++ k;
+            -- k;
+            int fg = 0, sub = 0, fg2 = 0;
+            if(i + k == n) {//跑完1会自动改变回合情况
+                if(k % 2 == 0) {//先手拿奇数才能保证下一轮自己先手
+                    fg = 1;
+                    if(ar[i] % 2 == 0) sub = 1;
+                }else {//先手拿偶数才能保证下一轮自己先手
+                    fg = 0;
+                    if(ar[i] % 2 == 1) sub = 1;
+                }
+            }else {
+                if(k % 2 == 0) {//先手拿偶数才能保证自己先手
+                    fg = 0;
+                    if(ar[i] % 2 == 1) sub = 1;
+                }else {//先手拿奇数才能保证自己先手
+                    fg = 1;
+                    if(ar[i] % 2 == 0) sub = 1;
                 }
             }
+            if(flag) {
+                res3[i] = (tmp1 + ar[i]) % mod;
+                res4[i] = res4[i - 1];
+                tmp1 = (tmp1 + ar[i] - sub) % mod;
+            }else {
+                res3[i] = res3[i - 1];
+                res4[i] = (tmp2 + ar[i]) % mod;
+                tmp2 = (tmp2 + ar[i] - sub) % mod;
+            }
+            fg2 = ar[i] % 2;//全拿是否会改变回合
+            res1[i] = tmp1, res2[i] = tmp2;
+            rep(j, 1, k + 1) {
+                if(flag ^ fg) ++ tmp1;
+                else ++ tmp2;
+                tmp1 %= mod, tmp2 %= mod;
+                res1[i + j] = tmp1, res2[i + j] = tmp2;
+                fg ^= 1;
+                res3[i + j] = res3[i + j - 1];
+                res4[i + j] = res4[i + j - 1];
+                if(flag ^ fg2) ++ res3[i + j];
+                else ++ res4[i + j];
+                fg2 ^= 1;
+            }
+            i += k;
+        }else {
+            if(flag) {
+                res3[i] = (tmp1 + ar[i]) % mod;
+            }else {
+                res4[i] = (tmp2 + ar[i]) % mod;
+            }
+            int sub = 0;
+            if(i == n) {
+                if(flag) {//最后一次拿奇数才能保证还能先手资格
+                    if(ar[i] % 2 == 0) sub = 1;
+                    tmp1 = (tmp1 + ar[i] - sub) % mod;
+                }else {//最后一次拿偶数才能保证还能先拿资格
+                    if(ar[i] % 2 == 1) sub = 1;
+                    tmp2 = (tmp2 + ar[i] - sub) % mod;
+                }
+            }else {//拿偶数不改变回合
+                if(ar[i] % 2 == 1) sub = 1;
+                if(flag) {
+                    tmp1 = (tmp1 + ar[i] - sub) % mod;
+                }else {
+                    tmp2 = (tmp2 + ar[i] - sub) % mod;
+                }
+            }
+            res1[i] = tmp1, res2[i] = tmp2;
         }
-        if (t == -1) for (int i = 0; i < len; ++i) F[i].r /= len;//IDFT
     }
-    void Conv (cpx a[], cpx b[], int len) { //求卷积
-        FFT (a, len, 1); FFT (b, len, 1);
-        for (int i = 0; i < len; ++i) a[i] = a[i] * b[i];
-        FFT (a, len, -1);
-    }
-    void gao (int64 a[], int64 b[], int n, int m, int64 ans[]) {
-        len = 1; mx = n + m;
-        while (len <= mx) len <<= 1; //mx为卷积后最大下标
-        for (int i = 0; i < len; i++) va[i].r =va[i].i = vb[i].r = vb[i].i = 0;
-        for (int i = 0; i < n; i++) va[i].r = a[i];//根据题目要求改写
-        for (int i = 0; i < m; i++) vb[i].r = b[i];//根据题目要求改写
-        Conv (va, vb, len);
-        for (int i = 0; i < len; ++i) ans[i] += (int64)(va[i].r + 0.5);
-    }
-}fft;
-int ar[MXN], b, c, d;
-int fac[MXN], inv[MXN], invF[MXN];
-int g[MXN], f[MXN], h[MXN];
+}
 int main() {
-#ifdef LH_LOCAL
-    freopen("D:in.in", "r", stdin);
-    freopen("D:out.out", "w", stdout);
+#ifndef ONLINE_JUDGE
+    // freopen("/home/cwolf9/CLionProjects/mtxt/in.txt", "r", stdin);
+    freopen("D:\\ACM\\mtxt\\in.txt", "r", stdin);
 #endif
-    n = read();
-    b = read();
-    c = read();
-    d = read();
-    fac[0] = invF[0] = inv[1] = 1;
-    for(int i = 1; i <= n; ++i) {
-        ar[i] = read();
-        fac[i] = (int64)fac[i - 1] * i % mod;
-        if(i != 1) inv[i] = (mod - mod / i)*(int64)inv[mod % i] % mod;
-        invF[i] = (int64)invF[i-1] * inv[i] % mod;
+    int tim = read();
+    while(tim --) {
+        word();
+        m = read();
+        while(m --) {
+            int64 R = read(), ans = 0;
+            if(sum == n) {
+                if(n % 2 == 0) {
+                    ans = (R / n) % mod * (n / 2) % mod;
+                    if((R / n) % 2 == 1) ans += (R % n) / 2;
+                    else ans += (R % n + 1) / 2;
+                }else {
+                    ans = (R / n) % mod * (n / 2 + 1) % mod;
+                    ans += (R % n + 1) / 2;
+                }
+                ans %= mod;
+            }else if(flag || R <= n) {
+                if(R % n == 0) {
+                    ans = (R / n - 1) % mod * res1[n] % mod;
+                    ans = (ans + res3[n]) % mod;
+                }else {
+                    ans = (R / n) % mod * res1[n] % mod;
+                    ans = (ans + res3[R % n]) % mod;
+                }
+            }else {
+                if(R % n == 0) {
+                    ans = (R / n - 1) % mod * res1[n] % mod;
+                    ans = (ans + res4[n]) % mod;
+                }else {
+                    ans = (R / n) % mod * res1[n] % mod;
+                    ans = (ans + res4[R % n]) % mod;
+                }
+            }
+            printf("%lld\n", (ans + mod) % mod);
+        }
     }
-    int tmp = 1;
-    for(int i = 0; i < n; ++i) {
-        g[i] = invF[n - 1 - i];
-        f[i] = (int64)ar[i] * tmp % mod * fac[i] % mod;
-        tmp = (int64)tmp * d % mod;
-    }
-
-#ifdef LH_LOCAL
-    // cout << "time cost:" << 1.0 * clock() / CLOCKS_PER_SEC << "s" << endl;
-    // system("pause");
+#ifndef ONLINE_JUDGE
+    cout << "time cost:" << 1.0 * clock() / CLOCKS_PER_SEC << "s" << endl;
 #endif
     return 0;
 }
