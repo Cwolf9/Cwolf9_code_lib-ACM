@@ -57,17 +57,88 @@ void debug_out(const T &f, const R &... r) {
 /*================Header Template==============*/
 const int INF = 0x3f3f3f3f;
 const int mod = 998244353;// 998244353
-const int MXN = 2e5 + 5;
+const int MXN = 2e2 + 5;
 int n, m;
+int mp[MXN][MXN], vis[MXN][MXN], num[MXN][MXN], ans[MXN][MXN];
+int dir[4][2] = {1, 0, -1, 0, 0, 1, 0, -1};
+void dfs(int x, int y, int a, int b) {
+    vis[x][y] = 1;
+    ++ num[a][b];
+    // debug(x, y, a, b, num[a][b])
+    rep(i, 0, 4) {
+        int px = x + dir[i][0], py = y + dir[i][1];
+        if(px < 1 || px > n || py < 1 || py > m) continue;
+        if(vis[px][py] == 0 && mp[px][py] == mp[a][b]) {
+            dfs(px, py, a, b);
+        } 
+    }
+}
+int inde;
+bool dfs2(int x, int y, int add) {
+    // debug(x, y, a, b, add)
+    ans[x][y] += add;
+    vis[x][y] = inde;
+    rep(i, 0, 4) {
+        int px = x + dir[i][0], py = y + dir[i][1];
+        if(px < 1 || px > n || py < 1 || py > m) continue;
+        if(ans[px][py] == ans[x][y]) {
+            if(ans[px][py] != mp[px][py]) {
+                ans[x][y] -= add;
+                return false;
+            }else {
+                bool f2 = dfs2(px, py, 1);
+                if(!f2) {
+                    ans[x][y] -= add;
+                    return false;
+                }
+            }
+        }
+    }
+    return true;
+}
 void work() {
-    n = read();
+    inde = 2;
+    n = read(), m = read();
+    rep(i, 1, n + 1) {
+        rep(j, 1, m + 1) {
+            ans[i][j] = mp[i][j] = read();
+            vis[i][j] = num[i][j] = 0;
+        }
+    }
+    rep(i, 1, n + 1) {
+        rep(j, 1, m + 1) {
+            if(vis[i][j] == 0) dfs(i, j, i, j);
+        }
+    }
+    rep(i, 1, n + 1) {
+        rep(j, 1, m + 1) {
+            if(mp[i][j] != ans[i][j]) continue;
+            bool ff = 0;
+            rep(d, 0, 4) {
+                int px = i + dir[d][0], py = j + dir[d][1];
+                if(px < 1 || px > n || py < 1 || py > m) continue;
+                if(ans[px][py] == ans[i][j]) ff = 1;
+            }
+            if(ff == 0) continue;
+            bool f = dfs2(i, j, 1);
+            ++ inde;
+            if(!f) {
+                dfs2(i, j, 0);
+                ++ inde;
+            }
+        }
+    }
+    rep(i, 1, n + 1) {
+        rep(j, 1, m + 1) {
+            printf("%d%c", ans[i][j], " \n"[j == m]);
+        }
+    }
 }
 int main() {
 #ifdef LH_LOCAL
-    freopen("D:in.txt", "r", stdin);
-    freopen("D:out.txt", "w", stdout);
+    freopen("D:\\ACM\\mtxt\\in.txt", "r", stdin);
 #endif
-    for(int cas = 1, tim = 1; cas <= tim; ++ cas) {
+    for(int cas = 1, tim = read(); cas <= tim; ++ cas) {
         // printf("Case #%d:\n", cas);
         work();
     }

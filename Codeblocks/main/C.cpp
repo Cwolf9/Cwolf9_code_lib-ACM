@@ -59,13 +59,22 @@ const int INF = 0x3f3f3f3f;
 const int mod = 998244353;// 998244353
 const int MXN = 2e5 + 5;
 int n, m;
+class node {
+    public:
+    int x, y, z, sum;
+    int get() {
+        return sum = x + z;
+    }
+};
 void work() {
-    n = read();
+    n = read(); m = read();
+    node x = {n, n, m};
+    auto ans = x.get();
+    printf("%d\n", ans);
 }
 int main() {
 #ifdef LH_LOCAL
-    freopen("D:in.txt", "r", stdin);
-    freopen("D:out.txt", "w", stdout);
+    freopen("D:\\ACM\\mtxt\\in.txt", "r", stdin);
 #endif
     for(int cas = 1, tim = 1; cas <= tim; ++ cas) {
         // printf("Case #%d:\n", cas);
