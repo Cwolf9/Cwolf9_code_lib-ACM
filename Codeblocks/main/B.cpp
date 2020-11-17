@@ -1,94 +1,93 @@
 #include <bits/stdc++.h>
+#define fi first
+#define se second
+#define o2(x) (x) * (x)
+#define mk make_pair
+#define eb emplace_back
+#define SZ(x) ((int)(x).size())
+#define all(x) (x).begin(), (x).end()
+#define clr(a, b) memset((a), (b), sizeof((a)))
+#define rep(i, s, t) for(register int i = (s), LIM=(t); i < LIM; ++i)
+#define per(i, s, t) for(register int i = (s), LIM=(t); i >= LIM; --i)
+#define GKD std::ios::sync_with_stdio(false);cin.tie(0)
+#define my_unique(x) sort(all(x)), x.erase(unique(all(x)), x.end())
 using namespace std;
 typedef long long LL;
-const int N = 10005;
+typedef long long int64;
+typedef unsigned long long uint64;
+typedef pair<int, int> pii;
+// mt19937 rng(time(NULL));//std::clock()
+// mt19937_64 rng64(chrono::steady_clock::now().time_since_epoch().count());
+// shuffle(arr, arr + n, rng64);
+inline int64 read() {
+    int64 x = 0;int f = 0;char ch = getchar();
+    while (ch < '0' || ch > '9') f |= (ch == '-'), ch = getchar();
+    while (ch >= '0' && ch <= '9') x = (x << 3) + (x << 1) + ch - '0', ch =
+    getchar(); return x = f ? -x : x;
+}
+inline void write(int64 x, bool f = true) {
+    if (x == 0) {putchar('0'); if(f)putchar('\n');else putchar(' ');return;}
+    if (x < 0) {putchar('-');x = -x;}
+    static char s[23];
+    int l = 0;
+    while (x != 0)s[l++] = x % 10 + 48, x /= 10;
+    while (l)putchar(s[--l]);
+    if(f)putchar('\n');else putchar(' ');
+}
+int lowbit(int x) { return x & (-x); }
+template <class T>
+T big(const T &a1, const T &a2) {return a1 > a2 ? a1 : a2;}
+template <class T>
+T sml(const T &a1, const T &a2) {return a1 < a2 ? a1 : a2;}
+template <typename T, typename... R>
+T big(const T &f, const R &... r) {return big(f, big(r...));}
+template <typename T, typename... R>
+T sml(const T &f, const R &... r) {return sml(f, sml(r...));}
+void debug_out() { cout << '\n'; }
+template <typename T, typename... R>
+void debug_out(const T &f, const R &... r) {
+    cout << f << " ";
+    debug_out(r...);
+}
+#ifdef LH_LOCAL
+#define debug(...) cout << "[" << #__VA_ARGS__ << "]: ", debug_out(__VA_ARGS__);
+#else
+#define debug(...) ;
+#endif
+/*================Header Template==============*/
 const int INF = 0x3f3f3f3f;
-int n, m, tot, vt, vs;
-int d[N], head[N];
-char mp[55][55];
-int dir[4][2] = {1, 0, -1, 0, 0, 1, 0, -1};
-struct lp {
-    int to, w, nex;
-    lp() {}
-    lp(int a, int b, int c) {
-        to = a;
-        w = b;
-        nex = c;
-    }
-} cw[N << 2];
-inline void add(int a, int b, int c) {
-    cw[++tot] = lp(b, c, head[a]);
-    head[a] = tot;
-    cw[++tot] = lp(a, 0, head[b]);
-    head[b] = tot;
-}
-bool bfs() {
-    memset(d, -1, sizeof(d));
-    queue<int> Q;
-    Q.push(vt);
-    d[vt] = 0;
-    while (!Q.empty()) {
-        int u = Q.front();
-        Q.pop();
-        for (int i = head[u]; i != -1; i = cw[i].nex) {
-            int v = cw[i].to;
-            if (cw[i ^ 1].w && d[v] == -1) {
-                d[v] = d[u] + 1;
-                Q.push(v);
-            }
-        }
-    }
-    return d[vs] != -1;
-}
-int dfs(int x, int f) {
-    if (x == vt || f == 0) return f;
-    int use = 0, w;
-    for (int i = head[x]; i != -1; i = cw[i].nex) {
-        int to = cw[i].to;
-        if (d[to] == d[x] - 1 && cw[i].w) {
-            w = dfs(to, min(cw[i].w, f - use));
-            cw[i].w -= w, cw[i ^ 1].w += w;
-            use += w;
-            if (use == f) return f;
-        }
-    }
-    return use;
-}
-void input() {
-    scanf("%s", mp[0]);
-    n = strlen(mp[0]);
-    for (int i = 1; i < n; ++i) scanf("%s", mp[i]);
-    tot = -1;
-    memset(head, -1, sizeof(head));  
-    
-    vs = 0, vt = n * n + 1;
+const int mod = 998244353;// 998244353
+const int MXN = 5e3 + 5;
+int n, m;
+char s[MXN], t[MXN];
+int az[27][MXN];
+void work() {
+	int st = 1 << 4, ed = 1 << 5;
+	debug(st, ed)
+	rep(i, st, ed) {
+		int Mn = 1e8, pos = 0;
+		rep(j, st, ed) {
+			if(i != j && (i ^ j) < Mn) {
+				if(i % 2 == 0 && j == i + 1) continue;
+				if(i % 2 == 1 && j == i - 1) continue;
+				Mn = (i ^ j);
+				pos = j;
+			}
+		}
+		debug(i, pos)
+	}
 }
 int main() {
-    input();
-    int ans = 0, sum = 0, dian = 0;
-    for (int i = 0; i < n; ++i) {
-        for (int j = 0; j < n; ++j) {
-            if (mp[i][j] == 'O') {
-                add(vs, i * n + j + 1, 1);
-                for (int x = 0; x < 4; ++x) {
-                    int px = dir[x][0] + i, py = dir[i][1] + j;
-                    if (px >= 0 && px < n && py >= 0 && py < n &&
-                        mp[px][py] == '.') {
-                        add(i * n + j + 1, px * n + py + 1, INF);
-                    }
-                }
-            } else if (mp[i][j] == '.') {
-                add(i * n + j + 1, vt, 1);
-                ++sum;
-            }
-        }
+#ifdef LH_LOCAL
+    //freopen("D:\\ACM\\mtxt\\in.txt", "r", stdin);
+#endif
+    for(int cas = 1, tim = 1; cas <= tim; ++ cas) {
+        // printf("Case #%d:\n", cas);
+        work();
     }
-    cout << sum << endl;
-    while (bfs()) ans += dfs(vs, INF);
-    cout << ans << endl;
-    /*for(int i = 0; i <= tot; ++i) {
-        if(cw[i].to == vt && cw[i].w == 0) -- dian;
-    }*/
-    printf("%d\n", sum - ans);
+#ifdef LH_LOCAL
+    cout << "time cost:" << 1.0 * clock() / CLOCKS_PER_SEC << "s" << endl;
+    // system("pause");
+#endif
     return 0;
 }

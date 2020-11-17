@@ -1,95 +1,101 @@
-#include <stdio.h>
-#include <string.h>
-#include <malloc.h>
-#define Status bool
-#define ERROR false
-#define OK true
-
-typedef struct {
-    char *elem;
-    int length;
-}SqList;
-Status CreateList(SqList &L, char* s, int n) {
-    int i;
-    L.elem = (char*)malloc(sizeof(char)*n);//分配空间
-    for(i = 0; i < n; ++i) {
-        L.elem[i] = s[i];//赋值
+#include <bits/stdc++.h>
+using namespace std;
+typedef long long LL;
+const int N = 10005;
+const int INF = 0x3f3f3f3f;
+int n, m, tot, vt, vs;
+int d[N], head[N];
+char mp[55][55];
+int dir[4][2] = {1, 0, -1, 0, 0, 1, 0, -1};
+struct lp {
+    int to, w, nex;
+    lp() {}
+    lp(int a, int b, int c) {
+        to = a;
+        w = b;
+        nex = c;
     }
-    L.length = n;
-    return OK;
+} cw[N << 2];
+inline void add(int a, int b, int c) {
+    cw[++tot] = lp(b, c, head[a]);
+    head[a] = tot;
+    cw[++tot] = lp(a, 0, head[b]);
+    head[b] = tot;
 }
-Status InsertList(SqList &L, int p, char v) {
-    //合法的插入位置是[1, L.length + 1]
-    if(p < 1 || p > L.length + 1) return ERROR;//插入位置不合法
-    int i;
-    char *newBase = (char*)malloc(sizeof(char)*(L.length + 1));//新的空间
-    for(i = 0; i < L.length; ++i) newBase[i] = L.elem[i];
-    free(L.elem);//释放旧的空间
-    L.elem = newBase;
-    L.length ++;
-    for(i = L.length - 1; i >= p; --i) {//将位置[p,L.length-1]的元素后移一位
-        L.elem[i] = L.elem[i - 1];
-    }
-    L.elem[p - 1] = v;
-    return OK;
-}
-Status DelList(SqList &L, int p) {
-    if(p < 1 || p > L.length) return ERROR;
-    int i;
-    for(i = p - 1; i < L.length; ++i) {//将位置[p,L.length]的元素前移一位
-        L.elem[i] = L.elem[i + 1];
-    }
-    L.length --;
-    return OK;
-}
-
-Status MergeList(SqList &L) {
-    if(L.length < 9) return ERROR;//确保线性表长度大于等于9才能merge
-    int id1[5] = {1, 3, 5, 7, 9};//需要合并的下标1
-    int id2[3] = {2, 3, 6};//需要合并的下标2
-    char *newBase3 = (char*)malloc(sizeof(char)*(8));
-    int i, j;
-    for(i = 0; i < 5; ++i) newBase3[i] = L.elem[id1[i] - 1];
-    for(i = 0; i < 3; ++i) newBase3[5 + i] = L.elem[id2[i] - 1];
-    free(L.elem);
-    L.elem = newBase3;
-    L.length = 8;
-    for(j = 0; j < L.length; ++j) {//合并后排序
-        for(i = 0; i < L.length - 1; ++i) {
-            if(L.elem[i] > L.elem[i + 1]) {
-                char tmp = L.elem[i];
-                L.elem[i] = L.elem[i + 1];
-                L.elem[i + 1] = tmp;
+bool bfs() {
+    memset(d, -1, sizeof(d));
+    queue<int> Q;
+    Q.push(vt);
+    d[vt] = 0;
+    while (!Q.empty()) {
+        int u = Q.front();
+        Q.pop();
+        for (int i = head[u]; i != -1; i = cw[i].nex) {
+            int v = cw[i].to;
+            if (cw[i ^ 1].w && d[v] == -1) {
+                d[v] = d[u] + 1;
+                Q.push(v);
             }
         }
     }
-    return OK;
+    return d[vs] != -1;
 }
-void OutputList(SqList &L) {//输出线性表
-    int i;
-    for(i = 0; i < L.length; ++i) {
-        printf("%c", L.elem[i]);
+int dfs(int x, int f) {
+    if (x == vt || f == 0) return f;
+    int use = 0, w;
+    for (int i = head[x]; i != -1; i = cw[i].nex) {
+        int to = cw[i].to;
+        if (d[to] == d[x] - 1 && cw[i].w) {
+            w = dfs(to, min(cw[i].w, f - use));
+            cw[i].w -= w, cw[i ^ 1].w += w;
+            use += w;
+            if (use == f) return f;
+        }
     }
-    printf("\n");
+    return use;
+}
+void input() {
+    scanf("%s", mp[0]);
+    n = strlen(mp[0]);
+    for (int i = 1; i < n; ++i) scanf("%s", mp[i]);
+    tot = -1;
+    memset(head, -1, sizeof(head));  
+    
+    vs = 0, vt = n * n + 1;
 }
 int main() {
-    SqList L;
-    // char *str = "ajcniydu";
-    char str[8] = {'a', 'j', 'c', 'n', 'i', 'y', 'd', 'u'};
-    printf("创建线性表如下：\n");
-    CreateList(L, str, 8);//创建
-    OutputList(L);//输出
-    printf("第三个位置插入p：\n");
-    InsertList(L, 3, 'p');//插入
-    OutputList(L);//输出
-    printf("删除第三个位置元素：\n");
-    DelList(L, 3);//删除
-    OutputList(L);//输出
-    printf("第三个位置插入p：\n");
-    InsertList(L, 3, 'p');//插入
-    OutputList(L);//输出
-    printf("将线性表1，3，5，7，9和2，3，6合并，合并后为非递减线性表：\n");
-    MergeList(L);//合并
-    OutputList(L);//输出
+#ifdef LH_LOCAL
+    freopen("D:\\ACM\\mtxt\\in.txt", "r", stdin);
+#endif
+    input();
+    int ans = 0, sum = 0, dian = 0;
+    for (int i = 0; i < n; ++i) {
+        for (int j = 0; j < n; ++j) {
+            if (mp[i][j] == 'O') {
+                add(vs, i * n + j + 1, 1);
+                for (int x = 0; x < 4; ++x) {
+                    int px = dir[x][0] + i, py = dir[i][1] + j;
+                    if (px >= 0 && px < n && py >= 0 && py < n &&
+                        mp[px][py] == '.') {
+                        add(i * n + j + 1, px * n + py + 1, INF);
+                    }
+                }
+            } else if (mp[i][j] == '.') {
+                add(i * n + j + 1, vt, 1);
+                ++sum;
+            }
+        }
+    }
+    cout << sum << endl;
+    while (bfs()) ans += dfs(vs, INF);
+    cout << ans << endl;
+    /*for(int i = 0; i <= tot; ++i) {
+        if(cw[i].to == vt && cw[i].w == 0) -- dian;
+    }*/
+    printf("%d\n", sum - ans);
+#ifdef LH_LOCAL
+    cout << "time cost:" << 1.0 * clock() / CLOCKS_PER_SEC << "s" << endl;
+    // system("pause");
+#endif
     return 0;
 }
