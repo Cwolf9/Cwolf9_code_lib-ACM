@@ -1,6 +1,7 @@
 //O(n*log(n)*log(y))
 //首先二分找到连续的能吃到的最右端点，再找到下一个可以吃到起点继续吃。
 //重复这个过程的复杂度是O(log(n)*log(y))。
+//线段树维护区间和，区间最小值，找到向右最多能吃的区间长度是线段树上二分
 #include <bits/stdc++.h>
 #define fi first
 #define se second
