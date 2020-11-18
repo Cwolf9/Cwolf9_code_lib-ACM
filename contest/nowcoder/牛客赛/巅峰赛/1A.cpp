@@ -39,10 +39,6 @@ void debug_out(const T &f, const R &... r) {
 #define debug(...) ;
 #endif
 /*================Header Template==============*/
-const int INF = 0x3f3f3f3f;
-const int mod = 998244353;// 998244353
-const int MXN = 2e5 + 5;
-
 #define fi first
 #define se second
 #define mk make_pair
@@ -59,58 +55,39 @@ typedef long long LL;
 typedef long long int64;
 typedef unsigned long long uint64;
 typedef pair<int, int> pii;
+const int INF = 0x3f3f3f3f;
+const int mod = 1e9 + 7;// 998244353
+const int MXN = 2e5 + 5;
 class Solution {
 public:
     /**
-     * longest common substring
-     * @param str1 string字符串 the string
-     * @param str2 string字符串 the string
-     * @return string字符串
+     * 代码中的类名、方法名、参数名已经指定，请勿修改，直接返回方法规定的值即可
+     * 返回1-n的所有k*m的和
+     * @param num long长整型 正整数 n
+     * @return long长整型
      */
-    string LCS(string s, string t) {
+    long long cowModCount(long long num) {
         // write code here
-        int n = s.length(), m = t.length();
-        vector<vector<int>> dp(n, vector<int>(m));
-        vector<vector<pii>> pre(n, vector<pii>(m, mk(-1, -1)));
-        int a = 0, b = 0;
-        rep(i, 0, n) {
-            rep(j, 0, m) {
-                if(s[i] == t[j]) dp[i][j] = 1 + (i > 0 && j > 0?dp[i-1][j-1]:0), pre[i][j] = mk(i-1,j-1);
-                else {
-                    if((i > 0?dp[i-1][j]:0) > (j > 0?dp[i][j-1]:0)) {
-                        dp[i][j] = (i > 0?dp[i-1][j]:0);
-                        pre[i][j] = mk(i - 1, j);
-                    }else {
-                        dp[i][j] = (j > 0?dp[i][j-1]:0);
-                        pre[i][j] = mk(i, j - 1);
-                    }
-                }
-                if(dp[i][j] > dp[a][b]) a = i, b = j;
-            }
+        int64 ans = 0, ni = 500000004;
+        for(LL left=2,right;left<=num;left=right+1){
+            right = num/(num/left);
+            LL tmp = num % left, len = right - left + 1;
+            // debug(left, right, len, num / left, tmp)
+            // assert(tmp - (len - 1) * (num/left) >= 0);
+            ans += (num / left) % mod * (len % mod * tmp % mod - ((len - 1) % mod * len % mod * ni % mod) % mod * ((num/left)%mod) % mod) % mod;
+            ans %= mod;
+            // debug(ans)
         }
-        if(dp[n - 1][m - 1] == 0) return "-1";
-        string ans;
-        while(1) {
-            ans += s[a];
-            int x = pre[a][b].first, y = pre[a][b].second;
-            a = x, b = y;
-            if(a < 0 || b < 0) break;
-            x = pre[a][b].first, y = pre[a][b].second;
-            while(x != -1 && y != -1 && dp[x][y] == dp[a][b]) {
-                a = x, b = y;
-                x = pre[a][b].first, y = pre[a][b].second;
-            }
-        }
-        reverse(all(ans));
-        return ans;
+        return (ans + mod) % mod;
     }
 };
 int main() {
 #ifdef LH_LOCAL
     //freopen("D:\\ACM\\mtxt\\in.txt", "r", stdin);
+    //freopen("D:\\ACM\\mtxt\\out.txt", "w", stdout);
 #endif
     Solution S;
-    auto x = S.LCS("1AB2345CD", "12345EF");
+    auto x = S.cowModCount(1);
     debug(x)
 #ifdef LH_LOCAL
     cout << "time cost:" << 1.0 * clock() / CLOCKS_PER_SEC << "s" << endl;

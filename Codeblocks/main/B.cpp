@@ -59,31 +59,80 @@ const int INF = 0x3f3f3f3f;
 const int mod = 998244353;// 998244353
 const int MXN = 5e3 + 5;
 int n, m;
-char s[MXN], t[MXN];
-int az[27][MXN];
-void work() {
-	int st = 1 << 4, ed = 1 << 5;
-	debug(st, ed)
-	rep(i, st, ed) {
-		int Mn = 1e8, pos = 0;
-		rep(j, st, ed) {
-			if(i != j && (i ^ j) < Mn) {
-				if(i % 2 == 0 && j == i + 1) continue;
-				if(i % 2 == 1 && j == i - 1) continue;
-				Mn = (i ^ j);
-				pos = j;
-			}
-		}
-		debug(i, pos)
-	}
-}
+class SegT1 {
+    public:
+#define lson rt << 1
+#define rson rt << 1 | 1
+    int N;
+    vector<int> lazy;
+    vector<int64_t> sum;
+    SegT1(int N = 0) : N(N), lazy((N << 2) + 5), sum((N << 2) + 5) {}
+    void pop(int rt) {
+        sum[rt] = (sum[lson] + sum[rson]);
+    }
+    void build(int l, int r, int rt) {
+        lazy[rt] = 0;
+        if(l == r) {
+            sum[rt] = 1;
+            return ;
+        }
+        int mid = (l + r) >> 1;
+        build(l, mid, lson), build(mid + 1, r, rson);
+        pop(rt);
+    }
+    void push(int rt, int l, int r) {
+        if(lazy[rt] == 0) return ;
+        int mid = (l + r) >> 1;
+        lazy[lson] += lazy[rt];
+        lazy[rson] += lazy[rt];
+        sum[lson] += lazy[rt] * (mid - l + 1);
+        sum[rson] += lazy[rt] * (r - mid);
+        lazy[rt] = 0;
+    }
+    void apply(int rt, int l, int r, int v) {
+        lazy[rt] += v;
+        sum[rt] += v * (r - l + 1);
+    }
+    void update(int v, int L, int R, int l, int r, int rt) {
+        if(L <= l && r <= R) {
+            apply(rt, l, r, v);
+            return ;
+        }
+        int mid = (l + r) >> 1;
+        push(rt, l, r);
+        if(L > mid) {update(v, L, R, mid + 1, r, rson);}
+        else if(R <= mid) {update(v, L, R, l, mid, lson);}
+        else {
+            update(v, L, mid, l, mid, lson);
+            update(v, mid + 1, R, mid + 1, r, rson);
+        }
+        pop(rt);
+    }
+    int query(int L, int R, int l, int r, int rt) {
+        if(L <= l && r <= R) {
+            return sum[rt];
+        }
+        int mid = (l + r) >> 1, ans = 0;
+        push(rt, l, r);
+        if(L > mid) {ans += query(L, R, mid + 1, r, rson);}
+        else if(R <= mid) {ans += query(L, R, l, mid, lson);}
+        else {
+            ans += query(L, mid, l, mid, lson);
+            ans + query(mid + 1, R, mid + 1, r, rson);
+        }
+        return ans;
+        pop(rt);
+    }
+#undef lson
+#undef rson
+};
 int main() {
 #ifdef LH_LOCAL
     //freopen("D:\\ACM\\mtxt\\in.txt", "r", stdin);
 #endif
     for(int cas = 1, tim = 1; cas <= tim; ++ cas) {
         // printf("Case #%d:\n", cas);
-        work();
+        
     }
 #ifdef LH_LOCAL
     cout << "time cost:" << 1.0 * clock() / CLOCKS_PER_SEC << "s" << endl;

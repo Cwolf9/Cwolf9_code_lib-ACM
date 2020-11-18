@@ -49,26 +49,43 @@ void debug_out(const T &f, const R &... r) {
     cout << f << " ";
     debug_out(r...);
 }
-#ifndef ONLINE_JUDGE
+#ifdef LH_LOCAL
 #define debug(...) cout << "[" << #__VA_ARGS__ << "]: ", debug_out(__VA_ARGS__);
 #else
 #define debug(...) ;
 #endif
 /*================Header Template==============*/
 const int INF = 0x3f3f3f3f;
-const int mod = 998244353;// 998244353
+const int mod = 1e9 + 7;// 998244353
 const int MXN = 2e5 + 5;
-const int MXE = 2e6 + 5;
 int n, m;
+int k;
+int id[MXN];
+void work() {
+	std::vector<int> f(10);
+    std::iota(f.begin(), f.end(), 0);
+	for(int x: f) printf("%d ", x);
+	n = read(), m = read(), k = read();
+	rep(i, 1, n + 1) id[i] = read();
+	rep(i, 1, m + 1) {
+		int a = read(), b = read();
 
+	}
 
+	printf("%d\n", 0);
+}
+
+//https://codeforces.com/contest/1445/problem/E
 int main() {
-#ifndef ONLINE_JUDGE
-    freopen("D:\\ACM\\mtxt\\in.txt", "r", stdin);
-    // freopen("D:\\ACM\\mtxt\\out.txt", "w", stdout);
+#ifdef LH_LOCAL
+    //freopen("D:\\ACM\\mtxt\\in.txt", "r", stdin);
 #endif
-    
-#ifndef ONLINE_JUDGE
+    debug(ksm(2, mod -2))
+    for(int cas = 1, tim = 1; cas <= tim; ++ cas) {
+        // printf("Case #%d:\n", cas);
+        work();
+    }
+#ifdef LH_LOCAL
     cout << "time cost:" << 1.0 * clock() / CLOCKS_PER_SEC << "s" << endl;
     // system("pause");
 #endif

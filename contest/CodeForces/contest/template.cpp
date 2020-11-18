@@ -55,8 +55,9 @@ void debug_out(const T &f, const R &... r) {
 #define debug(...) ;
 #endif
 /*================Header Template==============*/
-const int INF = 0x3f3f3f3f;
 const int mod = 998244353;// 998244353
+const int INF = 0x3f3f3f3f;
+int ksm(int a, int64 b, int kmod = mod) {int res = 1;for(;b > 0;b >>= 1, a = (int64)a * a % kmod) if(b &1) res = (int64)res * a % kmod;return res;}
 const int MXN = 2e5 + 5;
 const int MXE = 2e6 + 5;
 int n, m;
@@ -64,9 +65,9 @@ void work() {
     n = read();
 }
 int main() {
-#ifndef ONLINE_JUDGE
-    freopen("D:in.in", "r", stdin);
-    freopen("D:out.out", "w", stdout);
+#ifdef LH_LOCAL
+    freopen("D:/ACM/mtxt/in.txt", "r", stdin);
+    // freopen("D:/ACM/mtxt/out.txt", "w", stdout);
 #endif
     for(int cas = 1, tim = 1; cas <= tim; ++ cas) {
         // printf("Case #%d:\n", cas);
@@ -74,7 +75,6 @@ int main() {
     }
 #ifndef ONLINE_JUDGE
     cout << "time cost:" << 1.0 * clock() / CLOCKS_PER_SEC << "s" << endl;
-    // system("pause");
 #endif
     return 0;
 }
