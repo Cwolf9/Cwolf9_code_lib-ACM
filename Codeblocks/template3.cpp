@@ -64,6 +64,7 @@ const int mod = 998244353;// 998244353
 const int INF = 0x3f3f3f3f;
 int ksm(int a, int64 b, int kmod = mod) {int res = 1;for(;b > 0;b >>= 1, a = (int64)a * a % kmod) if(b &1) res = (int64)res * a % kmod;return res;}
 const int MXN = 2e5 + 5;
+
 int n, m;
 void work() {
     n = read();
@@ -79,7 +80,6 @@ int main() {
     }
 #ifdef LH_LOCAL
     cout << "time cost:" << 1.0 * clock() / CLOCKS_PER_SEC << "s" << endl;
-    // system("pause");
 #endif
     return 0;
 }
