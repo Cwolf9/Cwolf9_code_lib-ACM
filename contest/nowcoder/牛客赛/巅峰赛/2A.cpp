@@ -58,12 +58,13 @@ typedef pair<int, int> pii;
 const int INF = 0x3f3f3f3f;
 const int mod = 1e9 + 7;// 998244353
 const int MXN = 2e5 + 5;
+const int maxn = 1e5+7;
 class Solution {
 public:
     /**
-     * ÕÒµ½ËùÓĞ³¤¶È×ÓÊı×éÖĞ×î´óÖµµÄ×îĞ¡Öµ
-     * @param numbers intÕûĞÍvector Å£Å£¸ø³öµÄÊı¾İ
-     * @return intÕûĞÍvector
+     * æ‰¾åˆ°æ‰€æœ‰é•¿åº¦å­æ•°ç»„ä¸­æœ€å¤§å€¼çš„æœ€å°å€¼
+     * @param numbers intæ•´å‹vector ç‰›ç‰›ç»™å‡ºçš„æ•°æ®
+     * @return intæ•´å‹vector
      */
     vector<int> getMinimums(vector<int>& numbers) {
         // write code here
@@ -84,23 +85,24 @@ public:
         }
         vs.clear();
         for(int i = 0; i < n; ++i) {
-            if(rs[i] - ls[i] - 1 <= n) 
+            if(rs[i] - ls[i] - 1 <= n)
                 ans[rs[i] - ls[i] - 2] = min(ans[rs[i] - ls[i] - 2], numbers[i]);
-            // debug(rs[i], ls[i], numbers[i])
+            debug(rs[i] - ls[i] - 2, numbers[i])
         }
         for(int i = n - 2; i >= 0; --i) if(ans[i] == INF) ans[i] = ans[i + 1];
-        for(int i = n - 2; i >= 0; --i) {
-            ans[i] = min(ans[i], ans[i + 1]);
+        for(int i = 1; i < n; ++i) {
+            ans[i] = max(ans[i], ans[i - 1]);
         }
         return ans;
     }
-}; 
+};
+Solution S;
 int main() {
 #ifdef LH_LOCAL
     //freopen("D:\\ACM\\mtxt\\in.txt", "r", stdin);
     //freopen("D:\\ACM\\mtxt\\out.txt", "w", stdout);
 #endif
-    Solution S;
+    
     vector<int> ar;
     int n = read();
     for(int i = 0; i < n; ++i) {
@@ -117,4 +119,3 @@ int main() {
 #endif
     return 0;
 }
-

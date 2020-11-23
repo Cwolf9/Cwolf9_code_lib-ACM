@@ -89,45 +89,109 @@ struct Point {
 };
 class Solution {
 public:
-    int minCost(int n, vector<int>& cuts) {
-        cuts.emplace_back(0);
-        cuts.emplace_back(n);
-        n = cuts.size();
-        sort(cuts.begin(), cuts.end());
-        vector<vector<int>> dp(n + 1, vector<int>(n + 1, 1000000000));
-        for(int d = 1; d <= n; ++d) {
-            if(d == 1) {
-                for(int i = 1; i <= n; ++i) dp[i][i] = 0;
-                continue;
-            }else if(d == 2) {
-                for(int i = 1; i < n; ++i) dp[i][i+1] = 0;
-                continue;
-            }
-            for(int i = 1; i + d - 1 <= n; ++i) {
-                int j = i + d - 1;
-                for(int k = i + 1; k < j; ++k) {
-                    dp[i][j] = min(dp[i][j], dp[i][k] + dp[k][j] + cuts[j-1] - cuts[i-1]);
-                }
+    int odd[10001], even[10001];
+    int waysToMakeFair(vector<int>& nums) {
+        int n = nums.size();
+        if(n <= 2) return n == 1;
+        odd[0] = 0;
+        odd[1] = nums[1];
+        even[0] = even[1] = nums[0];
+        for(int i = 2; i < n; ++i) {
+            odd[i] = odd[i - 1], even[i] = even[i - 1];
+            if(i % 2 == 0) even[i] += nums[i];
+            else odd[i] += nums[i];
+        }
+        int ans = 0;
+        for(int i = 0; i < n; ++i) {
+            if(((i != 0?odd[i - 1]:0) + even[n - 1] - even[i]) == ((i != 0?even[i - 1]:0) + odd[n - 1] - odd[i])) {
+                ++ ans;
             }
         }
-        // debug(dp[1][n])
-        return dp[1][n];
+        return ans;
     }
 };
 int main() {
 #ifndef ONLINE_JUDGE
-    freopen("D:in.in", "r", stdin);
-    freopen("D:out.out", "w", stdout);
+    freopen("D:/ACM/mtxt/in.txt", "r", stdin);
+    // freopen("D:/ACM/mtxt/out.txt", "w", stdout);
 #endif
     vector<int> ar = vector<int>{5, 6, 1, 4, 2};
-    vector<vector<int> > br = vector<vector<int> >{{1,2,3},{1,2,3}};
+    vector<vector<int> > br = vector<vector<int> >{{1,2},{2,4},{4,8}};
     vector<Point> par = vector<Point>{{1, 2},{3,4}};
     Solution ss;
-    ss.minCost(9, ar);
+    // ss.minimumEffort(br);
 #ifndef ONLINE_JUDGE
     cout << "time cost:" << 1.0 * clock() / CLOCKS_PER_SEC << "ms" << endl;
     system("pause");
 #endif
     return 0;
 }
-
+/*
+class Solution {
+public:
+    bool arrayStringsAreEqual(vector<string>& word1, vector<string>& word2) {
+        string a, b;
+        for(string x: word1) a += x;
+        for(string x: word2) b += x;
+        return a == b;
+    }
+};
+class Solution {
+public:
+    string getSmallestString(int n, int k) {
+        string ans;
+        for(int i = 0; i < n; ++i) {
+            char c = 'a' + max(1, k - (n - 1 - i) * 26) - 1;
+            ans += c;
+            k -= c - 'a' + 1;
+        }
+        return ans;
+    }
+};
+class Solution {
+public:
+    int waysToMakeFair(vector<int>& nums) {
+        int n = nums.size();
+        if(n <= 2) return n == 1;
+        vector<int> odd(n), even(n);
+        odd[1] = nums[1];
+        even[0] = even[1] = nums[0];
+        for(int i = 2; i < n; ++i) {
+            odd[i] = odd[i - 1], even[i] = even[i - 1];
+            if(i % 2 == 0) even[i] += nums[i];
+            else odd[i] += nums[i];
+        }
+        int ans = 0;
+        for(int i = 0; i < n; ++i) {
+            if(((i != 0?odd[i - 1]:0) + even[n - 1] - even[i]) == ((i != 0?even[i - 1]:0) + odd[n - 1] - odd[i])) {
+                ++ ans;
+            }
+        }
+        return ans;
+    }
+};
+class Solution {
+public:
+    pair<int,int> vs[100001];
+    int minimumEffort(vector<vector<int>>& tasks) {
+        auto cmp = [&](const pair<int,int> &a, const pair<int,int> &b) {
+            return max(a.second, a.first + b.second) < max(b.second, b.first + a.second);
+        };
+        int i = 0, n = tasks.size();
+        for(vector<int> item: tasks) {
+            vs[i ++] = make_pair(item[0], item[1]);
+        }
+        sort(vs, vs + n, cmp);
+        int ans = 0, res = 0;
+        for(int i = 0; i < n; ++i) {
+            pair<int,int> x = vs[i];
+            if(res < x.second) {
+                ans += x.second - res;
+                res = x.second;
+            }
+            res -= x.first;
+        }
+        return ans;
+    }
+};
+*/

@@ -1,31 +1,15 @@
 #include <bits/stdc++.h>
-#define fi first
-#define se second
-#define o2(x) (x) * (x)
-#define mk make_pair
-#define eb emplace_back
-#define SZ(x) ((int)(x).size())
-#define all(x) (x).begin(), (x).end()
-#define clr(a, b) memset((a), (b), sizeof((a)))
-#define rep(i, s, t) for(int i = (s), LIM=(t); i < LIM; ++i)
-#define per(i, s, t) for(int i = (s), LIM=(t); i >= LIM; --i)
-#define GKD std::ios::sync_with_stdio(false);cin.tie(0)
-#define my_unique(x) sort(all(x)), x.erase(unique(all(x)), x.end())
 using namespace std;
-typedef long long LL;
-typedef long long int64;
-typedef unsigned long long uint64;
-typedef pair<int, int> pii;
 // mt19937 rng(time(NULL));//std::clock()
 // mt19937_64 rng64(chrono::steady_clock::now().time_since_epoch().count());
 // shuffle(arr, arr + n, rng64);
-inline int64 read() {
-    int64 x = 0;int f = 0;char ch = getchar();
+inline long long read() {
+    long long x = 0;int f = 0;char ch = getchar();
     while (ch < '0' || ch > '9') f |= (ch == '-'), ch = getchar();
     while (ch >= '0' && ch <= '9') x = (x << 3) + (x << 1) + ch - '0', ch =
-                                                                               getchar(); return x = f ? -x : x;
+    getchar(); return x = f ? -x : x;
 }
-inline void write(int64 x, bool f = true) {
+inline void write(long long x, bool f = true) {
     if (x == 0) {putchar('0'); if(f)putchar('\n');else putchar(' ');return;}
     if (x < 0) {putchar('-');x = -x;}
     static char s[23];
@@ -49,102 +33,90 @@ void debug_out(const T &f, const R &... r) {
     cout << f << " ";
     debug_out(r...);
 }
-#ifndef ONLINE_JUDGE
+#ifdef LH_LOCAL
 #define debug(...) cout << "[" << #__VA_ARGS__ << "]: ", debug_out(__VA_ARGS__);
 #else
 #define debug(...) ;
 #endif
 /*================Header Template==============*/
+#define fi first
+#define se second
+#define mk make_pair
+#define o2(x) (x) * (x)
+#define eb emplace_back
+#define SZ(x) ((int)(x).size())
+#define all(x) (x).begin(), (x).end()
+#define clr(a, b) memset((a), (b), sizeof((a)))
+#define GKD std::ios::sync_with_stdio(false);cin.tie(0)
+#define rep(i, s, t) for(int i = (s), LIM=(t); i < LIM; ++i)
+#define per(i, s, t) for(int i = (s), LIM=(t); i >= LIM; --i)
+#define my_unique(x) sort(all(x)), x.erase(unique(all(x)), x.end())
+typedef long long LL;
+typedef long long int64;
+typedef unsigned long long uint64;
+typedef pair<int, int> pii;
 const int INF = 0x3f3f3f3f;
-const int mod = 998244353;// 998244353
+const int mod = 1e9 + 7;// 998244353
 const int MXN = 2e5 + 5;
-const int MXE = 1e6 + 5;
-int n, m;
-int ar[MXN], sum[MXN<<2], sumfg[MXN<<2], ans[MXN<<2], mn[MXN<<2];
-vector<int> num[MXN];
-void push_up(int rt) {
-    sum[rt] = max(sum[rt << 1], sum[rt << 1 | 1]);
-    ans[rt] = min(ans[rt << 1], ans[rt << 1 | 1]);
-}
-void build(int l, int r, int rt) {
-    sumfg[rt] = 0;
-    if(l == r) {
-        sum[rt] = ar[l];
-        ans[rt] = ar[l] - l + 1;
-        return ;
+const int maxn = 1e5+7;
+class Solution {
+public:
+    /**
+     * 找到所有长度子数组中最大值的最小值
+     * @param numbers int整型vector 牛牛给出的数据
+     * @return int整型vector
+     */
+    vector<int> getMinimums(vector<int>& numbers) {
+        // write code here
+        int n = numbers.size();
+        vector<int> ans(n, INF), vs, ls(n), rs(n);
+        for(int i = 0; i < n; ++i) {
+            while(!vs.empty() && numbers[i] >= numbers[vs.back()]) vs.pop_back();
+            if(vs.empty()) ls[i] = -1;
+            else ls[i] = vs.back();
+            vs.push_back(i);
+        }
+        vs.clear();
+        for(int i = n - 1; i >= 0; --i) {
+            while(!vs.empty() && numbers[i] >= numbers[vs.back()]) vs.pop_back();
+            if(vs.empty()) rs[i] = n;
+            else rs[i] = vs.back();
+            vs.push_back(i);
+        }
+        vs.clear();
+        for(int i = 0; i < n; ++i) {
+            if(rs[i] - ls[i] - 1 <= n)
+                ans[rs[i] - ls[i] - 2] = min(ans[rs[i] - ls[i] - 2], numbers[i]);
+            // debug(rs[i], ls[i], numbers[i])
+        }
+        for(int i = n - 2; i >= 0; --i) if(ans[i] == INF) ans[i] = ans[i + 1];
+        for(int i = 1; i < n; ++i) {
+            ans[i] = max(ans[i], ans[i - 1]);
+        }
+        return ans;
     }
-    int mid = (l + r) >> 1;
-    build(l, mid, rt << 1), build(mid + 1, r, rt << 1 | 1);
-    push_up(rt);
-    // debug(rt, sum[rt])
-}
-void push_down(int rt, int l, int mid, int r) {
-    if(sumfg[rt] == 0) return;
-    sumfg[rt << 1] = max(sumfg[rt << 1], sumfg[rt]);
-    sumfg[rt << 1 | 1] = max(sumfg[rt << 1 | 1], sumfg[rt]);
-    if(sum[rt << 1] < sumfg[rt]) {
-        ans[rt << 1] = sumfg[rt] - mid + 1;
-        sum[rt << 1] = sumfg[rt];
-    }
-    if(sum[rt << 1 | 1] < sumfg[rt]) {
-        ans[rt << 1 | 1] = sumfg[rt] - r + 1;
-        sum[rt << 1 | 1] = sumfg[rt];
-    }
-    sumfg[rt] = 0;
-}
-void update(int L, int R, int v, int l, int r, int rt) {
-    // debug(L, R, l, r)
-    if(sum[rt] < v && L <= l && r <= R) {
-        ans[rt] = v - r + 1;
-        sum[rt] = v;
-        sumfg[rt] = max(sumfg[rt], v);
-        return;
-    }
-    if(l == r) return;
-    int mid = (l + r) >> 1;
-    push_down(rt, l, mid, r);
-    if(L > mid) {
-        update(L, R, v, mid + 1, r, rt << 1 | 1);
-    }else if(R <= mid) {
-        update(L, R, v, l, mid, rt << 1);
-    }else {
-        if(sum[rt << 1] < v) update(mid + 1, R, v, mid + 1, r, rt << 1 | 1);
-        update(L, mid, v, l, mid, rt << 1);
-    }
-    push_up(rt);
-}
+};
+Solution S;
 int main() {
-    n = read(), m = read();
-    rep(i, 0, m + 1) num[i].eb(0);
-    rep(i, 1, n + 1) {
-        ar[i] = read();
-        num[ar[i]].eb(i);
+#ifdef LH_LOCAL
+    //freopen("D:\\ACM\\mtxt\\in.txt", "r", stdin);
+    //freopen("D:\\ACM\\mtxt\\out.txt", "w", stdout);
+#endif
+    
+    vector<int> ar;
+    int n = read();
+    for(int i = 0; i < n; ++i) {
+        int x;
+        cin >> x;
+        ar.eb(x);
     }
-    rep(i, 1, SZ(num[1])) {
-        rep(j, num[1][i-1] + 1, num[1][i] + 1) {
-            ar[j] = num[1][i];
-            // debug(j, ar[j])
-        }
-    }
-    rep(i, num[1].back() + 1, n + 1) {
-        ar[i] = INF;
-        // debug(i, ar[i])
-    }
-    build(1, n, 1);
-    printf("%d", ans[1]);
-    rep(qi, 2, m + 1) {
-        rep(i, 1, SZ(num[qi])) {
-            int l = num[qi][i-1], r = num[qi][i];
-            update(l + 1, r, num[qi][i], 1, n, 1);
-            // debug(l + 1, r, num[qi][i])
-        }
-        if(num[qi].back() + 1 <= n) {
-            update(num[qi].back() + 1, n, INF, 1, n, 1);
-            // debug(num[qi].back() + 1, n)
-        }
-        printf(" %d", ans[1]);
-        // return 0;
-    }
+    auto x = S.getMinimums(ar);
+    for(int y: x) printf("%d ", y);
     printf("\n");
+#ifdef LH_LOCAL
+    // cout << "time cost:" << 1.0 * clock() / CLOCKS_PER_SEC << "s" << endl;
+    // system("pause");
+#endif
     return 0;
 }
+

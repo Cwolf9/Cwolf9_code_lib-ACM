@@ -45,14 +45,12 @@ int main() {
     // printf("%d\n", tim);
     while(tim--) {
 		int n, m;
-		n = randint(5, 100);
+		n = randint(5, 10);
 		m = randint(3, n);
-		printf("%d %d\n", n, m);
-		vector<int> ar(m);
-		rep(i, 0, m) ar[i] = i + 1;
-		rep(i, 0, n - m) ar.emplace_back(rng() % m + 1);
-		shuffle(all(ar), rng64);
-		rep(i, 0, n) printf("%d%c", ar[i], " \n"[i == n - 1]);
+		printf("%d\n", n);
+		vector<int64> ar(n);
+		for(int i = 0; i < n; ++i) ar[i] = randint64(1, 20);
+		rep(i, 0, n) printf("%lld%c", ar[i], " \n"[i == n - 1]);
 	}
 	return 0;
 } 
