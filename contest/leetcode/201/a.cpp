@@ -110,6 +110,7 @@ public:
         return ans;
     }
 };
+Solution ss;
 int main() {
 #ifndef ONLINE_JUDGE
     freopen("D:/ACM/mtxt/in.txt", "r", stdin);
@@ -118,7 +119,6 @@ int main() {
     vector<int> ar = vector<int>{5, 6, 1, 4, 2};
     vector<vector<int> > br = vector<vector<int> >{{1,2},{2,4},{4,8}};
     vector<Point> par = vector<Point>{{1, 2},{3,4}};
-    Solution ss;
     // ss.minimumEffort(br);
 #ifndef ONLINE_JUDGE
     cout << "time cost:" << 1.0 * clock() / CLOCKS_PER_SEC << "ms" << endl;
