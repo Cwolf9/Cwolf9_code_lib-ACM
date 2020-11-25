@@ -1,3 +1,8 @@
+#pragma comment(linker, "/STACK:102400000,102400000")
+#pragma GCC optimize("unroll-loops")
+#pragma GCC optimize(3,"Ofast","inline")
+#pragma GCC optimize("Ofast,no-stack-protector")
+#pragma GCC target("sse,sse2,sse3,ssse3,sse4,popcnt,abm,mmx,avx,tune=native")
 #include <bits/stdc++.h>
 #define fi first
 #define se second
@@ -59,13 +64,13 @@ const int mod = 998244353;// 998244353
 int ksm(int a, int64 b, int kmod = mod) {int res = 1;for(;b > 0;b >>= 1, a = (int64)a * a % kmod) if(b &1) res = (int64)res * a % kmod;return res;}
 const int INF = 0x3f3f3f3f;
 const int MXN = 2e5 + 5;
-const int MXE = 2e6 + 5;
+
 int n, m;
 void work() {
     n = read();
 }
 int main() {
-#ifdef LH_LOCAL
+#ifndef ONLINE_JUDGE
     freopen("D:/ACM/mtxt/in.txt", "r", stdin);
     // freopen("D:/ACM/mtxt/out.txt", "w", stdout);
 #endif
