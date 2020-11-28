@@ -1,0 +1,141 @@
+class Solution {
+public:
+    int maxRepeating(string sequence, string word) {
+        int ans = 0, n = sequence.length();
+        vector<int> vs(n, 0), dp(n, 0);
+        for(int i = 0; i < n; ++i) {
+            if(sequence.find(word) == 0) vs[i] = 1;
+            if(i != n - 1) sequence = sequence.substr(1, sequence.length() - 1);
+        }
+        for(int i = 0; i < n; ++i) {
+            dp[i] = vs[i];
+            if(i >= word.length() && vs[i - word.length()]) dp[i] += dp[i-word.length()];
+            ans = max(ans, dp[i]); 
+        }
+        return ans;
+    }
+};
+/**
+ * Definition for singly-linked list.
+ * struct ListNode {
+ *     int val;
+ *     ListNode *next;
+ *     ListNode() : val(0), next(nullptr) {}
+ *     ListNode(int x) : val(x), next(nullptr) {}
+ *     ListNode(int x, ListNode *next) : val(x), next(next) {}
+ * };
+ */
+class Solution {
+public:
+    ListNode* mergeInBetween(ListNode* list1, int a, int b, ListNode* list2) {
+        int i = 0;
+        ListNode* st = list1;
+        while(1) {
+            if(i == a - 1) {
+                b = b - a + 2;
+                ListNode* tmp = list1;
+                while(b --) {
+                    list1 = list1->next;
+                }
+                tmp->next = list2;
+                while(list2->next != nullptr) {
+                    list2 = list2->next;
+                }
+                list2->next = list1;
+                break;
+            }else {
+                list1 = list1->next;
+                ++ i;
+            }
+        }
+        return st;
+    }
+};
+class FrontMiddleBackQueue {
+public:
+    vector<int> vs;
+    int n;
+    FrontMiddleBackQueue() {
+        vs.clear();
+        n = 0;
+    }
+    void pushFront(int val) {
+        vs.push_back(val);
+        n = vs.size();
+        for(int i = n - 1; i >= 1; --i) vs[i] = vs[i - 1];
+        vs[0] = val;
+    }
+    
+    void pushMiddle(int val) {
+        vs.push_back(val);
+        n = vs.size();
+        int mid = (n + 1) / 2;
+        for(int i = n - 1; i >= mid; --i) vs[i] = vs[i - 1];
+        vs[mid - 1] = val;
+    }
+    
+    void pushBack(int val) {
+        vs.push_back(val);
+    }
+    
+    int popFront() {
+        n = vs.size();
+        if(n == 0) return -1;
+        int x = vs[0];
+        for(int i = 0; i < n - 1; ++i) vs[i] = vs[i + 1];
+        vs.pop_back();
+        return x;
+    }
+    
+    int popMiddle() {
+        n = vs.size();
+        if(n == 0) return -1;
+        int mid = (n % 2 == 0?(n/2-1):(n/2));
+        int x = vs[mid];
+        for(int i = mid; i < n - 1; ++i) vs[i] = vs[i + 1];
+        vs.pop_back();
+        return x;
+    }
+    
+    int popBack() {
+        n = vs.size();
+        if(n == 0) return -1;
+        int x = vs.back();
+        vs.pop_back();
+        return x;
+    }
+};
+
+/**
+ * Your FrontMiddleBackQueue object will be instantiated and called as such:
+ * FrontMiddleBackQueue* obj = new FrontMiddleBackQueue();
+ * obj->pushFront(val);
+ * obj->pushMiddle(val);
+ * obj->pushBack(val);
+ * int param_4 = obj->popFront();
+ * int param_5 = obj->popMiddle();
+ * int param_6 = obj->popBack();
+ */
+class Solution {
+public:
+    int minimumMountainRemovals(vector<int>& ar) {
+        int n = ar.size();
+        vector<int> ls(n, 0), rs(n, 0), dp(n, 0x3f3f3f3f);
+        for(int i = 0; i < n; ++i) {
+            int p = lower_bound(dp.begin(), dp.end(), ar[i]) - dp.begin();
+            dp[p] = ar[i];
+            ls[i] = p;
+        }
+        fill(dp.begin(), dp.end(), 0x3f3f3f3f);
+        for(int i = n - 1; i >= 0; --i) {
+            int p = lower_bound(dp.begin(), dp.end(), ar[i]) - dp.begin();
+            dp[p] = ar[i];
+            rs[i] = p;
+        }
+        int ans = n;
+        for(int i = 1; i < n - 1; ++i) {
+            ans = min(ans, n - 1 - ls[i] - rs[i]);
+        }
+        return ans;
+    }
+};

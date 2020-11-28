@@ -1,3 +1,18 @@
+
+// Problem: A. Special Permutation
+// Contest: Codeforces - Codeforces Round #686 (Div. 3)
+// URL: https://codeforces.com/contest/1454/problem/A
+// Memory Limit: 256 MB
+// Time Limit: 1000 ms
+// Powered by CP Editor (https://github.com/cpeditor/cpeditor)
+
+/*
+**题意**
+给你一个$n$输出任意一个错位排列即可。
+**思路**
+按题意输出一个错`1`位的排列即可。
+单组时间复杂度：$O(n)$.
+*/
 #include <bits/stdc++.h>
 #define fi first
 #define se second
@@ -61,52 +76,19 @@ const int INF = 0x3f3f3f3f;
 const int MXN = 2e5 + 5;
 
 int n, m;
-class Edge {
-public:
-	int v, nex;
-};
-Edge edge[20005];
-int head[10005], tot;
-int du[10005];
-void add_edge(int a, int b) {
-	edge[++tot].v = b, edge[tot].nex = head[a];
-	head[a] = tot;
-	edge[++tot].v = a, edge[tot].nex = head[b];
-	head[b] = tot;
-}
-void solve() {
-	queue<int> Q;
-	for(int i = 1; i <= n; ++i) if(du[i] == 1) Q.push(i);
-	while(!Q.empty()) {
-		int u = Q.front();
-		cout << u << " ";
-		Q.pop();
-		for(int i = head[u]; ~i; i = edge[i].nex) {
-			int v = edge[i].v;
-			-- du[v];
-			if(du[v] == 1) Q.push(v);
-		}
-	}
-	cout << "\n";
-}
 void work() {
-    cin >> n >> m;
-    tot = -1;
-    for(int i = 1; i <= n; ++i) head[i] = -1;
-    for(int i = 0; i < m; ++i) {
-    	int a, b;
-    	cin >> a >> b;
-    	++ du[a], ++ du[b];
-    	add_edge(a, b);
+    n = read();
+    rep(i, 0, n) {
+        printf("%d ", (i + 1) % n + 1);
     }
-    solve();
+    printf("\n");
 }
 int main() {
 #ifdef LH_LOCAL
     freopen("D:/ACM/mtxt/in.txt", "r", stdin);
     // freopen("D:/ACM/mtxt/out.txt", "w", stdout);
 #endif
-    for(int cas = 1, tim = 1; cas <= tim; ++ cas) {
+    for(int cas = 1, tim = read(); cas <= tim; ++ cas) {
         // printf("Case #%d:\n", cas);
         work();
     }

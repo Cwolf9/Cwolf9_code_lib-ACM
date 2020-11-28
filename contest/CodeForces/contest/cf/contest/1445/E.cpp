@@ -58,48 +58,88 @@ void debug_out(const T &f, const R &... r) {
 const int mod = 998244353;// 998244353
 int ksm(int a, int64 b, int kmod = mod) {int res = 1;for(;b > 0;b >>= 1, a = (int64)a * a % kmod) if(b &1) res = (int64)res * a % kmod;return res;}
 const int INF = 0x3f3f3f3f;
-const int MXN = 2e5 + 5;
+const int MXN = 1e6 + 5;
 
-int n, m;
-class Edge {
-public:
-	int v, nex;
-};
-Edge edge[20005];
-int head[10005], tot;
-int du[10005];
-void add_edge(int a, int b) {
-	edge[++tot].v = b, edge[tot].nex = head[a];
-	head[a] = tot;
-	edge[++tot].v = a, edge[tot].nex = head[b];
-	head[b] = tot;
+int n, m, k;
+int col[MXN], can_use[MXN], fa[MXN], rnk[MXN];
+vector<pii> edge, same;
+int Fi(int x) {
+	return fa[x] == x? x: Fi(fa[x]);
 }
-void solve() {
-	queue<int> Q;
-	for(int i = 1; i <= n; ++i) if(du[i] == 1) Q.push(i);
-	while(!Q.empty()) {
-		int u = Q.front();
-		cout << u << " ";
-		Q.pop();
-		for(int i = head[u]; ~i; i = edge[i].nex) {
-			int v = edge[i].v;
-			-- du[v];
-			if(du[v] == 1) Q.push(v);
-		}
-	}
-	cout << "\n";
+pii ecol(pii e) {
+	return mk(col[e.fi], col[e.se]);
+}
+int top;
+struct lh {
+    int u, v;
+}stak[MXN];
+int Union(int a, int b) {
+	debug(n)
+	int pu = Fi(a), pv = Fi(b + n);
+	if(pu == pv) return 0;
+	if(rnk[pu] > rnk[pv]) swap(pu, pv);
+	fa[pu] = pv, rnk[pv] += rnk[pu];
+	stak[++ top] = {pu, pv};
+	return 1;
 }
 void work() {
-    cin >> n >> m;
-    tot = -1;
-    for(int i = 1; i <= n; ++i) head[i] = -1;
-    for(int i = 0; i < m; ++i) {
-    	int a, b;
-    	cin >> a >> b;
-    	++ du[a], ++ du[b];
-    	add_edge(a, b);
-    }
-    solve();
+	n = read(), m = read(), k = read();
+	int64 ans = k;
+	rep(i, 1, n + 1) col[i] = read();
+	rep(i, 0, n + n + 1) fa[i] = i, rnk[i] = 1;
+	rep(i, 1, k + 1) can_use[i] = 1;
+	rep(i, 1, m + 1) {
+		int u = read(), v = read();
+		if(col[u] > col[v]) swap(u, v);
+		if(col[u] != col[v]) edge.eb(mk(u, v));
+		else same.eb(mk(u, v));
+	}
+	auto cmp = [&](const pii&a, const pii&b) {
+		return mk(col[a.fi], col[a.se]) < mk(col[b.fi], col[b.se]);
+	};
+	sort(all(edge), cmp);
+	for(pii e: same) {
+		if(Fi(e.fi) == Fi(e.se) || can_use[col[e.fi]] == 0) {
+			can_use[col[e.fi]] = 0;
+			continue;
+		}
+		Union(e.fi, e.se);
+		Union(e.se, e.fi);
+	}
+	rep(i, 1, k + 1) if(can_use[i] == 0) -- ans;
+	ans = ans * (ans - 1) / 2;
+	int L = 0;
+	rep(i, 0, SZ(edge)) {
+		if(i == SZ(edge) - 1 || ecol(edge[i]) != ecol(edge[i + 1])) {
+			int flag = 1, las = top;
+			rep(j, L, i + 1) {
+				pii e = edge[j];
+				if(can_use[col[e.fi]] == 0 || can_use[col[e.se]] == 0) {
+					flag = -1;
+					break;
+				}
+				if(Fi(e.fi) == Fi(e.se)) {
+					flag = 0;
+					break;
+				}
+				Union(e.fi, e.se);
+				Union(e.se, e.fi);
+			}
+			while(top > las) {
+				if(rnk[stak[top].u] > rnk[stak[top].v]) {
+					fa[stak[top].v] = stak[top].v;
+					rnk[stak[top].u] -= rnk[stak[top].v];
+		        }else {
+				    fa[stak[top].u] = stak[top].u;
+					rnk[stak[top].v] -= rnk[stak[top].u];
+				}
+				-- top;
+			}
+			if(flag == 0) -- ans;
+			L = i + 1;
+		}
+	}
+	printf("%lld\n", ans);
 }
 int main() {
 #ifdef LH_LOCAL

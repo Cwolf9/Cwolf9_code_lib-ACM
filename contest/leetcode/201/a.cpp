@@ -1,6 +1,3 @@
-/*
-
-*/
 #pragma comment(linker, "/STACK:102400000,102400000")
 #include<bits/stdc++.h>
 #include <assert.h>
