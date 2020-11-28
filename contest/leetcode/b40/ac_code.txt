@@ -1,3 +1,4 @@
+-----------------A-----------------
 class Solution {
 public:
     int maxRepeating(string sequence, string word) {
@@ -15,6 +16,8 @@ public:
         return ans;
     }
 };
+
+-----------------B-----------------
 /**
  * Definition for singly-linked list.
  * struct ListNode {
@@ -51,6 +54,9 @@ public:
         return st;
     }
 };
+
+
+-----------------C-----------------
 class FrontMiddleBackQueue {
 public:
     vector<int> vs;
@@ -116,6 +122,10 @@ public:
  * int param_5 = obj->popMiddle();
  * int param_6 = obj->popBack();
  */
+
+
+
+-----------------D-----------------
 class Solution {
 public:
     int minimumMountainRemovals(vector<int>& ar) {
