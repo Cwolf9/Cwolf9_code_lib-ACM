@@ -67,27 +67,13 @@ typedef pair<int, int> pii;
 const int INF = 0x3f3f3f3f;
 const int mod = 1e9 + 7;// 998244353
 const int MXN = 2e5 + 5;
-const int maxn = 2e5 + 7;
 
 class Solution {
 public:
-    int minimumMountainRemovals(vector<int>& ar) {
-        int n = ar.size();
-        vector<int> ls(n, 0), rs(n, 0), dp(n, 0x3f3f3f3f);
-        for(int i = 0; i < n; ++i) {
-            int p = lower_bound(dp.begin(), dp.end(), ar[i]) - dp.begin();
-            dp[p] = ar[i];
-            ls[i] = p;
-        }
-        fill(dp.begin(), dp.end(), 0x3f3f3f3f);
-        for(int i = n - 1; i >= 0; --i) {
-            int p = lower_bound(dp.begin(), dp.end(), ar[i]) - dp.begin();
-            dp[p] = ar[i];
-            rs[i] = p;
-        }
-        int ans = n;
-        for(int i = 1; i < n - 1; ++i) {
-            ans = min(ans, n - 1 - ls[i] - rs[i]);
+    int maximumWealth(vector<vector<int>>& accounts) {
+        int ans = 0;
+        for(vector<int> &x: accounts) {
+            ans = max(ans, accumulate(all(x), 0));
         }
         return ans;
     }

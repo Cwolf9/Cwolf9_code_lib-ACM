@@ -67,21 +67,14 @@ typedef pair<int, int> pii;
 const int INF = 0x3f3f3f3f;
 const int mod = 1e9 + 7;// 998244353
 const int MXN = 2e5 + 5;
-const int maxn = 2e5 + 7;
 
 class Solution {
 public:
     int dir[4][2] = {};
     int wwork(int n, int m, vector<vector<int> >& c) {
         // write code here
-        int ans = 0, q = SZ(c);
-        vector<vector<int>> ls(n * m, 0), rs(n * m, 0), up(n *m , 0), down(n * m, 0);
-        per(Q, 0, q) {
-            int x = c[Q][0], y = c[Q][1], res = INF, px, py;
-            px = x, py = y;
-
-        }
-        return ans;
+        
+        return 0;
     }
 };
 Solution S;
@@ -90,7 +83,6 @@ int main() {
     //freopen("D:\\ACM\\mtxt\\in.txt", "r", stdin);
     //freopen("D:\\ACM\\mtxt\\out.txt", "w", stdout);
 #endif
-    debug(500 * 500 * 500)
     vector<int> arr = vector<int>{1,2,5,3,4};
     vector<int> arr2 = vector<int>{1,4,2,5,2,2};
     vector<Interval> ar = vector<Interval>{Interval(0, 2), Interval(4, 7), Interval(9, 9)};

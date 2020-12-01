@@ -67,7 +67,6 @@ typedef pair<int, int> pii;
 const int INF = 0x3f3f3f3f;
 const int mod = 1e9 + 7;// 998244353
 const int MXN = 2e5 + 5;
-const int maxn = 2e5 + 7;
 
 class Solution {
 public:
