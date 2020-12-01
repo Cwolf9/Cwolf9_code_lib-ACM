@@ -102,6 +102,15 @@ int main() {
 }
 
 /* 
-
+class Solution {
+public:
+    int maximumWealth(vector<vector<int>>& accounts) {
+        int ans = 0;
+        for(vector<int> &x: accounts) {
+            ans = max(ans, accumulate(all(x), 0));
+        }
+        return ans;
+    }
+};
 
 */

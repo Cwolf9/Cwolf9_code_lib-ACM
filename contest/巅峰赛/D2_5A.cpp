@@ -70,11 +70,52 @@ const int MXN = 2e5 + 5;
 
 class Solution {
 public:
-    int dir[4][2] = {};
-    int wwork(int n, int m, vector<vector<int> >& c) {
+    /**
+     * 代码中的类名、方法名、参数名已经指定，请勿修改，直接返回方法规定的值即可
+     * 给定一个后缀表达式，返回它的结果
+     * @param str string字符串 
+     * @return long长整型
+     */
+    long long solve(string str) {
         // write code here
-        
-        return 0;
+        stack<int64> s1;
+        int n = str.length();
+        for(int i = 0; i < n; ++i) {
+            if(isdigit(str[i])) {
+                int64 res = 0;
+                while(i < n && isdigit(str[i])) {
+                    res = res * 10 + str[i] - '0';
+                    ++ i;
+                }
+                s1.push(res);
+            }else {
+                assert(s1.size() >= 2);
+                if(str[i] == '+') {
+                    int64 b = s1.top();
+                    s1.pop();
+                    int64 a = s1.top();
+                    s1.pop();
+                    a += b;
+                    s1.push(a);
+                }else if(str[i] == '-') {
+                    int64 b = s1.top();
+                    s1.pop();
+                    int64 a = s1.top();
+                    s1.pop();
+                    a -= b;
+                    s1.push(a);
+                }else if(str[i] == '*') {
+                    int64 b = s1.top();
+                    s1.pop();
+                    int64 a = s1.top();
+                    s1.pop();
+                    a *= b;
+                    s1.push(a);
+                }else assert(0);
+            }
+        }
+        if(s1.size() == 0) return 0LL;
+        return s1.top();
     }
 };
 Solution S;
@@ -88,7 +129,7 @@ int main() {
     vector<Interval> ar = vector<Interval>{Interval(0, 2), Interval(4, 7), Interval(9, 9)};
     vector<vector<int> > br = vector<vector<int> >{{1,2},{2,4},{4,8}};
     vector<Point> par = vector<Point>{{1, 2},{3,4}};
-    auto x = S.wwork(5, 5, br);
+    auto x = S.solve("1#2#3#+4#*+5#-");
     debug(x)
     //for(int y: x) printf("%d ", y);
     //printf("\n");
