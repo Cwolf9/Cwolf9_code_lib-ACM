@@ -58,38 +58,18 @@ void debug_out(const T &f, const R &... r) {
 const int mod = 998244353;// 998244353
 int ksm(int a, int64 b, int kmod = mod) {int res = 1;for(;b > 0;b >>= 1, a = (int64)a * a % kmod) if(b &1) res = (int64)res * a % kmod;return res;}
 const int INF = 0x3f3f3f3f;
-const int MXN = 1e3 + 5;
+const int MXN = 2e6 + 5;
 
 int n, m;
 int ar[MXN];
 void work() {
     n = read();
-    m = read();
-    int cnt = 0, las = -1;
-    rep(i, 1, n + 1) ar[i] = read();
-    rep(i, 2, n + 1) {
-        if(ar[i] < ar[i - 1]) {
-            las = i;
-        }
-    }
-    rep(i, 1, las) {
-    	if(ar[i] > m) {
-    		++ cnt;
-    		swap(ar[i], m);
-		}
-	}
-    rep(i, 2, n + 1) {
-        if(ar[i] < ar[i - 1]) {
-            cnt = -1;
-            break;
-        }
-    }
-    printf("%d\n", cnt);
+    
 }
 int main() {
 #ifdef LH_LOCAL
     freopen("D:/ACM/mtxt/in.txt", "r", stdin);
-    freopen("D:/ACM/mtxt/out.txt", "w", stdout);
+    // freopen("D:/ACM/mtxt/out.txt", "w", stdout);
 #endif
     for(int cas = 1, tim = read(); cas <= tim; ++ cas) {
         // printf("Case #%d:\n", cas);
