@@ -195,11 +195,6 @@ public:
     }
 };
 
-- 先把所有奇数乘`2`，这样就等价于只有操作`1`； 
-- 操作`1`的只会减少某个数的值，减少最大值结果才可能更优； 
-- 用`set`维护最大值，当最大值是奇数时停止； 
-- 最多会执行$log(a_{max})$次，复杂度：$O(n*log(n)*log(a_{max})$。
-- 还有一种$O(n*log(n))$的做法，就是先找到最后这个序列的最大值，然后再贪心。 
 class Solution {
 public:
     int minimumDeviation(vector<int>& nums) {

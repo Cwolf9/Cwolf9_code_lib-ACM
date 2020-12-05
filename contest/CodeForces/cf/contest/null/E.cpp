@@ -61,33 +61,13 @@ const int INF = 0x3f3f3f3f;
 const int MXN = 2e5 + 5;
 int n;
 vector<int> mp[MXN];
-int dis[MXN], mn[MXN], num[MXN];
-int ans;
+int dis[MXN];
 void dfs(int u, int ba) {
-    vector<int> vs;
-    mn[u] = INF;
-    num[u] = 0;
-    int cnt = 0;
     for(int v: mp[u]) {
         if(v == ba) continue;
         dis[v] = dis[u] + 1;
-        ++ num[u];
         dfs(v, u);
-        if(num[v] > 1) ++ cnt;
-        mn[u] = min(mn[u], mn[v]);
-        vs.eb(mn[v] - dis[u]);
     }
-    if(vs.size() == 0) {
-        mn[u] = dis[u];
-        return ;
-    }
-    sort(all(vs));
-    if(vs.size() == 1) {
-        ans = max(ans, vs[0]);
-        return ;
-    }
-    for(int i = 0; i < SZ(vs) - 1; ++i) ans = max(ans, vs[i] + 1);
-    ans = max(ans, vs.back());
 }
 void work() {
     n = read();
@@ -97,10 +77,20 @@ void work() {
         mp[a].eb(b);
         mp[b].eb(a);
     }
-    ans = 0;
     dis[1] = 0;
     dfs(1, -1);
-    printf("%d\n", ans);
+    int pa = 2;
+    rep(i, 3, n + 1) {
+        if(dis[i] > dis[pa]) pa = i;
+    }
+    printf("%d\n", (dis[pa] + 1) / 2 + 1);
+    return ;
+    dis[pa] = 0;
+    dfs(pa, -1);
+    int pb = 1;
+    rep(i, 1, n + 1) {
+        if(dis[i] > dis[pb]) pb = i;
+    }
 }
 
 int main() {
