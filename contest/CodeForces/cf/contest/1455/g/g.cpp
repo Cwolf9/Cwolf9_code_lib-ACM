@@ -1,10 +1,4 @@
-#pragma comment(linker, "/STACK:102400000,102400000")
-#pragma GCC optimize("unroll-loops")
-#pragma GCC optimize(3,"Ofast","inline")
-#pragma GCC optimize("Ofast,no-stack-protector")
-#pragma GCC target("sse,sse2,sse3,ssse3,sse4,popcnt,abm,mmx,avx,tune=native")
 #include <bits/stdc++.h>
-using namespace std;
 #define fi first
 #define se second
 #define o2(x) (x) * (x)
@@ -17,6 +11,7 @@ using namespace std;
 #define per(i, s, t) for(register int i = (s), LIM=(t); i >= LIM; --i)
 #define GKD std::ios::sync_with_stdio(false);cin.tie(0)
 #define my_unique(x) sort(all(x)), x.erase(unique(all(x)), x.end())
+using namespace std;
 typedef long long LL;
 typedef long long int64;
 typedef unsigned long long uint64;
@@ -54,7 +49,7 @@ void debug_out(const T &f, const R &... r) {
     cout << f << " ";
     debug_out(r...);
 }
-#ifndef ONLINE_JUDGE
+#ifdef LH_LOCAL
 #define debug(...) cout << "[" << #__VA_ARGS__ << "]: ", debug_out(__VA_ARGS__);
 #else
 #define debug(...) ;
@@ -70,16 +65,33 @@ void work() {
     n = read();
 }
 int main() {
-#ifndef ONLINE_JUDGE
-    // freopen("D:/ACM/mtxt/in.txt", "r", stdin);
+#ifdef LH_LOCAL
+    freopen("D:/ACM/mtxt/in.txt", "r", stdin);
     // freopen("D:/ACM/mtxt/out.txt", "w", stdout);
 #endif
     for(int cas = 1, tim = 1; cas <= tim; ++ cas) {
         // printf("Case #%d:\n", cas);
         work();
     }
-#ifndef ONLINE_JUDGE
+#ifdef LH_LOCAL
     cout << "time cost:" << 1.0 * clock() / CLOCKS_PER_SEC << "s" << endl;
 #endif
     return 0;
 }
+/* 
+给你一个$n$和$s$，初始定义了一个变量$x$，经过$n$条命令，问使$x$从来都不等于$x$的最小的花费。
+`set y v` 表示要么令$x=y$，要么花费$v$元跳过这一次操作。
+`if y ... end` block，表示如果$x==y$的话就执行这一个block块，每个block块由end截至。
+block块内可以包含set指令和嵌套if指令。
+
+$1\le n,s\le 2e5, 0\le y\le 2e5, 1\le v\le 10^9$.
+
+5 1
+set 1 10
+set 2 15
+if 2
+set 1 7
+end
+
+17 
+*/

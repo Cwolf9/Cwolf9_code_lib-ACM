@@ -1,10 +1,4 @@
-#pragma comment(linker, "/STACK:102400000,102400000")
-#pragma GCC optimize("unroll-loops")
-#pragma GCC optimize(3,"Ofast","inline")
-#pragma GCC optimize("Ofast,no-stack-protector")
-#pragma GCC target("sse,sse2,sse3,ssse3,sse4,popcnt,abm,mmx,avx,tune=native")
 #include <bits/stdc++.h>
-using namespace std;
 #define fi first
 #define se second
 #define o2(x) (x) * (x)
@@ -17,6 +11,7 @@ using namespace std;
 #define per(i, s, t) for(register int i = (s), LIM=(t); i >= LIM; --i)
 #define GKD std::ios::sync_with_stdio(false);cin.tie(0)
 #define my_unique(x) sort(all(x)), x.erase(unique(all(x)), x.end())
+using namespace std;
 typedef long long LL;
 typedef long long int64;
 typedef unsigned long long uint64;
@@ -54,7 +49,7 @@ void debug_out(const T &f, const R &... r) {
     cout << f << " ";
     debug_out(r...);
 }
-#ifndef ONLINE_JUDGE
+#ifdef LH_LOCAL
 #define debug(...) cout << "[" << #__VA_ARGS__ << "]: ", debug_out(__VA_ARGS__);
 #else
 #define debug(...) ;
@@ -66,19 +61,49 @@ const int INF = 0x3f3f3f3f;
 const int MXN = 2e5 + 5;
 
 int n, m;
+char s[MXN];
+int ori[MXN], dwn[MXN];
 void work() {
-    n = read();
+    n = read(), m = read();
+    rep(i, 0, n) ori[i] = dwn[i] = 0;
+    scanf("%s", s);
+    rep(i, 0, n) {
+        int a = s[i] - 'a', b = (i + 1 < n && ori[i + 1] == 0? s[i + 1] - 'a': INF), c = (i + 2 < n && ori[i + 1] == 0? s[i + 2] - 'a': INF);
+        if(dwn[i] == 0) a = sml(a, (a + 1) % m, (a + m - 1) % m);
+        if(b != INF && ori[i] == 0 && dwn[i + 1] == 0 && ori[i + 1] == 0) b = sml(b, (b + 1) % m, (b + m - 1) % m);
+        if(a <= b && a <= c) {
+            s[i] = a + 'a';
+        }else if(b <= a && b <= c) {
+            swap(s[i], s[i + 1]);
+            if(s[i] != b + 'a') {
+                s[i] = b + 'a';
+                dwn[i + 1] = ori[i + 1] = 1;
+            }else {
+                ori[i + 1] = 1;
+            }
+            if(dwn[i]) dwn[i + 1] = 1;
+            if(ori[i]) ori[i + 1] = 1;
+        }else if(c <= a && c <= b){
+            swap(s[i], s[i + 2]);
+            swap(s[i + 1], s[i + 2]);
+            if(dwn[i]) dwn[i + 1] = 1;
+            ori[i + 1] = 1;
+            ori[i + 2] = dwn[i + 2] = 1;
+        }
+        // debug(i, s)
+    }
+    printf("%s\n", s);
 }
 int main() {
-#ifndef ONLINE_JUDGE
-    // freopen("D:/ACM/mtxt/in.txt", "r", stdin);
+#ifdef LH_LOCAL
+    freopen("D:/ACM/mtxt/in.txt", "r", stdin);
     // freopen("D:/ACM/mtxt/out.txt", "w", stdout);
 #endif
-    for(int cas = 1, tim = 1; cas <= tim; ++ cas) {
+    for(int cas = 1, tim = read(); cas <= tim; ++ cas) {
         // printf("Case #%d:\n", cas);
         work();
     }
-#ifndef ONLINE_JUDGE
+#ifdef LH_LOCAL
     cout << "time cost:" << 1.0 * clock() / CLOCKS_PER_SEC << "s" << endl;
 #endif
     return 0;

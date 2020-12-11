@@ -1,4 +1,5 @@
 #include <bits/stdc++.h>
+using namespace std;
 #define fi first
 #define se second
 #define o2(x) (x) * (x)
@@ -11,7 +12,6 @@
 #define per(i, s, t) for(register int i = (s), LIM=(t); i >= LIM; --i)
 #define GKD std::ios::sync_with_stdio(false);cin.tie(0)
 #define my_unique(x) sort(all(x)), x.erase(unique(all(x)), x.end())
-using namespace std;
 typedef long long LL;
 typedef long long int64;
 typedef unsigned long long uint64;

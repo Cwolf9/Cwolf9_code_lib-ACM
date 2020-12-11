@@ -1,10 +1,12 @@
-#pragma comment(linker, "/STACK:102400000,102400000")
-#pragma GCC optimize("unroll-loops")
-#pragma GCC optimize(3,"Ofast","inline")
-#pragma GCC optimize("Ofast,no-stack-protector")
-#pragma GCC target("sse,sse2,sse3,ssse3,sse4,popcnt,abm,mmx,avx,tune=native")
+
+// Problem: G. Forbidden Value
+// Contest: Codeforces - Educational Codeforces Round 99 (Rated for Div. 2)
+// URL: https://codeforces.com/contest/1455/problem/G
+// Memory Limit: 256 MB
+// Time Limit: 2000 ms
+// Powered by CP Editor (https://github.com/cpeditor/cpeditor)
+
 #include <bits/stdc++.h>
-using namespace std;
 #define fi first
 #define se second
 #define o2(x) (x) * (x)
@@ -17,6 +19,7 @@ using namespace std;
 #define per(i, s, t) for(register int i = (s), LIM=(t); i >= LIM; --i)
 #define GKD std::ios::sync_with_stdio(false);cin.tie(0)
 #define my_unique(x) sort(all(x)), x.erase(unique(all(x)), x.end())
+using namespace std;
 typedef long long LL;
 typedef long long int64;
 typedef unsigned long long uint64;
@@ -54,7 +57,7 @@ void debug_out(const T &f, const R &... r) {
     cout << f << " ";
     debug_out(r...);
 }
-#ifndef ONLINE_JUDGE
+#ifdef LH_LOCAL
 #define debug(...) cout << "[" << #__VA_ARGS__ << "]: ", debug_out(__VA_ARGS__);
 #else
 #define debug(...) ;
@@ -70,15 +73,15 @@ void work() {
     n = read();
 }
 int main() {
-#ifndef ONLINE_JUDGE
-    // freopen("D:/ACM/mtxt/in.txt", "r", stdin);
+#ifdef LH_LOCAL
+    freopen("D:/ACM/mtxt/in.txt", "r", stdin);
     // freopen("D:/ACM/mtxt/out.txt", "w", stdout);
 #endif
     for(int cas = 1, tim = 1; cas <= tim; ++ cas) {
         // printf("Case #%d:\n", cas);
         work();
     }
-#ifndef ONLINE_JUDGE
+#ifdef LH_LOCAL
     cout << "time cost:" << 1.0 * clock() / CLOCKS_PER_SEC << "s" << endl;
 #endif
     return 0;

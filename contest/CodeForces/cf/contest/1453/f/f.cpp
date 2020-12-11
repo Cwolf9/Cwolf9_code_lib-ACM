@@ -58,41 +58,37 @@ void debug_out(const T &f, const R &... r) {
 const int mod = 998244353;// 998244353
 int ksm(int a, int64 b, int kmod = mod) {int res = 1;for(;b > 0;b >>= 1, a = (int64)a * a % kmod) if(b &1) res = (int64)res * a % kmod;return res;}
 const int INF = 0x3f3f3f3f;
-const int MXN = 2e5 + 5;
-int n;
-vector<int> mp[MXN];
-int dis[MXN];
-void dfs(int u, int ba) {
-    for(int v: mp[u]) {
-        if(v == ba) continue;
-        dis[v] = dis[u] + 1;
-        dfs(v, u);
-    }
-}
+const int MXN = 2e2 + 5;
+
+int n, m;
+int ar[MXN];
+int dp[MXN][MXN][MXN];
+
 void work() {
     n = read();
-    rep(i, 1, n + 1) mp[i].clear();
+    rep(i, 1, n + 1) ar[i] = read();
+    clr(dp, 0x3f);
+    per(i, n - 1, 1) {
+        if(i + ar[i] <= n) dp[i][i][n] = 0;
+    }
+    per(i, n - 2, 1) {
+        rep(j, i, n) {
+            rep(k, j + 1, n + 1) {
+                //i不在当前路径中
+                dp[i][j][k] = min(dp[i][j][k], dp[i + 1][j][k] + (i + ar[i] >= j));
+                //i在当前路径中
+                if(i + ar[i] >= j && i + ar[i] < k) dp[i][i][j] = min(dp[i][i][j], dp[i + 1][j][k]);
+            }
+        }
+    }
+    int ans = INF;
     rep(i, 1, n) {
-        int a = read(), b = read();
-        mp[a].eb(b);
-        mp[b].eb(a);
+        rep(j, i + 1, n + 1) {
+            ans = min(ans, dp[1][i][j]);
+        }
     }
-    dis[1] = 0;
-    dfs(1, -1);
-    int pa = 2;
-    rep(i, 3, n + 1) {
-        if(dis[i] > dis[pa]) pa = i;
-    }
-    printf("%d\n", (dis[pa] + 1) / 2 + 1);
-    return ;
-    dis[pa] = 0;
-    dfs(pa, -1);
-    int pb = 1;
-    rep(i, 1, n + 1) {
-        if(dis[i] > dis[pb]) pb = i;
-    }
+    printf("%d\n", ans);
 }
-
 int main() {
 #ifdef LH_LOCAL
     freopen("D:/ACM/mtxt/in.txt", "r", stdin);
@@ -107,3 +103,54 @@ int main() {
 #endif
     return 0;
 }
+/* 
+有$n$个权值，$0\le a_i\le n - i$，当你在第$i$个位置时，你可以移动到$[i+1,i+a_i]$位置中的某一个，最后移动到$n$游戏胜利。
+问最少赋值多少个权值为$0$，使得游戏只有一种胜利的走法。
+注意：合法的路径中经过的点除了$a_n$不能有$0$。
+$2\le n\le 3000$
+
+3
+4
+1 1 1 0
+5
+4 3 2 1 0
+9
+4 1 4 2 1 0 2 1 0
+
+0
+3
+2
+#include<bits/stdc++.h>
+using namespace std;
+using LL = long long;
+constexpr int maxn = 3000 + 2;
+int dp[maxn][maxn], pre[maxn][maxn], add[maxn], a[maxn];
+int main(){
+    ios::sync_with_stdio(false);
+    cin.tie(nullptr);
+    int t;
+    for(cin >> t; t; t -= 1){
+        int n;
+        cin >> n;
+        for(int i = 1; i <= n; i += 1) cin >> a[i];
+        for(int i = 1; i <= n + 1; i += 1){
+            for(int j = 1; j <= n + 1; j += 1){
+                dp[i][j] = maxn;
+                pre[i][j] = maxn;
+            }
+            add[i] = 0;
+        }
+        dp[n][n + 1] = pre[n][n + 1] = 0;
+        for(int i = n - 1; i >= 1; i -= 1){
+            for(int j = i + 1; j <= n; j += 1)
+                if(i + a[i] >= j)
+                    dp[i][j] = min(dp[i][j], pre[j][i + a[i] + 1] + add[j]);
+                for(int j = n; j > i; j -= 1) pre[i][j] = min(pre[i][j + 1], dp[i][j]);
+            for(int j = i + 1; j <= i + a[i]; j += 1) add[j] += 1;
+        }
+        cout << pre[1][2] << "\n";
+    }
+    return 0;
+}
+
+*/

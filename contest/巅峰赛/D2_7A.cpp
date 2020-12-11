@@ -33,7 +33,7 @@ void debug_out(const T &f, const R &... r) {
     cout << f << " ";
     debug_out(r...);
 }
-#ifdef LH_LOCAL
+#ifndef LH_LOCAL
 #define debug(...) cout << "[" << #__VA_ARGS__ << "]: ", debug_out(__VA_ARGS__);
 #else
 #define debug(...) ;
@@ -67,79 +67,90 @@ typedef pair<int, int> pii;
 const int INF = 0x3f3f3f3f;
 const int mod = 1e9 + 7;// 998244353
 const int MXN = 1e5 + 5;
+int ksm(int a, int64 b, int kmod = mod) {int res = 1;for(;b > 0;b >>= 1, a = (int64)a * a % kmod) if(b &1) res = (int64)res * a % kmod;return res;}
 
 class Solution {
 public:
-    int ans, n, sz;
-    vector<pii> vs;
-    void dfs(int c, int cnt, int sta, int res, int k) {
-        if(cnt == k) {
-            ans = min(ans, res);
-            return ;
-        }
-        if(res >= ans) return ;
-        for(int i = c; i < sz; ++i) {
-            if((sta & vs[i].se) == 0) dfs(i + 1, cnt + 1, sta | vs[i].se, res + vs[i].fi, k);
+    /**
+     * 代码中的类名、方法名、参数名已经指定，请勿修改，直接返回方法规定的值即可
+     * 
+     * @param n int整型 节点个数
+     * @param u int整型vector 
+     * @param v int整型vector 
+     * @return int整型
+     */
+    int n;
+    int dp[MXN][3], fa[MXN];
+    vector<pair<int,int> > mp[MXN];
+    void dfs1(int u,int Fa) {
+        int len = mp[u].size();
+        for(int i = 0; i < len; ++i) {
+            int v = mp[u][i].fi;
+            if(v == Fa)continue;
+            dfs1(v, u);
+            if(dp[v][0] + mp[u][i].se > dp[u][0]) {
+                fa[u] = v;
+                dp[u][1] = dp[u][0];
+                dp[u][0] = dp[v][0] + mp[u][i].se;
+            }else if(dp[v][0] + mp[u][i].se > dp[u][1]) {
+                dp[u][1] = (dp[v][0] + mp[u][i].se);
+            }
         }
     }
-    int minimumIncompatibility(vector<int>& nums, int k) {
-        vector<int> cnt(20, 0);
-        int flag = 1;
-        ans = INF;
-        for(int x: nums) {
-            ++ cnt[x];
-            if(cnt[x] > k) flag = 0;
-        }
-        if(flag == 0) return -1;
-        n = nums.size();
-        int sta = 1 << n;
-        sort(all(nums));
-        for(int i = 1; i < sta; ++i) {
-            int cnt = 0, Mx = 0, Mn = 100, las = -1;
-            for(int j = 0; j < n; ++j) {
-                if(i & (1 << j)) {
-                    ++ cnt;
-                    Mx = max(Mx, nums[j]);
-                    Mn = min(Mn, nums[j]);
-                    if(nums[j] == las) cnt = -100;
-                    las = nums[j];
-                }
+    void dfs2(int u, int Fa) {
+        int len = mp[u].size();
+        for(int i = 0; i < len; ++i) {
+            int v = mp[u][i].fi;
+            if(v == Fa)continue;
+            if(fa[u] == v) {
+                dp[v][2] = max(dp[u][2], dp[u][1]) + mp[u][i].se;
+            }else{
+                dp[v][2] = max(dp[u][2], dp[u][0]) + mp[u][i].se;
             }
-            if(cnt * k == n) {
-                vs.eb(mk(Mx - Mn, i));
-            }
+            dfs2(v, u);
         }
-        sort(all(vs));
-        sz = vs.size();
-        dfs(0, 0, 0, 0, k);
-        vs.clear();
-        return ans;
+    }
+    int PointsOnDiameter(int n, vector<int>& u, vector<int>& v) {
+        // write code here
+        for(int i = 0; i <= n; ++i) {
+            mp[i].clear();
+            fa[i] = 0;
+            memset(dp[i], 0, sizeof(dp[i]));
+        }
+        for(int i = 0; i < n - 1; ++i) {
+            mp[u[i]].eb(mk(v[i], 1));
+            mp[v[i]].eb(mk(u[i],1));
+        }
+        dfs1(1,-1);
+        dfs2(1, -1);
+        int cnt = 0, Mx = 0;
+        for(int i = 1; i <= n; ++i) Mx = max(Mx, max(dp[i][0], dp[i][2]));
+        for(int i = 1; i <= n; ++i) {
+            vector<int> v = vector<int> {dp[i][0], dp[i][1], dp[i][2]};
+            sort(all(v));
+            if(v[1] + v[2] == Mx) ++ cnt;
+        }
+        return cnt;
     }
 };
-Solution s;
+Solution S;
 int main() {
 #ifdef LH_LOCAL
     //freopen("D:\\ACM\\mtxt\\in.txt", "r", stdin);
     //freopen("D:\\ACM\\mtxt\\out.txt", "w", stdout);
 #endif
-    vector<int> arr = vector<int>{1,2,3,4,1,2,3,4,1,2,3,4,1,2,3,4};
-    vector<int> arr2 = vector<int>{1,4,2,5,2,2};
+    vector<int> arr = vector<int>{1,2,};
+    vector<int> arr2 = vector<int>{2,3};
     vector<Interval> ar = vector<Interval>{Interval(0, 2), Interval(4, 7), Interval(9, 9)};
     vector<vector<int> > br = vector<vector<int> >{{1,2},{2,4},{4,8}};
     vector<Point> par = vector<Point>{{1, 2},{3,4}};
-    auto x = 1;
-    s.minimumIncompatibility(arr, 8);
-    if(1) {
-        debug(x)
-    }else {
-        // for(int y: x) printf("%d ", y);
-        printf("\n");
-    }
+    auto x = S.PointsOnDiameter(3,arr,arr2);
+    debug(x)
+    //for(int y: x) printf("%d ", y);
+    //printf("\n");
 #ifdef LH_LOCAL
+    // cout << "time cost:" << 1.0 * clock() / CLOCKS_PER_SEC << "s" << endl;
+    // system("pause");
 #endif
     return 0;
 }
-
-/*
-
-*/
