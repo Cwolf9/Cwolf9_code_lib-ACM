@@ -73,13 +73,29 @@ class Solution {
 public:
     
 };
-
+const int MAXN = 1e6 + 6;
+LL F[MAXN], invF[MAXN];
+void init() {
+  F[0] = 1;
+  for (int i = 1; i < MAXN; i++) F[i] = F[i - 1] * i % mod;//阶乘
+  invF[MAXN - 1] = ksm(F[MAXN - 1], mod - 2);
+  for (int i = MAXN - 2; i >= 0; i--) invF[i] = invF[i + 1] * (i + 1) % mod;//阶乘的逆元
+}
+LL COMB(int n, int m) {//组合数
+  if(n < m) return 0; if(n == m)return 1;
+  return F[n] * invF[m] % mod * invF[n-m] % mod;
+}
 Solution S;
 int main() {
 #ifdef LH_LOCAL
     //freopen("D:\\ACM\\mtxt\\in.txt", "r", stdin);
     //freopen("D:\\ACM\\mtxt\\out.txt", "w", stdout);
 #endif
+    for(int i = 1; i <= 100; ++i) {
+        int x = ((i * 2) & i) == i;
+        int y = ((i * 2) & (i - 1)) == (i - 1);
+        printf("%d %d\n", i, x == y);
+    }
     vector<int> arr = vector<int>{1,2,};
     vector<int> arr2 = vector<int>{2,3};
     vector<Interval> ar = vector<Interval>{Interval(0, 2), Interval(4, 7), Interval(9, 9)};

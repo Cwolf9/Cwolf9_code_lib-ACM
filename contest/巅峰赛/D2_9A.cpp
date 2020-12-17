@@ -71,21 +71,94 @@ int ksm(int a, int64 b, int kmod = mod) {int res = 1;for(;b > 0;b >>= 1, a = (in
 
 class Solution {
 public:
+    /**
+     * 代码中的类名、方法名、参数名已经指定，请勿修改，直接返回方法规定的值即可
+     * 
+     * @param n string字符串 三角形的长和高
+     * @return bool布尔型
+     */
+    void mul(string &n, int &len) {
+        for(int i = 0; i < len; ++i) n[i] = (n[i] - '0') * 2 + '0';
+        for(int i = 0; i < len; ++i) {
+            if(n[i] > '9') {
+                if(i == len - 1) ++ len;
+                n[i + 1] += (n[i] - '0') / 10;
+                n[i] = (n[i] - '0') % 10 + '0';
+            }
+        }
+    }
+    void chu(string &n, int &len) {
+        for(int i = len - 1; i >= 0; --i) {
+            int x = n[i] - '0';
+            if(x % 2 == 0) n[i] = x / 2 + '0';
+            else {
+                n[i] = x / 2 + '0';
+                n[i - 1] += 10;
+            }
+        }
+        while(n[len - 1] == '0') -- len;
+    }
+    string add1(string n) {
+        reverse(n.begin(), n.end());
+        int len = n.length();
+        n[0] ++;
+        for(int i = 0; i < len; ++i) {
+            if(n[i] > '9') {
+                if(i == len - 1) ++ len, n += '0';
+                n[i + 1] += (n[i] - '0') / 10;
+                n[i] = (n[i] - '0') % 10 + '0';
+            }
+        }
+        reverse(n.begin(), n.end());
+        return n;
+    }
     
+    bool judge(string n) {
+        // write code here
+        bool flag = 0;
+        n = add1(n);
+        // reverse(all(n));
+        // int len = n.length();
+        // while(1) {
+        //     if(len == 1 && n[0] == '1') {
+        //         flag = 1;
+        //         break;
+        //     }
+        //     if((n[0] - '0') % 2 == 1) break;
+        //     chu(n, len);
+        // }
+        string x(10005, '0');
+        x[0] = '2';
+        int len = 1, xn = n.length();
+        for(int i = 1; ; ++i) {
+            int f = (len == xn);
+            rep(j, 0, len) if(f && x[len - 1 - j] != n[j]) {
+                f = 0;
+                break;
+            }
+            if(f == 1) {
+                flag = 1;
+                break;
+            }
+            mul(x, len);
+            if(len > xn) break;
+        }
+        return flag;
+    }
 };
-
 Solution S;
 int main() {
 #ifdef LH_LOCAL
     //freopen("D:\\ACM\\mtxt\\in.txt", "r", stdin);
     //freopen("D:\\ACM\\mtxt\\out.txt", "w", stdout);
 #endif
-    vector<int> arr = vector<int>{1,2,};
-    vector<int> arr2 = vector<int>{2,3};
+    vector<int> arr = vector<int>{1,2,3,4};
+    vector<int> arr2 = vector<int>{2,3,1,3};
     vector<Interval> ar = vector<Interval>{Interval(0, 2), Interval(4, 7), Interval(9, 9)};
     vector<vector<int> > br = vector<vector<int> >{{1,2},{2,4},{4,8}};
     vector<Point> par = vector<Point>{{1, 2},{3,4}};
-    auto x = 0;
+    auto x = S.judge("5");
+    debug(x)
     //for(int y: x) printf("%d ", y);
     //printf("\n");
 #ifdef LH_LOCAL
