@@ -3,17 +3,9 @@ using namespace std;
 #define fi first
 #define se second
 #define mk make_pair
-#define eb emplace_back
 #define SZ(x) ((int)(x).size())
 #define all(x) (x).begin(), (x).end()
-#define clr(a, b) memset((a), (b), sizeof((a)))
-#define rep(i, s, t) for(int i = (s), LIM=(t); i < LIM; ++i)
-#define per(i, s, t) for(int i = (s), LIM=(t); i >= LIM; --i)
-#define GKD std::ios::sync_with_stdio(false);cin.tie(0)
-#define my_unique(x) sort(all(x)), x.erase(unique(all(x)), x.end())
 typedef long long LL;
-typedef long long int64;
-typedef unsigned long long uint64;
 typedef pair<int, int> pii;
 // mt19937 rng(time(NULL));//std::clock()
 // mt19937_64 rng64(chrono::steady_clock::now().time_since_epoch().count());
@@ -48,13 +40,13 @@ void debug_out(const T &f, const R &... r) {
     cout << f << " ";
     debug_out(r...);
 }
-#ifdef LH_LOCAL
+#ifndef ONLINE_JUDGE
 #define debug(...) cout << "[" << #__VA_ARGS__ << "]: ", debug_out(__VA_ARGS__);
 #else
 #define debug(...) ;
 #endif
 /*================Header Template==============*/
-const int mod = 998244353;// 998244353
+const int mod = 998244353;
 int ksm(int a, int64 b, int kmod = mod) {int res = 1;for(;b > 0;b >>= 1, a = (int64)a * a % kmod) if(b &1) res = (int64)res * a % kmod;return res;}
 const int INF = 0x3f3f3f3f;
 const int MXN = 2e5 + 5;
@@ -64,15 +56,15 @@ void work() {
     n = read();
 }
 int main() {
-#ifdef LH_LOCAL
-    freopen("D:/ACM/mtxt/in.txt", "r", stdin);
-    // freopen("D:/ACM/mtxt/out.txt", "w", stdout);
+#ifndef ONLINE_JUDGE
+//    freopen("D:/ACM/mtxt/in.txt", "r", stdin);
+//    freopen("D:/ACM/mtxt/out.txt", "w", stdout);
 #endif
     for(int cas = 1, tim = 1; cas <= tim; ++ cas) {
         // printf("Case #%d:\n", cas);
         work();
     }
-#ifdef LH_LOCAL
+#ifndef ONLINE_JUDGE
     cout << "time cost:" << 1.0 * clock() / CLOCKS_PER_SEC << "s" << endl;
 #endif
     return 0;
