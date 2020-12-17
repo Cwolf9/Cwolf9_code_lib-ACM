@@ -13,8 +13,8 @@ using namespace std;
 #define SZ(x) ((int)(x).size())
 #define all(x) (x).begin(), (x).end()
 #define clr(a, b) memset((a), (b), sizeof((a)))
-#define rep(i, s, t) for(register int i = (s), LIM=(t); i < LIM; ++i)
-#define per(i, s, t) for(register int i = (s), LIM=(t); i >= LIM; --i)
+#define rep(i, s, t) for(int i = (s), LIM=(t); i < LIM; ++i)
+#define per(i, s, t) for(int i = (s), LIM=(t); i >= LIM; --i)
 #define GKD std::ios::sync_with_stdio(false);cin.tie(0)
 #define my_unique(x) sort(all(x)), x.erase(unique(all(x)), x.end())
 typedef long long LL;
