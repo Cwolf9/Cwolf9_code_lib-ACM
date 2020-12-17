@@ -1,5 +1,12 @@
 #include <bits/stdc++.h>
 using namespace std;
+#define fi first
+#define se second
+#define mk make_pair
+#define SZ(x) ((int)(x).size())
+#define all(x) (x).begin(), (x).end()
+typedef long long LL;
+typedef pair<int, int> pii;
 void debug_out() { cout << '\n'; }
 template <typename T, typename... R>
 void debug_out(const T &f, const R &... r) {
@@ -11,7 +18,6 @@ void debug_out(const T &f, const R &... r) {
 #else
 #define debug(...) ;
 #endif
-typedef long long LL;
 bool Finish_read;
 inline long long Rd() {long long x = 0;Finish_read = 0;int f = 1;char ch = getchar();while (!isdigit(ch)) {if (ch == '-') f = -1;if (ch == EOF) return x;ch = getchar();}while (isdigit(ch)) x = x * 10 + ch - '0', ch = getchar();x *= f;Finish_read = 1;return x;}
 template <class T>inline void print(T x) {if(x > 9) print(x / 10), putchar(x % 10 ^ 48);else if(x < 0) putchar('-'), print(-x);else putchar(x % 10 ^ 48);}
