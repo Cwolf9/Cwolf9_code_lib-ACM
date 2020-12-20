@@ -60,47 +60,13 @@ int ksm(int a, int64 b, int kmod = mod) {int res = 1;for(;b > 0;b >>= 1, a = (in
 const int INF = 0x3f3f3f3f;
 const int MXN = 2e5 + 5;
 int n;
-vector<int> mp[MXN];
-int dis[MXN], mn[MXN], num[MXN];
-int ans;
-void dfs(int u, int ba) {
-    vector<int> vs;
-    mn[u] = INF;
-    num[u] = 0;
-    int cnt = 0;
-    for(int v: mp[u]) {
-        if(v == ba) continue;
-        dis[v] = dis[u] + 1;
-        ++ num[u];
-        dfs(v, u);
-        if(num[v] > 1) ++ cnt;
-        mn[u] = min(mn[u], mn[v]);
-        vs.eb(mn[v] - dis[u]);
-    }
-    if(vs.size() == 0) {
-        mn[u] = dis[u];
-        return ;
-    }
-    sort(all(vs));
-    if(vs.size() == 1) {
-        ans = max(ans, vs[0]);
-        return ;
-    }
-    for(int i = 0; i < SZ(vs) - 1; ++i) ans = max(ans, vs[i] + 1);
-    ans = max(ans, vs.back());
-}
 void work() {
-    n = read();
-    rep(i, 1, n + 1) mp[i].clear();
-    rep(i, 1, n) {
-        int a = read(), b = read();
-        mp[a].eb(b);
-        mp[b].eb(a);
-    }
-    ans = 0;
-    dis[1] = 0;
-    dfs(1, -1);
-    printf("%d\n", ans);
+    int64 a = read();
+    int64 b = read();
+    int64 c = read();
+    int64 d = a + b + c;
+    int64 e = min({a, b, c});
+    printf("%s\n", (d % 9 == 0 && e >= d / 9)?"YES":"NO");
 }
 
 int main() {

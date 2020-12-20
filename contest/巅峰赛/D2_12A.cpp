@@ -80,10 +80,11 @@ int main() {
     //freopen("D:\\ACM\\mtxt\\in.txt", "r", stdin);
     //freopen("D:\\ACM\\mtxt\\out.txt", "w", stdout);
 #endif
-    vector<int> arr = vector<int>{1,2,};
-    vector<int> arr2 = vector<int>{2,3};
-    vector<Interval> ar = vector<Interval>{Interval(0, 2), Interval(4, 7), Interval(9, 9)};
-    vector<vector<int> > br = vector<vector<int> >{{1,2},{2,4},{4,8}};
+    vector<int> U = vector<int>{0,0,0,0,1,3,3,6,7};
+    vector<int> V = vector<int>{1,3,4,5,2,6,8,7,9};
+    vector<int> VAL = vector<int>{1,7,4,0,9,4,8,8,2,4};
+    vector<Interval> IntV = vector<Interval>{Interval(0, 2), Interval(4, 7), Interval(9, 9)};
+    vector<vector<int> > vvInt = vector<vector<int> >{{1,2},{2,4},{4,8}};
     vector<Point> par = vector<Point>{{1, 2},{3,4}};
     auto x = 0;
     //for(int y: x) printf("%d ", y);
