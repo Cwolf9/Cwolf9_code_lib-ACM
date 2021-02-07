@@ -19,17 +19,6 @@ def main():
             print("文件已经存在")
     except:
         print("爬取失败")
-# 转换请求头
-def headerToDict(s):
-    #https://blog.csdn.net/qq_43088815/article/details/90214217
-    #https://zhuanlan.zhihu.com/p/35656001
-    t = re.sub(r'(?P<key>.*?):(?P<value>.*?),', "'\g<key>':'\g<value>',\n", s, re.M)
-    return t
-s = 'aaa:bb,cc:dd,ddd:ddddd,'
-t = headerToDict(s)
-print(t)
-dic = {'a':'1', 'b':2}
-print(dic)
 '''
 https://www.icourse163.org/learn/BIT-1001870001?tid=1461946455#/learn/forumdetail?pid=1319863872
 https://github.com/xuehang00126/zh_mooc_reptile/blob/master/8.%E5%8D%95%E5%85%83%E5%85%AD.%E4%B8%AD%E5%9B%BD%E5%A4%A7%E5%AD%A6%E6%8E%92%E5%90%8D%E7%88%AC%E8%99%AB/UnivList.py

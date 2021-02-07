@@ -1,8 +1,12 @@
+# https://blog.csdn.net/CUFEECR/article/details/105467109
 # https://blog.csdn.net/aelous_dp/article/details/107461249
 import requests
 import re
 from bs4 import BeautifulSoup
 import time
+import html
+import csv
+import json
 def getHTMLText(url, code='utf-8'):
     head = {
         'referer': 'https://search.jd.com/',  # 每个页面的后半部分数据，是通过下拉然后再次请求，会做来源检查。
@@ -57,20 +61,22 @@ def getJDProd(qName = '手机', depth = 1):
     infoList = []
     for i in range(depth):
         try:
-            url = 'https://search.jd.com/Search?keyword=' + qName + '&enc=utf-8&qrst=1&rt=1&stop=1&vt=2&wq=' + qName + '&cid2=653&cid3=655&page=' + str(
-                (i + 1) * 2 - 1) + '&click=0'  # 此处注意 应该给i加1，注意细节
-            html = getHTMLText(url)
-            parsePage(infoList, html)
-            url = 'https://search.jd.com/s_new.php?keyword=' + qName + '&enc=utf-8&qrst=1&rt=1&stop=1&vt=2&wq=' + qName + '&cid2=653&cid3=655&page=' + str(
-                (i + 1) * 2) + '&scrolling=y&log_id=' + str(timeID) + '&tpl=3_M'
-            # html = getHTMLText(url)
-            # parsePage(infoList, html)
-            time.sleep(1)  # 提升视觉效果
+            with open("D:/iJDSJ.html", "r", encoding='utf-8') as f:
+                html = f.read()
+                url = 'https://search.jd.com/Search?keyword=' + qName + '&enc=utf-8&qrst=1&rt=1&stop=1&vt=2&wq=' + qName + '&cid2=653&cid3=655&page=' + str(
+                    (i + 1) * 2 - 1) + '&click=0'  # 此处注意 应该给i加1，注意细节
+                # html = getHTMLText(url)
+                # if i == 0:
+                #     with open("D:/iJDSJ.html", "w", encoding='utf-8') as f:
+                #         f.write(html)
+                parsePage(infoList, html)
+                time.sleep(1)
         except:
             print("获取京东商品产生异常")
     return infoList
-def getJDComments(url, num = 10):
+def reqProdComments(url, csv_writer, num = 10):
     if num > 20: num = 20
+    if num <= 0: num = 10
     result = []
     pid = url.split('/')[-1].split('.')[0]
     head = {
@@ -88,6 +94,7 @@ def getJDComments(url, num = 10):
         "isShadowSku":"0","fold":"1",
     }
     url = 'https://club.jd.com/comment/productPageComments.action'
+    attris = ["creationTime", "score", "replyCount", "usefulVoteCount", "imageCount", "content"]
     try:
         while len(result) < num :
             r = requests.get(url, timeout=30, headers=head, params = dSearch)
@@ -96,13 +103,36 @@ def getJDComments(url, num = 10):
             comment_list = reCommentLi.findall(r.text)
             if r.text == "" or len(comment_list) == 0:
                 break
-            for x in comment_list:
-                nli = []
-                for y in x:
-                    nli.append(y.strip())
-                result.append(nli)
+            # print(r.text[20:-2])
+            rtjs = json.loads(r.text[20:-2])
+            comments = rtjs['comments']
+            for comment in comments:
+                tmp = []
+                for attri in attris:
+                    if(attri == 'content') :
+                        # comment[attri] = html.unescape(comment[attri]).replace(r'\n', ' ')
+                        comment[attri] = comment[attri].replace('\n', ' ')
+                    tmp.append(comment[attri])
+                result.append(tmp)
+                csv_writer.writerow(tmp)
                 if len(result) == num:
                     break
+            # for comt in comment_list:
+            #     if len(comt) != 6 :
+            #         continue
+            #     content = html.unescape(comt[0]).replace(r'\n', ' ')#将HTML转义字符如&;等转化成普通字符串
+            #     creationTime = comt[1]
+            #     replyCount = comt[2]
+            #     score = comt[3]
+            #     usefulVoteCount = comt[4]
+            #     imageCount = comt[5]
+            #     csv_writer.writerow((creationTime, score, replyCount, usefulVoteCount, imageCount, content))
+            #     nli = [content]
+            #     for i in range(1, 6):
+            #         nli.append(comt[i].strip())
+            #     result.append(nli)
+            #     if len(result) == num:
+            #         break
             dSearch['page'] = str(int(dSearch['page']) + 1)
     except:
         print("获取京东评论出现bug")
@@ -110,20 +140,23 @@ def getJDComments(url, num = 10):
 def printComments(ilist):
     cnt = 0
     for x in ilist:
-        print(cnt, x[0])
+        print(cnt, x[0], x[1], x[2], x[3], x[4], x[5])
         cnt += 1
     print("")
+def getJDProdComments():
+    time.sleep(1)
+    ilist = []
+    with open('jdData.csv', 'a+', newline='', encoding='gb18030') as f:
+        writer = csv.writer(f)
+        writer.writerow(('留言时间', '评分', '回复数', '点赞数', '图片数', '评论内容'))
+        ilist = reqProdComments('https://item.jd.com/30191153091.html', writer)
+    printComments(ilist)
 def main():
     time.sleep(1)
     infoList = getJDProd()
     printGoodsList(infoList)
 # main()
-# https://blog.csdn.net/aelous_dp/article/details/107461249
-def tryJDCom():
-    time.sleep(1)
-    ilist = getJDComments('https://item.jd.com/100000499657.html')
-    printComments(ilist)
-tryJDCom()
+getJDProdComments()
 print('hello')
 """
 序号      价格          链接                      商品名称                
