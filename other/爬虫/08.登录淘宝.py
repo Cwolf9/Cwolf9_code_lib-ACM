@@ -29,17 +29,18 @@ class TBLogin:
     开始前要自己先打开F12，登录淘宝https://login.taobao.com/member/login.jhtml，获取login_data的一些关键参数，例如：loginId,password2,ua,_csrf_token,umidToken,hsiz。这些参数可能会该改变。
     
     功能：
-    首先判断是否需要滑块验证，然后验证密码，验证成功的话，返回的页面内容大致如下：
+    参考别人博客的思路是，首先判断是否需要滑块验证，然后验证密码，验证成功的话，返回的页面内容大致如下：
     {"content":{"data":{"redirect":true,"redirectUrl":"https://i.taobao.com/my_taobao.htm?nekot=vsa36MDHbHA=1612689094592","asyncUrls":["https://passport.alibaba.com/mini_apply_st.js?callback=callback&site=0&token=1cV7NfuThwWJTwvOOI4cbTQ"],"resultCode":100},"status":0,"success":true},"hasError":false}
     asyncUrls是申请st码的地址
     然后通过申请st码的地址来获取st码，最后再使用st码登录。
-    感觉貌似只需要验证密码返回成功，就已经算登录成功了，至于为什么要获取st码并再登录一次，不太清楚。
+    
+    我个人感觉貌似只需要验证密码返回成功，就已经算登录成功了，因为验证完密码，就重定向到自己主页了，至于为什么要获取st码并再登录一次，不太清楚。
 
     留坑：
     能登录成功的关键在于ua，有合法的基于用户身份的ua登录才不用滑块验证。一般输入完账户还没输入密码的时候就会发出一个post请求，带有ua，而且ua是动态的！
     这个ua是在登录页面的console通过命令：window["_n"] or window[UA_Opt.LogVal]获取。
     @property什么用
-    
+
     参考：
     [猪哥66](https://blog.csdn.net/u014044812/article/details/99584382)
     从代码层面将模拟登录淘宝分为以下四个步骤：
@@ -48,7 +49,6 @@ class TBLogin:
         浏览器拿着token去阿里巴巴（alibaba.com）交换st码！
         浏览器获取st码之后，拿着st码获取cookies，登录成功
     https://www.cnblogs.com/542684416-qq/p/11427600.html
-    https://blog.csdn.net/weixin_42852210/article/details/99700598
 
     https://blog.csdn.net/weixin_41624982/article/details/86710995
     https://mp.weixin.qq.com/s?__biz=MzI2OTQ1NzEyMQ==&mid=2247483923&idx=1&sn=b54293568b411695dac564a6433c2016&chksm=eae1419ddd96c88bb653a1cef4b7cdbeb0ff5b983c173b4e3730f01b0dfec28d391a43c45b76&scene=21#wechat_redirect
@@ -65,6 +65,7 @@ class TBLogin:
         """
         # 检测是否需要验证码的URL
         self.user_check_url = "https://login.taobao.com/member/request_nick_check.do?_input_charset=utf-8"
+        # 'https://login.taobao.com/newlogin/account/check.do?appName=taobao&fromSite=0'
         # 验证淘宝用户名密码URL
         self.verify_password_url = "https://login.taobao.com/newlogin/login.do?appName=taobao&fromSite=0"
         # 申请st码地址
@@ -328,9 +329,8 @@ class TBLogin:
         测试
         :return:
         """
-        gu = self.get_umidToken()
-        print(gu)
-        # self.login_with_stma()
+        # self.user_check_vcode()
+        self.login_with_stma()
         nick_name = self.get_taobao_nick_name()
 def main() :
     loginId = '15172425261'
