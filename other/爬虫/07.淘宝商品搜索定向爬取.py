@@ -222,22 +222,6 @@ bx-umidtoken: T2gAcyQJh8zPYUjSavc81S-lS_NPHm_zonle5MSIEvE8kTBCFg0qDFI6nwwrP2ilU6
 
 https://i.taobao.com/my_taobao.htm?nekot=vsa36MDHbHA%3D1612600291168
 
-手动登录淘宝，拿到几个关键参数
-loginId
-password2
-ua
-_csrf_token
-umidToken
-hsiz
-
-username
-password2
-ua
-csrf_token
-umidToken
-hsiz
-这几个参数，通过火狐登录 https://login.taobao.com/ 之后，打开高级模式，然后登录，之后搜索一下参数名就可以找到，这几个参数大概3天左右变化一次？具体的规律目前没有掌控
-
 \u003d =
 \u0026 &
 jsonp704({rateDetail: {rateCount: {total: 20, shop: 0, picNum: 7, used: 1},…}})
